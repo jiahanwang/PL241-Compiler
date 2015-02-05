@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -16,21 +15,15 @@ public class FileReader {
     }
 
     //return current and advance to the next character on the input
-    public char getSym() {
+    public char getSym() throws IOException{
         try {
             this.sym = (char)reader.read();
         }
         catch (IOException e) {
-            e.printStackTrace();
-            error("Error: FileReader encountered an I/O " +
+            throw new IOException("IOException: FileReader encountered an I/O " +
                     "exception when advancing to the next symbol.");
         }
         return this.sym;
-    }
-
-    // error handler
-    public void error(String errorMsg) {
-        throw new RuntimeException(errorMsg);
     }
 
 }
