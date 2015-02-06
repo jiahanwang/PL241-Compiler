@@ -1,8 +1,11 @@
+package frontend;
+
+import java.util.HashMap;
+
 /**
  * Created by Ivan on 1/31/2015.
  */
-public class Tokens {
-    public enum Token {
+public enum Token {
         errorToken("", 0),
 
         timesToken("*", 1),
@@ -36,7 +39,7 @@ public class Tokens {
         semiToken(";", 70),
 
         endToken("}", 80),
-        odTOken("od", 81),
+        odToken("od", 81),
         fiToken("fi", 82),
 
         elseToken("else", 90),
@@ -56,11 +59,29 @@ public class Tokens {
         mainToken("main", 200),
         eofToken("end of file", 255);
 
+        private static final HashMap<String, Integer> map = new HashMap();
+
+        static {
+            for(Token t : Token.values()) {
+                map.put(t.representation, t.value);
+            }
+        }
+
         public final String representation;
-        public int value;
+        public final int value;
+
         Token(String representation, int value) {
             this.representation = representation;
             this.value = value;
         }
-    }
+
+        public static int getValue(String s) {
+            //match value with representation
+            return map.get(s);
+        }
+
+        public static boolean contains(String s) {
+            return map.containsKey(s);
+        }
 }
+

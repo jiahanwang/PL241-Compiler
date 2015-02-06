@@ -1,3 +1,5 @@
+package frontend;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -20,7 +22,7 @@ public class FileReader {
             this.sym = (char)reader.read();
         }
         catch (IOException e) {
-            throw new IOException("IOException: FileReader encountered an I/O " +
+            throw new IOException("IOException: frontend.FileReader encountered an I/O " +
                     "exception when advancing to the next symbol.");
         }
         return this.sym;
