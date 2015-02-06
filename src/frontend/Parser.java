@@ -14,7 +14,7 @@ public class Parser {
         s = new Scanner(path);
     }
 
-    private void Next() throws IOException {
+    private void next() throws IOException {
         this.scannerSym = s.getSym();
         // advance to the next currToken
     }
