@@ -7,14 +7,18 @@ public class ScannerTest {
 
     public static void main(String[] args) {
         try {
-            Scanner s = new Scanner("test001.txt");
+            Scanner s = new Scanner("test002.txt");
 //            for(int i = 0; i < 30; i++) {
 //                System.out.println(s.getSym());
 //            }
             int curr = s.getSym();
             while(curr != Token.eofToken.value && curr != Token.errorToken.value) {
-                System.out.println(curr);
+                System.out.print(curr+" "+Token.getRepresentation(curr));
+                if(curr == Token.ident.value) {
+                    System.out.print(" "+s.id);
+                }
                 curr = s.getSym();
+                System.out.println("");
             }
         } catch (Exception e) {
             e.printStackTrace();

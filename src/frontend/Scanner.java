@@ -107,13 +107,15 @@ public class Scanner {
                 String peek = current.toString()+inputSym;
                 // SPECIAL CASE: COMMENTS
                 if(peek.equals("//")) {
+                    //go to next line and start on the next char
                     f.nextLine();
                     inputSym = f.getSym();
                     this.next();
                     return;
                 }
                 if(Token.contains(peek)) {
-                    // look up said is valid token, takes precendence
+                    // look up said is valid token, takes precendence over single symbol
+                    //
                     current.append(inputSym);
                 }
             }

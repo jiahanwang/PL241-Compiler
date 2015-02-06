@@ -59,11 +59,14 @@ public enum Token {
         mainToken("main", 200),
         eofToken("end of file", 255);
 
+        // two way hash-map
+        // alternatively can use Google BiMap but this is easier for now.
         private static final HashMap<String, Integer> map = new HashMap<String, Integer>();
-
+        private static final HashMap<Integer, String> rmap = new HashMap<Integer, String>();
         static {
             for(Token t : Token.values()) {
                 map.put(t.representation, t.value);
+                rmap.put(t.value, t.representation);
             }
         }
 
@@ -82,6 +85,11 @@ public enum Token {
 
         public static boolean contains(String s) {
             return map.containsKey(s);
+        }
+
+        // Only used for debugging
+        public static String getRepresentation(int i) {
+            return rmap.get(i);
         }
 }
 
