@@ -19,9 +19,9 @@ public class Scanner {
     private String[] keywords = {"then", "do", "od", "fi", "else", "let",
             "call", "if", "while", "return", "var", "array", "procedure", "main"};
 
-    private List<Character> singleSymbols = Arrays.asList('*', ',', ';', '{', '}', '[', ']', '.', '(', ')');
+    private List<Character> singleSymbols = Arrays.asList('*', ',', ';', '{', '}', '[', ']', '.', '(', ')', '+', '-');
     private List<Character> checkSymbols = Arrays.asList('=', '!', '<', '>', '/');
-    // double symbols
+    // checkSymbols = peek ahead required to determine token
     // ==, !=, <=, >=, ++?, --?, //
 
     // the last number encountered
@@ -47,21 +47,20 @@ public class Scanner {
     private void next() throws IOException {
         current = new StringBuilder();  //building out the currToken string in case its an identifier
         // We've reached the end of file
-        if(inputSym == (char)-1) {
+        if (inputSym == (char) -1) {
             currToken = Token.eofToken.value;
             return;
         }
         // Advance to next available input
-        while (Character.isWhitespace(inputSym))
-        {
+        while (Character.isWhitespace(inputSym)) {
             inputSym = f.getSym();
         }
 
         // input [A-z][A-z0-9]
         // will be identifier
-        if(Character.isAlphabetic(inputSym)) {
+        if (Character.isAlphabetic(inputSym)) {
             currToken = Token.ident.value;
-            while(Character.isAlphabetic(inputSym) || Character.isDigit(inputSym)) {
+            while (Character.isAlphabetic(inputSym) || Character.isDigit(inputSym)) {
                 //read until no more alphanumeric chars
                 current.append(inputSym);
                 inputSym = f.getSym();
@@ -82,9 +81,9 @@ public class Scanner {
         }
         // input NNNNN = value
         // will be number
-        else if(Character.isDigit(inputSym)) {
+        else if (Character.isDigit(inputSym)) {
             currToken = Token.number.value;
-            while(Character.isDigit(inputSym)) {
+            while (Character.isDigit(inputSym)) {
                 // read until no more numbers
                 current.append(inputSym);
                 inputSym = f.getSym();
@@ -92,39 +91,38 @@ public class Scanner {
             number = Integer.parseInt(current.toString());
         }
         // input '*', ',', ';', '{', '}', '[', ']', '.', '(', ')'
-        else if(singleSymbols.contains(inputSym)) {
+        else if (singleSymbols.contains(inputSym)) {
             // single symbol
             currToken = Token.getValue(Character.toString(inputSym));
             inputSym = f.getSym();
         }
         // these symbols need LL(1) first
-        else if(checkSymbols.contains(inputSym)) {
+        else if (checkSymbols.contains(inputSym)) {
             // consume next and check the Tokens agn
             current.append(inputSym);
             inputSym = f.getSym();
             // if not end of file, then peek ahead
-            if(inputSym != -1) {
-                String peek = current.toString()+inputSym;
+            if (inputSym != -1) {
+                String peek = current.toString() + inputSym;
                 // SPECIAL CASE: COMMENTS
-                if(peek.equals("//")) {
+                if (peek.equals("//")) {
                     //go to next line and start on the next char
                     f.nextLine();
                     inputSym = f.getSym();
                     this.next();
                     return;
                 }
-                if(Token.contains(peek)) {
-                    // look up said is valid token, takes precendence over single symbol
-                    //
+                // otherwise check up the relational operators
+                if (Token.contains(peek)) {
+                    // if look up said is valid token, takes precedence over single symbol
                     current.append(inputSym);
                 }
             }
             currToken = Token.getValue(current.toString());
             inputSym = f.getSym();
-        }
-        else {
+        } else {
             // symbol not recognized
-            throw new IOException("IOException : Scanner encountered unknown symbol \""+inputSym+"\"");
+            throw new IOException("IOException : Scanner encountered unknown symbol \"" + inputSym + "\"");
         }
     }
 
