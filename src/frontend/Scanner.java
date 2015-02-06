@@ -21,7 +21,7 @@ public class Scanner {
             "call", "if", "while", "return", "var", "array", "procedure", "main"};
 
     private List<Character> singleSymbols = Arrays.asList('*', ',', ';', '{', '}', '[', ']', '.', '(', ')');
-    private List<Character> checkSymbols = Arrays.asList('=', '!', '<', '>');
+    private List<Character> checkSymbols = Arrays.asList('=', '!', '<', '>', '/');
     // double symbols
     // ==, !=, <=, >=, ++?, --?, //
 
@@ -42,21 +42,22 @@ public class Scanner {
         identifiers.addAll(Arrays.asList(keywords));
         // update size of identifiers
         id = identifiers.size() - 1;
+        inputSym = f.getSym();
     }
 
     private void next() throws IOException {
         current = new StringBuilder();  //building out the currToken string in case its an identifier
-
+        // We've reached the end of file
+        if(inputSym == (char)-1) {
+            currToken = Token.eofToken.value;
+            return;
+        }
         // Advance to next available input
-        while (inputSym == ' ' || inputSym == '\t' || inputSym == '\n')
+        while (Character.isWhitespace(inputSym))
         {
             inputSym = f.getSym();
         }
 
-        // We've reached the end of file
-        if(inputSym == -1) {
-            currToken = Token.eofToken.value;
-        }
         // input [A-z][A-z0-9]
         // will be identifier
         if(Character.isAlphabetic(inputSym)) {
@@ -64,6 +65,7 @@ public class Scanner {
             while(Character.isAlphabetic(inputSym) || Character.isDigit(inputSym)) {
                 //read until no more alphanumeric chars
                 current.append(inputSym);
+                inputSym = f.getSym();
             }
             if (identifiers.contains(current.toString())) {
                 // if currToken matches previous identifier then set id.
@@ -86,6 +88,7 @@ public class Scanner {
             while(Character.isDigit(inputSym)) {
                 // read until no more numbers
                 current.append(inputSym);
+                inputSym = f.getSym();
             }
             number = Integer.parseInt(current.toString());
         }
@@ -93,17 +96,29 @@ public class Scanner {
         else if(singleSymbols.contains(inputSym)) {
             // single symbol
             currToken = Token.getValue(Character.toString(inputSym));
+            inputSym = f.getSym();
         }
         // these symbols need LL(1) first
         else if(checkSymbols.contains(inputSym)) {
             // consume next and check the Tokens agn
             current.append(inputSym);
-            f.getSym();
-            if(Token.contains(current.toString()+inputSym)) {
-                // look up said is valid token, takes precendence
-                current.append(inputSym);
+            inputSym = f.getSym();
+            // if not end of file, then peek ahead
+            if(inputSym != -1) {
+                String peek = current.toString()+inputSym;
+                // SPECIAL CASE: COMMENTS
+                if(peek.equals("//")) {
+                    f.nextLine();
+                    next();
+                    return;
+                }
+                if(Token.contains(peek)) {
+                    // look up said is valid token, takes precendence
+                    current.append(inputSym);
+                }
             }
             currToken = Token.getValue(current.toString());
+            inputSym = f.getSym();
         }
         else {
             // symbol not recognized

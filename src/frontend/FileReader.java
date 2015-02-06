@@ -28,4 +28,8 @@ public class FileReader {
         return this.sym;
     }
 
+    public void nextLine() throws IOException {
+        String s = reader.readLine();
+    }
+
 }
