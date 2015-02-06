@@ -59,7 +59,7 @@ public enum Token {
         mainToken("main", 200),
         eofToken("end of file", 255);
 
-        private static final HashMap<String, Integer> map = new HashMap();
+        private static final HashMap<String, Integer> map = new HashMap<String, Integer>();
 
         static {
             for(Token t : Token.values()) {

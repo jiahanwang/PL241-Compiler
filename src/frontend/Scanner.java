@@ -3,7 +3,6 @@ package frontend;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -109,7 +108,8 @@ public class Scanner {
                 // SPECIAL CASE: COMMENTS
                 if(peek.equals("//")) {
                     f.nextLine();
-                    next();
+                    inputSym = f.getSym();
+                    this.next();
                     return;
                 }
                 if(Token.contains(peek)) {
