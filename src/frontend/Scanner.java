@@ -16,8 +16,9 @@ public class Scanner {
     public List<String> identifiers;
 
     // Special Keywords
-    private String[] keywords = {"then", "do", "od", "fi", "else", "let",
-            "call", "if", "while", "return", "var", "array", "procedure", "main"};
+    private String[] keywords = {"then", "do", "od", "fi", "else",
+            "let", "call", "if", "while", "return", "var", "array",
+            "function", "procedure", "main"};
 
     private List<Character> singleSymbols = Arrays.asList('*', ',', ';', '{', '}', '[', ']', '.', '(', ')', '+', '-');
     private List<Character> checkSymbols = Arrays.asList('=', '!', '<', '>', '/');
@@ -57,7 +58,7 @@ public class Scanner {
         }
 
         // input [A-z][A-z0-9]
-        // will be identifier
+        // will be identifier or keyword
         if (Character.isAlphabetic(inputSym)) {
             currToken = Token.ident.value;
             while (Character.isAlphabetic(inputSym) || Character.isDigit(inputSym)) {
