@@ -147,7 +147,7 @@ public class Parser {
                     error("Missing close paren in func call");
                 }
             } else {
-                error("Missing open paren in func call");
+//                error("Missing open paren in func call");
             }
         }
     }
@@ -268,7 +268,10 @@ public class Parser {
             next();
             if(accept(Token.ident)) {
                 next();
-                formalParam();
+                //if not semiToken, then formalParams MUST be following
+                if(!accept(Token.semiToken)) {
+                    formalParam();
+                }
                 if(accept(Token.semiToken)) {
                     next();
                     funcBody();
@@ -335,7 +338,10 @@ public class Parser {
             }
             if (accept(Token.beginToken)){
                 next();
-                statSequence();
+                //if token is not }, must be statSequence option.
+                if(!accept(Token.endToken)){
+                    statSequence();
+                }
                 if(accept(Token.endToken)) {
                     next();
                 } else {
@@ -358,7 +364,8 @@ public class Parser {
         System.out.println(s);
     }
 
-    public void error(String s) throws Exception {
-        throw new Exception("Parser encountered error : "+s+" at tokenNum:"+tokenCount+" ="+Token.getRepresentation(in));
+    public void error(String e) throws Exception {
+        throw new Exception("Parser encountered error "+e+" on line "+s.getLineNum()+" near tokenNum:"
+                +tokenCount+" ="+Token.getRepresentation(in));
     }
 }

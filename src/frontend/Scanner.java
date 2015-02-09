@@ -34,7 +34,7 @@ public class Scanner {
     // the id of the token that has just been parsed by next()
     public int currToken;
 
-    public Scanner(String fileName) throws IOException {
+    public Scanner(String fileName) throws Exception {
         //constructor: open file and scan the first currToken into 'sym'
         f = new FileReader(fileName);
         identifiers = new ArrayList<String>();
@@ -45,7 +45,7 @@ public class Scanner {
         inputSym = f.getSym();
     }
 
-    private void next() throws IOException {
+    private void next() throws Exception {
         current = new StringBuilder();  //building out the currToken string in case its an identifier
         // We've reached the end of file
         if (inputSym == (char) -1) {
@@ -128,7 +128,7 @@ public class Scanner {
     }
 
     //return current and advance to the next currToken on the input
-    public int getSym() throws IOException {
+    public int getSym() throws Exception {
         this.next();
         return currToken;
     }
@@ -139,4 +139,7 @@ public class Scanner {
     }
 
 
+    public int getLineNum() {
+        return f.getLineNum();
+    }
 }

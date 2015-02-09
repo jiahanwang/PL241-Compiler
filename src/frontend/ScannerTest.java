@@ -17,6 +17,8 @@ public class ScannerTest {
                 curr = s.getSym();
                 System.out.println("");
             }
+
+            System.out.println("Total Line count : " +s.getLineNum());
         } catch (Exception e) {
             e.printStackTrace();
         }

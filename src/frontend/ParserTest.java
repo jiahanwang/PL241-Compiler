@@ -7,7 +7,7 @@ public class ParserTest {
 
     public static void main(String[] args) {
         try {
-            Parser p = new Parser("test003.txt");
+            Parser p = new Parser("test002.txt");
         } catch (Exception e) {
             e.printStackTrace();
         }
