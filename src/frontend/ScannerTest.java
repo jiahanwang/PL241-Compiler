@@ -8,9 +8,6 @@ public class ScannerTest {
     public static void main(String[] args) {
         try {
             Scanner s = new Scanner("test002.txt");
-//            for(int i = 0; i < 30; i++) {
-//                System.out.println(s.getSym());
-//            }
             int curr = s.getSym();
             while(curr != Token.eofToken.value && curr != Token.errorToken.value) {
                 System.out.print(curr+" "+Token.getRepresentation(curr));
