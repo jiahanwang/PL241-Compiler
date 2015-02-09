@@ -139,7 +139,7 @@ public class Scanner {
     }
 
 
-    public int getLineNum() {
-        return f.getLineNum();
+    public int getLineNumber() {
+        return f.getLineNumber();
     }
 }

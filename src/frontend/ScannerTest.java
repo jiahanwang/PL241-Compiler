@@ -18,7 +18,7 @@ public class ScannerTest {
                 System.out.println("");
             }
 
-            System.out.println("Total Line count : " +s.getLineNum());
+            System.out.println("Total Line count : " +s.getLineNumber());
         } catch (Exception e) {
             e.printStackTrace();
         }

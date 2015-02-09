@@ -2,6 +2,7 @@ package frontend;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,10 +12,10 @@ public class FileReader {
     private char sym;
     private int lineNum;
 
-    private BufferedReader reader;
+    private LineNumberReader reader;
 
     public FileReader(String path) throws IOException {
-        this.reader = Files.newBufferedReader(Paths.get(path), Charset.forName("UTF-8"));
+        this.reader = new LineNumberReader(Files.newBufferedReader(Paths.get(path), Charset.forName("UTF-8")));
         lineNum = 1;
     }
 
@@ -35,6 +36,8 @@ public class FileReader {
         String s = reader.readLine();
     }
 
-    public int getLineNum() { return lineNum; }
+    public int getLineNumber() {
+        return reader.getLineNumber() + 1;
+    }
 
 }

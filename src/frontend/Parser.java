@@ -18,6 +18,7 @@ public class Parser {
        //initialize the first token
         next();
         computation();
+        System.out.println("Finished compiling "+s.getLineNumber()+" lines in "+path+".");
     }
 
     private void next() throws IOException {
@@ -365,7 +366,7 @@ public class Parser {
     }
 
     public void error(String e) throws Exception {
-        throw new Exception("Parser encountered error "+e+" on line "+s.getLineNum()+" near tokenNum:"
+        throw new Exception("Parser encountered error "+e+" on line "+s.getLineNumber()+" near tokenNum:"
                 +tokenCount+" ="+Token.getRepresentation(in));
     }
 }
