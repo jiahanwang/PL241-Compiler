@@ -4,7 +4,7 @@ package frontend;
  * Created by Ivan on 2/6/2015.
  */
 public class Result {
-    public enum Type {CONST, VAR, REG, COND};
+    public enum Type {CONST, VAR, ARR, REG, COND};
     public enum Condition {GT, LT, GE, LE, NE, EQ}
 
     Type t;       // const, var, reg

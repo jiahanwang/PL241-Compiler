@@ -39,52 +39,71 @@ public class Parser {
         if(in >= 20 && in <=25){
             next();
         }
+        else {
+            error("Invalid operator found");
+        }
     }
 
-    public void ident() throws Exception {
+    public String ident() throws Exception {
         if(accept(Token.ident)) {
             next();
-        } else {
+            return s.identifiers.get(s.id);
+        }
+        else {
             error("Missing identifier");
         }
+        return null;
     }
 
-    public void number() throws Exception {
+    public Result number() throws Exception {
+        Result x = new Result();
         if(accept(Token.number)) {
+            x.t = Result.Type.CONST;
+            x.value = s.number;
             next();
-        } else {
+        }
+        else {
             error("Missing number");
         }
+        return x;
     }
 
 
-    public void designator() throws Exception {
+    public Result designator() throws Exception {
+        // TODO: still need to figure out how to deal with arrays
+        //
+        Result x = new Result();
         if(accept(Token.ident)) {
             ident();
             while (accept(Token.openbracketToken)) {
+                x.t = Result.Type.ARR;
                 next();
                 expression();
                 if(accept(Token.closebracketToken)) {
                     next();
-                } else {
+                }
+                else {
                     error("Missing close bracket in designator");
                 }
             }
-        } else {
+        }
+        else {
             error("Missing identifier from designator");
         }
+        return x;
     }
 
-    public void factor() throws Exception {
+    public Result factor() throws Exception {
+        Result x = new Result();
         if(accept(Token.ident)) {
-            designator();
+            x = designator();
         }
         else if(accept(Token.number)) {
-            number();
+            x = number();
         }
         else if(accept(Token.openparenToken)) {
             next();
-            expression();
+            x = expression();
             if(accept(Token.closeparenToken)) {
                 next();
             }
@@ -95,41 +114,57 @@ public class Parser {
         else {
             error("Invalid factor call");
         }
+        return x;
     }
 
-    public void term() throws Exception {
-        factor();
+    public Result term() throws Exception {
+        Result x, y;
+        x = factor();
         while(accept(Token.timesToken) || accept(Token.divToken)) {
+            Operator o = (accept(Token.timesToken)) ? Operator.MUL : Operator.DIV;
             next();
-            factor();
+            y = factor();
+            ParserHelper.compute(o, x, y);
         }
+        return x;
     }
 
-    public void expression() throws Exception {
-        term();
+    public Result expression() throws Exception {
+        Result x, y;
+        x = term();
         while(accept(Token.plusToken) || accept(Token.minusToken)) {
+            Operator o = (accept(Token.plusToken)) ? Operator.ADD : Operator.SUB;
             next();
-            term();
+            y = term();
+            ParserHelper.compute(o, x, y);
         }
+        return x;
     }
 
-    public void relation() throws Exception {
-        expression();
+    public Result relation() throws Exception {
+        Result x, y, z;
+        x = expression();
         relOp();
-        expression();
+        y = expression();
+
+        return x;
     }
 
     public void assignment() throws Exception {
+        Result x, y;
         if(accept(Token.letToken)) {
             next();
-            designator();
+            x = designator();
             if(accept(Token.becomesToken)) {
                 next();
-                expression();
-            } else {
+                y = expression();
+                x = y;
+            }
+            else {
                 error("Missing becomes token during assignment");
             }
-        } else {
+        }
+        else {
             error("Missing let token during assignment");
         }
     }
@@ -149,10 +184,12 @@ public class Parser {
                 }
                 if(accept(Token.closeparenToken)) {
                     next();
-                } else {
+                }
+                else {
                     error("Missing close paren in func call");
                 }
-            } else {
+            }
+            else {
 //                error("Missing open paren in func call");
             }
         }
@@ -171,13 +208,16 @@ public class Parser {
                 }
                 if(accept(Token.fiToken)) {
                     next();
-                } else {
+                }
+                else {
                     error("Missing fi token");
                 }
-            } else {
+            }
+            else {
                 error("Missing then token");
             }
-        } else {
+        }
+        else {
             error("Missing if token");
         }
     }
@@ -191,13 +231,16 @@ public class Parser {
                 statSequence();
                 if(accept(Token.odToken)) {
                     next();
-                } else {
+                }
+                else {
                     error("Missing od token");
                 }
-            } else {
+            }
+            else {
                 error("Missing do token");
             }
-        } else {
+        }
+        else {
             error("Missing while token");
         }
     }
@@ -206,7 +249,8 @@ public class Parser {
         if(accept(Token.returnToken)) {
             next();
             expression();
-        } else {
+        }
+        else {
             error("Missing return statement");
         }
     }
@@ -247,7 +291,8 @@ public class Parser {
                 number();
                 if(accept(Token.closebracketToken)) {
                     next();
-                } else {
+                }
+                else {
                     error("Missing close parenthesis in type declaration");
                 }
             }
@@ -263,7 +308,8 @@ public class Parser {
         }
         if(accept(Token.semiToken)) {
             next();
-        } else {
+        }
+        else {
             error("Missing semicolon for var declaration");
         }
     }
@@ -282,16 +328,20 @@ public class Parser {
                     funcBody();
                     if(accept(Token.semiToken)) {
                         next();
-                    } else {
+                    }
+                    else {
                         error("Missing ; after function body");
                     }
-                } else {
+                }
+                else {
                     error("Missing ; after formal parameters");
                 }
-            } else {
+            }
+            else {
                 error("Missing identifier for function declaration");
             }
-        } else {
+        }
+        else {
             error("Missing function or procedure heading");
         }
     }
@@ -307,10 +357,12 @@ public class Parser {
             }
             if(accept(Token.closeparenToken)) {
                 next();
-            } else {
+            }
+            else {
                 error("Missing close paren for formal params");
             }
-        } else {
+        }
+        else {
             error("Missing open paren for formal params");
         }
     }
@@ -319,7 +371,8 @@ public class Parser {
         while(!accept(Token.beginToken)){
             if(accept(Token.varToken) || accept(Token.arrToken)) {
                 varDecl();
-            } else {
+            }
+            else {
                 error("Invalid var declaration in func body");
             }
         }
@@ -328,10 +381,12 @@ public class Parser {
             statSequence();
             if(accept(Token.endToken)) {
                 next();
-            } else {
+            }
+            else {
                 error("Misisng closing bracket for func body");
             }
-        } else {
+        }
+        else {
             error("Missing open bracket for func body");
         }
     }
@@ -353,13 +408,16 @@ public class Parser {
                 }
                 if(accept(Token.endToken)) {
                     next();
-                } else {
+                }
+                else {
                     error("Missing closing bracket for main");
                 }
-            } else {
+            }
+            else {
                 error("Missing open bracket for main");
             }
-        } else {
+        }
+        else {
             error("Missing main");
         }
     }
