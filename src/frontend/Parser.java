@@ -91,7 +91,8 @@ public class Parser {
         }
         else if(accept(Token.callToken)) {
             funcCall();
-        } else {
+        }
+        else {
             error("Invalid factor call");
         }
     }
@@ -128,6 +129,8 @@ public class Parser {
             } else {
                 error("Missing becomes token during assignment");
             }
+        } else {
+            error("Missing let token during assignment");
         }
     }
 
@@ -137,10 +140,12 @@ public class Parser {
             ident();
             if(accept(Token.openparenToken)) {
                 next();
-                expression();
-                while(accept(Token.commaToken)) {
-                    next();
+                if(!accept(Token.closeparenToken)) {
                     expression();
+                    while(accept(Token.commaToken)) {
+                        next();
+                        expression();
+                    }
                 }
                 if(accept(Token.closeparenToken)) {
                     next();
@@ -207,7 +212,6 @@ public class Parser {
     }
 
     public void statement() throws Exception {
-        //TODO: figure out how to OR all these
         if(accept(Token.letToken)) {
             assignment();
         }
@@ -312,8 +316,12 @@ public class Parser {
     }
 
     public void funcBody() throws Exception {
-        if(accept(Token.varToken)) {
-            varDecl();
+        while(!accept(Token.beginToken)){
+            if(accept(Token.varToken) || accept(Token.arrToken)) {
+                varDecl();
+            } else {
+                error("Invalid var declaration in func body");
+            }
         }
         if(accept(Token.beginToken)) {
             next();

@@ -21,7 +21,7 @@ public class Scanner {
             "function", "procedure", "main"};
 
     private List<Character> singleSymbols = Arrays.asList('*', ',', ';', '{', '}', '[', ']', '.', '(', ')', '+', '-');
-    private List<Character> checkSymbols = Arrays.asList('=', '!', '<', '>', '/');
+    private List<Character> checkSymbols = Arrays.asList('=', '!', '<', '>', '/', '#');
     // checkSymbols = peek ahead required to determine token
     // ==, !=, <=, >=, ++?, --?, //
 
@@ -106,7 +106,7 @@ public class Scanner {
             if (inputSym != -1) {
                 String peek = current.toString() + inputSym;
                 // SPECIAL CASE: COMMENTS
-                if (peek.equals("//")) {
+                if (peek.equals("//") || current.toString().equals("#")) {
                     //go to next line and start on the next char
                     f.nextLine();
                     inputSym = f.getSym();
