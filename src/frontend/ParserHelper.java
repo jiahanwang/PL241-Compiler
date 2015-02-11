@@ -12,7 +12,7 @@ public class ParserHelper {
     private static int basereg = 0;
     private static int pc = 0;
 
-    public static void compute(Operator op, Result x, Result y) throws Exception {
+    public static void combine(Operator op, Result x, Result y) throws Exception {
         if((x.t == Result.Type.CONST) && (y.t == Result.Type.CONST)) {
             if(op == Operator.ADD) {
                 x.value += y.value;
@@ -23,7 +23,7 @@ public class ParserHelper {
             } else if(op == Operator.DIV) {
                 x.value /= y.value;
             } else {
-                throw new Exception("Error while doing compute "
+                throw new Exception("Error while doing combine "
                         +op.toString()+" with Results:["+x.toString()+"] and ["+y.toString()+"]");
             }
         } else {

@@ -1,7 +1,6 @@
 package frontend;
 
 import java.io.IOException;
-import java.text.ParseException;
 
 /**
  * Created by Ivan on 1/31/2015.
@@ -18,7 +17,7 @@ public class Parser {
        //initialize the first token
         next();
         computation();
-        System.out.println("Finished compiling "+s.getLineNumber()+" lines in "+path+".");
+        System.out.println("Finished compiling " + s.getLineNumber() + " lines in " + path + ".");
     }
 
     private void next() throws IOException {
@@ -33,26 +32,29 @@ public class Parser {
     // BEGIN RULES FOR PL241
 
     public void relOp() throws Exception {
-//        switch(in) {
-//            // relation operators
-//        }
-        if(in >= 20 && in <=25){
-            next();
+        // TODO: this
+        switch(in) {
+            // relation operators
+            case 20 : next(); break;
+            case 21 : next(); break;
+            case 22 : next(); break;
+            case 23 : next(); break;
+            case 24 : next(); break;
+            case 25 : next(); break;
+            default:
+                error("Unknown symbol for rel op");
         }
-        else {
-            error("Invalid operator found");
-        }
+
     }
 
-    public String ident() throws Exception {
+    public void ident() throws Exception {
+        // TODO: this
         if(accept(Token.ident)) {
             next();
-            return s.identifiers.get(s.id);
         }
         else {
             error("Missing identifier");
         }
-        return null;
     }
 
     public Result number() throws Exception {
@@ -94,6 +96,7 @@ public class Parser {
     }
 
     public Result factor() throws Exception {
+        // TODO: this
         Result x = new Result();
         if(accept(Token.ident)) {
             x = designator();
@@ -124,7 +127,7 @@ public class Parser {
             Operator o = (accept(Token.timesToken)) ? Operator.MUL : Operator.DIV;
             next();
             y = factor();
-            ParserHelper.compute(o, x, y);
+            ParserHelper.combine(o, x, y);
         }
         return x;
     }
@@ -136,12 +139,13 @@ public class Parser {
             Operator o = (accept(Token.plusToken)) ? Operator.ADD : Operator.SUB;
             next();
             y = term();
-            ParserHelper.compute(o, x, y);
+            ParserHelper.combine(o, x, y);
         }
         return x;
     }
 
     public Result relation() throws Exception {
+        // TODO: this
         Result x, y, z;
         x = expression();
         relOp();
