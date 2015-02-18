@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+//TODO: check the scope of vars
 /**
  * Created by Ivan on 1/31/2015.
  */
