@@ -1,10 +1,9 @@
 package frontend;
 
 import IR.BasicBlock;
+import IR.DefUseChain;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Ivan on 1/31/2015.
@@ -14,7 +13,7 @@ public class Parser {
     private int in; //the current currToken on the input
     private Scanner s;
 
-    private HashMap<String, List<Integer>> du;
+    private DefUseChain du;
 
     private int tokenCount = 0;
 
@@ -37,36 +36,51 @@ public class Parser {
 
     // BEGIN RULES FOR PL241
 
-    public void relOp() throws Exception {
-//        switch(in) {
-//            // relation operators
-//        }
-        if(in >= 20 && in <=25){
-            next();
+    public Result.Condition relOp() throws Exception {
+        switch(in) {
+            // relation operators
+            case 20: next(); return Result.Condition.EQ;
+            case 21: next(); return Result.Condition.NE;
+            case 22: next(); return Result.Condition.LT;
+            case 23: next(); return Result.Condition.GE;
+            case 24: next(); return Result.Condition.LE;
+            case 25: next(); return Result.Condition.GT;
+            default:
+                error("Invalid relational operator found");
         }
+        return null;
     }
 
-    public void ident() throws Exception {
+    public Result ident() throws Exception {
+        Result r = new Result();
+        r.t = Result.Type.VAR;
         if(accept(Token.ident)) {
             next();
         } else {
             error("Missing identifier");
         }
+        return r;
     }
 
-    public void number() throws Exception {
+    public Result number() throws Exception {
+        Result r = new Result();
+        r.t = Result.Type.CONST;
         if(accept(Token.number)) {
+            r.value = s.number;
             next();
         } else {
             error("Missing number");
         }
+        return r;
     }
 
 
-    public void designator() throws Exception {
+    public Result designator() throws Exception {
+        Result r = null;
         if(accept(Token.ident)) {
-            ident();
+            r = ident();
             while (accept(Token.openbracketToken)) {
+                r.t = Result.Type.ARR;
                 next();
                 expression();
                 if(accept(Token.closebracketToken)) {
@@ -78,6 +92,7 @@ public class Parser {
         } else {
             error("Missing identifier from designator");
         }
+        return r;
     }
 
     public BasicBlock factor() throws Exception {
@@ -129,10 +144,15 @@ public class Parser {
         return b;
     }
 
-    public void relation() throws Exception {
+    public Result relation() throws Exception {
+        Result x = null,y;
+        int op;
+
         expression();
         relOp();
         expression();
+
+        return x;
     }
 
     public BasicBlock assignment() throws Exception {
@@ -228,7 +248,7 @@ public class Parser {
             if(accept(Token.doToken)) {
                 next();
                 BasicBlock leftSide = statSequence();
-                leftSide.exit.left = j;
+                leftSide.exit.left = b;
                 b.left = leftSide;
                 // TODO: patch this back to the first b block later
                 if(accept(Token.odToken)) {
@@ -259,6 +279,7 @@ public class Parser {
     }
 
     public BasicBlock statement() throws Exception {
+        //TODO: merge the individual blocks unless they are branching
         if(accept(Token.letToken)) {
             return assignment();
         }
@@ -280,6 +301,7 @@ public class Parser {
     }
 
     public BasicBlock statSequence() throws Exception {
+        //TODO: maybe use branch flag to figure out when to separate blocks
         BasicBlock start = statement();
         BasicBlock last = start;
         while(accept(Token.semiToken)) {
@@ -435,6 +457,10 @@ public class Parser {
             error("Missing main");
         }
         b.instruction = "main";
+        BasicBlock exit = new BasicBlock();
+        exit.instruction = "END";
+        b.exit = exit;
+        current.exit.left = exit;
         return b;
     }
 
