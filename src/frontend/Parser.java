@@ -95,62 +95,61 @@ public class Parser {
         return r;
     }
 
-    public BasicBlock factor() throws Exception {
-        BasicBlock b = new BasicBlock();
+    public Result factor() throws Exception {
+        Result x = null, y;
         if(accept(Token.ident)) {
-            designator();
+            x = designator();
         }
         else if(accept(Token.number)) {
-            number();
+            x = number();
         }
         else if(accept(Token.openparenToken)) {
             next();
-            expression();
+            x = expression();
             if(accept(Token.closeparenToken)) {
                 next();
             }
         }
         else if(accept(Token.callToken)) {
-            funcCall();
+            x = funcCall();
         }
         else {
             error("Invalid factor call");
         }
-        b.exit = b;
-        return b;
+        return x;
     }
 
-    public BasicBlock term() throws Exception {
-        BasicBlock b = new BasicBlock();
-        factor();
+    public Result term() throws Exception {
+        Result x, y;
+        x = factor();
         while(accept(Token.timesToken) || accept(Token.divToken)) {
             next();
-            factor();
+            y = factor();
         }
-        b.instruction = "term";
-        b.exit = b;
-        return b;
+        //combine(MUL, x, y);
+        return x;
     }
 
-    public BasicBlock expression() throws Exception {
-        BasicBlock b = new BasicBlock();
-        term();
+    public Result expression() throws Exception {
+        Result x, y;
+        x = term();
         while(accept(Token.plusToken) || accept(Token.minusToken)) {
             next();
-            term();
+            y = term();
         }
-        b.instruction = "expression";
-        b.exit = b;
-        return b;
+        //combine(ADD, x, y);
+        return x;
     }
 
     public Result relation() throws Exception {
         Result x = null,y;
         int op;
 
-        expression();
+        x = expression();
         relOp();
-        expression();
+        y = expression();
+
+        //combine(CMP, x, y);
 
         return x;
     }
@@ -174,8 +173,8 @@ public class Parser {
         return b;
     }
 
-    public BasicBlock funcCall() throws Exception {
-        BasicBlock b = new BasicBlock();
+    public Result funcCall() throws Exception {
+        Result x = null;
         if(accept(Token.callToken)) {
             next();
             ident();
@@ -197,9 +196,7 @@ public class Parser {
 //                error("Missing open paren in func call");
             }
         }
-        b.instruction = "calling something";
-        b.exit = b;
-        return b;
+        return x;
     }
 
     public BasicBlock ifStatement() throws Exception {
@@ -252,7 +249,6 @@ public class Parser {
                 BasicBlock leftSide = statSequence();
                 leftSide.exit.left = b;
                 b.left = leftSide;
-                // TODO: patch this back to the first b block later
                 if(accept(Token.odToken)) {
                     next();
                 } else {
@@ -281,12 +277,16 @@ public class Parser {
     }
 
     public BasicBlock statement() throws Exception {
-        //TODO: merge the individual blocks unless they are branching
         if(accept(Token.letToken)) {
+            //TODO: don't have assignment return bb
             return assignment();
         }
         else if(accept(Token.callToken)) {
-            return funcCall();
+            funcCall();
+            BasicBlock b = new BasicBlock();
+            b.instruction = "calling func";
+            b.exit = b;
+            return b;
         }
         else if(accept(Token.ifToken)) {
             return ifStatement();
@@ -295,6 +295,7 @@ public class Parser {
             return whileStatement();
         }
         else if(accept(Token.returnToken)) {
+            //TODO: need to work on dis. prob doesnt work
             return returnStatement();
         } else {
             error("Statement is invalid");
@@ -303,7 +304,6 @@ public class Parser {
     }
 
     public BasicBlock statSequence() throws Exception {
-        //TODO: maybe use branch flag to figure out when to separate blocks
         BasicBlock start = statement();
         while(accept(Token.semiToken)) {
             next();
@@ -315,9 +315,9 @@ public class Parser {
             } else {
                 // just append instead
                 (start.exit).append(temp.instruction);
+                //TODO: od and fi are considered part of basic blocks
+                // unsure if this is wanted behavior
             }
-
-
         }
         return start;
     }
@@ -422,7 +422,7 @@ public class Parser {
         if(accept(Token.beginToken)) {
             next();
             b.left = statSequence();
-            b.exit = b.left.exit;
+            b.exit = (b.left).exit;
             if(accept(Token.endToken)) {
                 next();
             } else {

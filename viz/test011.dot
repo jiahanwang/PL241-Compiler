@@ -1,56 +1,52 @@
 digraph test011 {
-0[label="main"]
-0 -> 1
-1[label="varDecl"]
-1 -> 3
-3[label="assignment"]
-3 -> 7
-7[label="assignment"]
-7 -> 11
-11[label="assignment"]
-11 -> 15
-15[label="assignment"]
-15 -> 19
-19[label="if"]
-19 -> 27
-27[label="assignment"]
-27 -> 33
-33[label="while"]
-33 -> 41
-41[label="assignment"]
-41 -> 47
-47[label="assignment"]
-47 -> 33
-33 -> 34
-34[label="od"]
-34 -> 20
-20[label="fi"]
-20 -> 79
-79[label="while"]
-79 -> 87
-87[label="if"]
-87 -> 95
-95[label="assignment"]
-95 -> 88
-88[label="fi"]
-88 -> 79
-87 -> 99
-99[label="assignment"]
-99 -> 88
-79 -> 80
-80[label="od"]
-80 -> 103
-103[label="END"]
-19 -> 53
-53[label="assignment"]
-53 -> 59
-59[label="while"]
-59 -> 67
-67[label="assignment"]
-67 -> 73
-73[label="assignment"]
-73 -> 59
-59 -> 60
-60[label="od"]
-60 -> 20
+node [shape=box]
+199[label="main"]
+199 -> 200
+200[label="varDecl"]
+200 -> 202
+202[label="assignment
+assignment
+assignment
+assignment"]
+202 -> 206
+206[label="if"]
+206 -> 208
+208[label="assignment"]
+208 -> 209
+209[label="while"]
+209 -> 211
+211[label="assignment
+assignment"]
+211 -> 209
+209 -> 210
+210[label="od"]
+210 -> 207
+207[label="fi"]
+207 -> 218
+218[label="while"]
+218 -> 220
+220[label="if"]
+220 -> 222
+222[label="assignment"]
+222 -> 221
+221[label="fi"]
+221 -> 218
+220 -> 223
+223[label="assignment"]
+223 -> 221
+218 -> 219
+219[label="od"]
+219 -> 224
+224[label="END"]
+206 -> 213
+213[label="assignment"]
+213 -> 214
+214[label="while"]
+214 -> 216
+216[label="assignment
+assignment"]
+216 -> 214
+214 -> 215
+215[label="od"]
+215 -> 207
 }
