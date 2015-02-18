@@ -205,6 +205,7 @@ public class Parser {
     public BasicBlock ifStatement() throws Exception {
         BasicBlock b = new BasicBlock();
         b.instruction = "if";
+        b.hasBranching = true;
         BasicBlock join = new BasicBlock();
         join.instruction = "fi";
         b.right = join;
@@ -238,6 +239,7 @@ public class Parser {
     public BasicBlock whileStatement() throws Exception {
         BasicBlock b = new BasicBlock();
         b.instruction = "while";
+        b.hasBranching = true;
         BasicBlock j = new BasicBlock();
         j.instruction = "od";
         b.right = j;            //exiting the while loop
@@ -303,12 +305,19 @@ public class Parser {
     public BasicBlock statSequence() throws Exception {
         //TODO: maybe use branch flag to figure out when to separate blocks
         BasicBlock start = statement();
-        BasicBlock last = start;
         while(accept(Token.semiToken)) {
             next();
-            last.left = statement();
-            last = last.left.exit;
-            start.exit = last;
+            BasicBlock temp = statement();
+            if(temp.hasBranching) {
+                //connect top and bottom
+                (start.exit).left = temp;
+                start.exit = temp.exit;
+            } else {
+                // just append instead
+                (start.exit).append(temp.instruction);
+            }
+
+
         }
         return start;
     }

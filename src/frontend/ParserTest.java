@@ -12,6 +12,7 @@ public class ParserTest {
             Parser p;
             for(int i = 11; i <= 11; i++) {
                 System.out.println("digraph test0"+String.format("%02d", i)+" {");
+                System.out.println("node [shape=box]");
                 p = new Parser("tests/test0"+String.format("%02d", i)+".txt");
                 BasicBlock b = p.computation();
                 DFS_buildCFG(b);
