@@ -2,29 +2,41 @@ package frontend;
 
 import IR.BasicBlock;
 import IR.DefUseChain;
+import IR.Instruction;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Ivan on 1/31/2015.
  */
 public class Parser {
 
-    private int in; //the current currToken on the input
+    // Vars used for parsing the tokens
+    private int in;                     // the current currToken on the input
     private Scanner s;
+    private int tokenCount = 0;         // debugging
 
+    // Stuffs for outputting IR or DLX
+    public List<Instruction> output;    // the buffer of instructions to output
+    private int pc = 0;                 // program counter
+
+    // Vars used for optimization
     private DefUseChain du;
+    private int basereg;
 
-    private int tokenCount = 0;
 
+    // Constructor for the parser
     public Parser(String path) throws Exception {
         s = new Scanner(path);
        //initialize the first token
         next();
-        //computation();
-        //System.out.println("Finished compiling "+s.getLineNumber()+" lines in "+path+".");
+
+        output = new ArrayList<Instruction>();
     }
 
+    // Advancing the token input from scanner to next
     private void next() throws IOException {
         try {
             in = s.getSym();
@@ -34,11 +46,14 @@ public class Parser {
         }
     }
 
-    // BEGIN RULES FOR PL241
+    /*
+        BEGIN RULES FOR PL241
+    */
 
     public Result.Condition relOp() throws Exception {
         switch(in) {
-            // relation operators
+            // IDE would not allow Token.LEQ.value for switch
+            // consume token and return the corresponding condition
             case 20: next(); return Result.Condition.EQ;
             case 21: next(); return Result.Condition.NE;
             case 22: next(); return Result.Condition.LT;
@@ -47,14 +62,16 @@ public class Parser {
             case 25: next(); return Result.Condition.GT;
             default:
                 error("Invalid relational operator found");
+                return null;
         }
-        return null;
     }
 
     public Result ident() throws Exception {
         Result r = new Result();
         r.t = Result.Type.VAR;
         if(accept(Token.ident)) {
+            //store info inside the Result and move onto next token
+            //r.address = //TODO: store the identifiers and their scopes somewhere
             next();
         } else {
             error("Missing identifier");
@@ -63,6 +80,7 @@ public class Parser {
     }
 
     public Result number() throws Exception {
+        // build the Result and store the number
         Result r = new Result();
         r.t = Result.Type.CONST;
         if(accept(Token.number)) {
@@ -76,13 +94,19 @@ public class Parser {
 
 
     public Result designator() throws Exception {
-        Result r = null;
+        // Determine if designator is a var or array?
+        Result r = null, x;
         if(accept(Token.ident)) {
+            // ident defaults to var
             r = ident();
             while (accept(Token.openbracketToken)) {
+                // [] means array
                 r.t = Result.Type.ARR;
                 next();
-                expression();
+                //TODO: not sure what to do with these expressions?
+                x = expression();
+                // probably compute them and reference the array after
+                // be careful of nesting [][][]
                 if(accept(Token.closebracketToken)) {
                     next();
                 } else {
@@ -96,6 +120,7 @@ public class Parser {
     }
 
     public Result factor() throws Exception {
+        //TODO: not sure how to deal with all these different types :(
         Result x = null, y;
         if(accept(Token.ident)) {
             x = designator();
@@ -193,34 +218,43 @@ public class Parser {
                     error("Missing close paren in func call");
                 }
             } else {
-//                error("Missing open paren in func call");
+                error("Missing open paren in func call");
             }
         }
         return x;
     }
 
     public BasicBlock ifStatement() throws Exception {
+
+        // create the top "if" block and bottom "fi" block
+        // the right side will default to end unless an else is detected
         BasicBlock b = new BasicBlock();
         b.instruction = "if";
         b.hasBranching = true;
         BasicBlock join = new BasicBlock();
         join.instruction = "fi";
-        b.right = join;
+        // set the right and exit to the fi block
+        b.right = b.exit = join;
+
         if(accept(Token.ifToken)) {
             next();
-            relation();
+            Result r = relation();
+            //TODO: suppose to get the result from relation to determine if branch for codegen
             if(accept(Token.thenToken)) {
                 next();
+                // set the fall through if to the statement sequence
                 b.left = statSequence();
+                // this connects the left statement's exit to the fi block
+                (b.left).exit.left = join;
                 if (accept(Token.elseToken)) {
                     next();
+                    // if else is detected, rearrange the right to include the block
                     b.right = statSequence();
-                    b.right.exit.left = join;
+                    // this connects the else statement's exit to the fi block
+                    (b.right).exit.left = join;
                 }
                 if(accept(Token.fiToken)) {
                     next();
-                    b.left.exit.left = join;
-                    b.exit = join;
                 } else {
                     error("Missing fi token");
                 }
@@ -234,21 +268,24 @@ public class Parser {
     }
 
     public BasicBlock whileStatement() throws Exception {
+
+        // Setting up the extra nodes for CFG
         BasicBlock b = new BasicBlock();
         b.instruction = "while";
         b.hasBranching = true;
-        BasicBlock j = new BasicBlock();
-        j.instruction = "od";
-        b.right = j;            //exiting the while loop
-        b.exit = j;
+        BasicBlock join = new BasicBlock();
+        join.instruction = "od";
+        //setting the default exits
+        b.right = b.exit = join;
+
         if(accept(Token.whileToken)) {
             next();
             relation();
             if(accept(Token.doToken)) {
                 next();
-                BasicBlock leftSide = statSequence();
-                leftSide.exit.left = b;
-                b.left = leftSide;
+                b.left = statSequence();
+                // setting the exit to fall back towards the while loop header
+                (b.left).exit.left = b;
                 if(accept(Token.odToken)) {
                     next();
                 } else {
@@ -282,6 +319,7 @@ public class Parser {
             return assignment();
         }
         else if(accept(Token.callToken)) {
+            //TODO: func call will probably look up a table for the jump?
             funcCall();
             BasicBlock b = new BasicBlock();
             b.instruction = "calling func";
@@ -295,7 +333,7 @@ public class Parser {
             return whileStatement();
         }
         else if(accept(Token.returnToken)) {
-            //TODO: need to work on dis. prob doesnt work
+            //TODO: need to work on dis. prob doesnt work, has not been tested
             return returnStatement();
         } else {
             error("Statement is invalid");
@@ -472,11 +510,12 @@ public class Parser {
         current.exit.left = exit;
         return b;
     }
-
+    /*
+        Auxillary Functions
+    */
     private boolean accept(Token t) {
         return in == t.value;
     }
-
 
     private void emit(String s) {
         System.out.println(s);
@@ -486,4 +525,61 @@ public class Parser {
         throw new Exception("Parser encountered error "+e+" on line "+s.getLineNumber()+" near tokenNum:"
                 +tokenCount+" ="+Token.getRepresentation(in));
     }
+
+    public void combine(Operator op, Result x, Result y) throws Exception {
+        if((x.t == Result.Type.CONST) && (y.t == Result.Type.CONST)) {
+            if(op == Operator.ADD) {
+                x.value += y.value;
+            } else if(op == Operator.SUB) {
+                x.value -= y.value;
+            } else if(op == Operator.MUL) {
+                x.value *= y.value;
+            } else if(op == Operator.DIV) {
+                x.value /= y.value;
+            } else {
+                throw new Exception("Error while doing combine "
+                        +op.toString()+" with Results:["+x.toString()+"] and ["+y.toString()+"]");
+            }
+        } else {
+            load(x);
+            if(x.regno == 0 ) {
+                x.regno = RegisterAllocator.AllocateReg();
+                PutF1("ADD", x.regno, 0, 0);
+            }
+            if(y.t == Result.Type.CONST) {
+                PutF1(op.toString()+"I", x.regno, x.regno, y.value);
+            }
+            else {
+                load(y);
+                PutF1(op.toString(), x.regno, x.regno, y.regno);
+                RegisterAllocator.deallocate(y.regno);
+            }
+        }
+    }
+
+    public void load(Result x) {
+        if(x.t == Result.Type.VAR) {
+            x.regno = RegisterAllocator.AllocateReg();
+            x.t = Result.Type.REG;
+            PutF1("LDW", x.regno, basereg, x.address);
+        }
+        else if(x.t == Result.Type.CONST) {
+            if(x.value == 0) {
+                x.regno = 0;
+            }
+            else {
+                x.regno = RegisterAllocator.AllocateReg();
+                PutF1("ADDI", x.regno, 0, x.value);
+            }
+        }
+    }
+
+    public void PutF1(String s, int a, int b, int c) {
+
+        //instructions[pc++] = s+" "+a+","+b+","+c;
+        //output.add(s+" "+a+","+b+","+c);
+        pc++;
+    }
+    
+
 }

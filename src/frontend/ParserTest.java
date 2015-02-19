@@ -14,22 +14,18 @@ public class ParserTest {
         try {
             Parser p;
             for(int i = 1; i <= 31; i++) {
-
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".dot");
-
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
                 p = new Parser("tests/test0"+String.format("%02d", i)+".txt");
                 BasicBlock b = p.computation();
                 DFS_buildCFG(b, pw);
                 pw.println("}");
-
                 pw.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public static boolean[] explored = new boolean[1000];
