@@ -2,7 +2,7 @@ package frontend;
 
 import IR.BasicBlock;
 import IR.DefUseChain;
-import IR.Instruction;
+import IR.IRInstruction;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,8 +19,9 @@ public class Parser {
     private int tokenCount = 0;         // debugging
 
     // Stuffs for outputting IR or DLX
-    public List<Instruction> output;    // the buffer of instructions to output
+    public List<IRInstruction> buffer;    // the buffer of instructions to output
     private int pc = 0;                 // program counter
+    BasicBlock c;       //the current basicblock we're writing to
 
     // Vars used for optimization
     private DefUseChain du;
@@ -33,7 +34,7 @@ public class Parser {
        //initialize the first token
         next();
 
-        output = new ArrayList<Instruction>();
+        buffer = new ArrayList<IRInstruction>();
     }
 
     // Advancing the token input from scanner to next
@@ -71,7 +72,7 @@ public class Parser {
         r.t = Result.Type.VAR;
         if(accept(Token.ident)) {
             //store info inside the Result and move onto next token
-            //r.address = //TODO: store the identifiers and their scopes somewhere
+            r.address = s.id;//TODO: store the identifiers and their scopes somewhere
             next();
         } else {
             error("Missing identifier");
@@ -103,7 +104,7 @@ public class Parser {
                 // [] means array
                 r.t = Result.Type.ARR;
                 next();
-                //TODO: not sure what to do with these expressions?
+                //TODO: not sure what to do with these expressions? i think these are the array offsets.
                 x = expression();
                 // probably compute them and reference the array after
                 // be careful of nesting [][][]
@@ -148,10 +149,14 @@ public class Parser {
         Result x, y;
         x = factor();
         while(accept(Token.timesToken) || accept(Token.divToken)) {
+            String op = (accept(Token.timesToken)) ? "MUL" : "DIV";
             next();
             y = factor();
+//            combine(op, x, y);
+            String op1 = (x.t == Result.Type.CONST) ? Integer.toString(x.value) : s.identifiers.get(x.address);
+            String op2 = (y.t == Result.Type.CONST) ? Integer.toString(y.value) : s.identifiers.get(y.address);
+            insertInstruction(c, new IRInstruction(op, op1, op2));
         }
-        //combine(MUL, x, y);
         return x;
     }
 
@@ -159,10 +164,14 @@ public class Parser {
         Result x, y;
         x = term();
         while(accept(Token.plusToken) || accept(Token.minusToken)) {
+            String op = (accept(Token.plusToken)) ? "ADD" : "SUB";
             next();
             y = term();
+            combine(op, x, y);
+            String op1 = (x.t == Result.Type.CONST) ? Integer.toString(x.value) : s.identifiers.get(x.address);
+            String op2 = (y.t == Result.Type.CONST) ? Integer.toString(y.value) : s.identifiers.get(y.address);
+            insertInstruction(c, new IRInstruction(op, op1, op2));
         }
-        //combine(ADD, x, y);
         return x;
     }
 
@@ -171,40 +180,54 @@ public class Parser {
         int op;
 
         x = expression();
-        relOp();
+        x.c = relOp();
         y = expression();
 
-        //combine(CMP, x, y);
+        combine("CMP", x, y);
+        x.t = Result.Type.COND;
 
+        String op1 = (x.t == Result.Type.CONST) ? Integer.toString(x.value) : s.identifiers.get(x.address);
+        String op2 = (y.t == Result.Type.CONST) ? Integer.toString(y.value) : s.identifiers.get(y.address);
+
+        insertInstruction(c, new IRInstruction("CMP", op1, op2));
         return x;
     }
 
     public BasicBlock assignment() throws Exception {
         BasicBlock b = new BasicBlock();
+        Result x, y;
+        IRInstruction i;
+        c = b;
         if(accept(Token.letToken)) {
             next();
-            designator();
+            x = designator();
             if(accept(Token.becomesToken)) {
                 next();
-                expression();
+                y = expression();
+                //TODO: this later
+                combine("MOVE", x, y);
+                String assignee = (x.t == Result.Type.CONST) ? Integer.toString(x.value) : s.identifiers.get(x.address);
+                String assignor = (y.t == Result.Type.CONST) ? Integer.toString(y.value) : s.identifiers.get(y.address);
+                insertInstruction(b, new IRInstruction("MOVE", assignor, assignee));    // move y x -> x:=y
             } else {
                 error("Missing becomes token during assignment");
             }
         } else {
             error("Missing let token during assignment");
         }
-        b.instruction = "assignment";
         b.exit = b;
         return b;
     }
 
     public Result funcCall() throws Exception {
-        Result x = null;
+        Result x = null, y;
         if(accept(Token.callToken)) {
             next();
-            ident();
+            x = ident(); //this is the func call name
+            insertInstruction(c, new IRInstruction("call", "0", "0"));
             if(accept(Token.openparenToken)) {
                 next();
+                //TODO: handle the parms if there are any
                 if(!accept(Token.closeparenToken)) {
                     expression();
                     while(accept(Token.commaToken)) {
@@ -224,26 +247,28 @@ public class Parser {
         return x;
     }
 
+    //TODO: generate phis inside the join block
     public BasicBlock ifStatement() throws Exception {
 
         // create the top "if" block and bottom "fi" block
         // the right side will default to end unless an else is detected
         BasicBlock b = new BasicBlock();
-        b.instruction = "if";
         b.hasBranching = true;
         BasicBlock join = new BasicBlock();
-        join.instruction = "fi";
         // set the right and exit to the fi block
         b.right = b.exit = join;
 
         if(accept(Token.ifToken)) {
             next();
             Result r = relation();
+            r.fixuplocation = pc;
+            insertInstruction(b, new IRInstruction("BRA", "IF"));
             //TODO: suppose to get the result from relation to determine if branch for codegen
             if(accept(Token.thenToken)) {
                 next();
                 // set the fall through if to the statement sequence
                 b.left = statSequence();
+                insertInstruction(b.left, new IRInstruction("BRA", "FWD"));
                 // this connects the left statement's exit to the fi block
                 (b.left).exit.left = join;
                 if (accept(Token.elseToken)) {
@@ -264,26 +289,33 @@ public class Parser {
         } else {
             error("Missing if token");
         }
+        // connect dom tree, b is the parent of all the blocks
+        (b.right).myDom = (b.left).myDom = join.myDom = b;
         return b;
     }
 
+    //TODO: generate phis inside the join block
     public BasicBlock whileStatement() throws Exception {
 
         // Setting up the extra nodes for CFG
         BasicBlock b = new BasicBlock();
-        b.instruction = "while";
         b.hasBranching = true;
         BasicBlock join = new BasicBlock();
-        join.instruction = "od";
         //setting the default exits
         b.right = b.exit = join;
+        // setting the branch back up to loop header
+        int loop = pc;
 
         if(accept(Token.whileToken)) {
             next();
-            relation();
+            c = b;
+            Result x = relation();
+
+            insertInstruction(b, new IRInstruction("BNE", "end"));
             if(accept(Token.doToken)) {
                 next();
                 b.left = statSequence();
+                insertInstruction(b.left, new IRInstruction("wBRA", String.valueOf(loop-pc)));
                 // setting the exit to fall back towards the while loop header
                 (b.left).exit.left = b;
                 if(accept(Token.odToken)) {
@@ -297,6 +329,8 @@ public class Parser {
         } else {
             error("Missing while token");
         }
+        // connect dom tree, b is the parent of all the blocks
+        (b.right).myDom = (b.left).myDom = join.myDom = b;
         return b;
     }
 
@@ -305,7 +339,7 @@ public class Parser {
         if(accept(Token.returnToken)) {
             next();
             expression();
-            b.instruction = "return something";
+            insertInstruction(b, new IRInstruction("BRA", "return addr"));
         } else {
             error("Missing return statement");
         }
@@ -322,8 +356,8 @@ public class Parser {
             //TODO: func call will probably look up a table for the jump?
             funcCall();
             BasicBlock b = new BasicBlock();
-            b.instruction = "calling func";
             b.exit = b;
+            c = b;
             return b;
         }
         else if(accept(Token.ifToken)) {
@@ -343,18 +377,25 @@ public class Parser {
 
     public BasicBlock statSequence() throws Exception {
         BasicBlock start = statement();
+        c = start;
         while(accept(Token.semiToken)) {
             next();
             BasicBlock temp = statement();
             if(temp.hasBranching) {
+                // connect the dom tree
+                temp.myDom = start.exit;
+
                 //connect top and bottom
                 (start.exit).left = temp;
                 start.exit = temp.exit;
+
+                //redefine the current block to append instructions to
+                c = start.exit;
             } else {
                 // just append instead
-                (start.exit).append(temp.instruction);
-                //TODO: od and fi are considered part of basic blocks
-                // unsure if this is wanted behavior
+                for(IRInstruction i : temp.instructions) {
+                    start.exit.append(i);
+                }
             }
         }
         return start;
@@ -374,13 +415,15 @@ public class Parser {
                 }
             }
         }
-        b.instruction = "typeDecl";
+
         b.exit = b;
         return b;
     }
 
     public BasicBlock varDecl() throws Exception {
         BasicBlock b = new BasicBlock();
+        c = b;
+        //TODO: probably setup for symbol table or scope? doesn't actually generate anything?
         typeDecl();
         ident();
         while(accept(Token.commaToken)) {
@@ -392,14 +435,15 @@ public class Parser {
         } else {
             error("Missing semicolon for var declaration");
         }
-        b.instruction = "varDecl";
         b.exit = b;
+        insertInstruction(b, new IRInstruction("var", "decl"));
         return b;
     }
 
     public BasicBlock funcDecl() throws Exception {
         BasicBlock b = new BasicBlock();
-        b.instruction = "funcDecl";
+        //TODO: probably setup some kind of address to this func
+        insertInstruction(b, new IRInstruction("label", "func"));
         if(accept(Token.funcToken) || accept(Token.procToken)) {
             next();
             if(accept(Token.ident)) {
@@ -477,6 +521,7 @@ public class Parser {
         BasicBlock current = b;
         if(accept(Token.mainToken)) {
             next();
+            b.append(new IRInstruction("main", "0"));
             while (accept(Token.varToken) || accept(Token.arrToken)) {
                 current.left = varDecl();
                 current = current.left;
@@ -491,9 +536,12 @@ public class Parser {
                 if(!accept(Token.endToken)){
                     current.left = statSequence();
                     current = current.left;
+                    b.exit = current.exit;
                 }
                 if(accept(Token.endToken)) {
                     next();
+                    (b.exit).append(new IRInstruction("end", "0"));
+
                 } else {
                     error("Missing closing bracket for main");
                 }
@@ -503,11 +551,6 @@ public class Parser {
         } else {
             error("Missing main");
         }
-        b.instruction = "main";
-        BasicBlock exit = new BasicBlock();
-        exit.instruction = "END";
-        b.exit = exit;
-        current.exit.left = exit;
         return b;
     }
     /*
@@ -526,20 +569,38 @@ public class Parser {
                 +tokenCount+" ="+Token.getRepresentation(in));
     }
 
-    public void combine(Operator op, Result x, Result y) throws Exception {
+    public void print() {
+        for(IRInstruction i : buffer) {
+            System.out.println(i.toString());
+        }
+    }
+
+    public void combine(String op, Result x, Result y) throws Exception {
         if((x.t == Result.Type.CONST) && (y.t == Result.Type.CONST)) {
-            if(op == Operator.ADD) {
+            if(op == "ADD") {
                 x.value += y.value;
-            } else if(op == Operator.SUB) {
+            } else if(op == "SUB") {
                 x.value -= y.value;
-            } else if(op == Operator.MUL) {
+            } else if(op == "MUL") {
                 x.value *= y.value;
-            } else if(op == Operator.DIV) {
+            } else if(op == "DIV") {
                 x.value /= y.value;
             } else {
                 throw new Exception("Error while doing combine "
                         +op.toString()+" with Results:["+x.toString()+"] and ["+y.toString()+"]");
             }
+// if(op == Operator.ADD) {
+//                x.value += y.value;
+//            } else if(op == Operator.SUB) {
+//                x.value -= y.value;
+//            } else if(op == Operator.MUL) {
+//                x.value *= y.value;
+//            } else if(op == Operator.DIV) {
+//                x.value /= y.value;
+//            } else {
+//                throw new Exception("Error while doing combine "
+//                        +op.toString()+" with Results:["+x.toString()+"] and ["+y.toString()+"]");
+//            }
         } else {
             load(x);
             if(x.regno == 0 ) {
@@ -574,10 +635,13 @@ public class Parser {
         }
     }
 
+    public void insertInstruction(BasicBlock bb, IRInstruction i) {
+        bb.append(i);
+    }
+
     public void PutF1(String s, int a, int b, int c) {
 
-        //instructions[pc++] = s+" "+a+","+b+","+c;
-        //output.add(s+" "+a+","+b+","+c);
+        // write later
         pc++;
     }
     

@@ -17,7 +17,8 @@ public class Result {
     int fixuplocation;
 
     public String toString() {
-        return "TYPE:"+t.toString()+",COND:"+c.toString()+",VALUE:"+value+",REGNO:"+regno+",FIXUP"+fixuplocation;
+        //return "TYPE:"+t.toString()+",COND:"+c.toString()+",VALUE:"+value+",REGNO:"+regno+",FIXUP"+fixuplocation;
+        return "Implement me";
     }
 
 }

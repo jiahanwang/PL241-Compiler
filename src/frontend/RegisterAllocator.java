@@ -26,7 +26,11 @@ public class RegisterAllocator {
         return -1;
     }
 
-    public static void deallocate(int i) {
-        openRegs[i] = false;
+    public static void deallocate(int i) throws Exception {
+        if(i > 0 && i < openRegs.length) {
+            openRegs[i] = false;
+        } else {
+            //throw new Exception("Invalid dellocate call on reg"+i);
+        }
     }
 }
