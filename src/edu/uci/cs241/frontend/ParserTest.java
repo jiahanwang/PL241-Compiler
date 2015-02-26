@@ -1,8 +1,7 @@
-package frontend;
+package edu.uci.cs241.frontend;
 
-import IR.BasicBlock;
+import edu.uci.cs241.ir.BasicBlock1;
 
-import java.io.BufferedWriter;
 import java.io.PrintWriter;
 
 /**
@@ -13,14 +12,14 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser p;
-            for(int i = 1; i <= 31; i++) {
+            for(int i = 1; i <= 1; i++) {
 
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".dot");
 
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
                 p = new Parser("tests/test0"+String.format("%02d", i)+".txt");
-                BasicBlock b = p.computation();
+                BasicBlock1 b = p.computation();
                 DFS_buildCFG(b, pw);
                 pw.println("}");
 
@@ -34,7 +33,7 @@ public class ParserTest {
 
     public static boolean[] explored = new boolean[1000];
 
-    public static void DFS_buildCFG(BasicBlock b, PrintWriter pw) {
+    public static void DFS_buildCFG(BasicBlock1 b, PrintWriter pw) {
         if(explored[b.id]) {
             return;
         }

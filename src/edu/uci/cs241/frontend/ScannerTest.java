@@ -1,4 +1,4 @@
-package frontend;
+package edu.uci.cs241.frontend;
 
 /**
  * Created by ivanleung on 2/5/15.

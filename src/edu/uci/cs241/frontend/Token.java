@@ -1,4 +1,4 @@
-package frontend;
+package edu.uci.cs241.frontend;
 
 import java.util.HashMap;
 

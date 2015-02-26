@@ -1,6 +1,5 @@
-package IR;
+package edu.uci.cs241.ir;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

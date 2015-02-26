@@ -1,31 +1,82 @@
-package frontend;
+package edu.uci.cs241.frontend;
 
-import IR.BasicBlock;
-import IR.DefUseChain;
+import edu.uci.cs241.ir.*;
+import edu.uci.cs241.ir.types.BasicBlockType;
+import edu.uci.cs241.ir.types.InstructionType;
+import edu.uci.cs241.ir.types.OperandType;
+import edu.uci.cs241.ir.types.ResultType;
+import org.java.algorithm.graph.basics.Graph;
+import org.java.algorithm.graph.basics.SimpleDirectedGraph;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Ivan on 1/31/2015.
  */
 public class Parser {
 
+    // Scanner and token
     private int in; //the current currToken on the input
     private Scanner s;
+    private int tokenCount;
 
-    private DefUseChain du;
+    // Flag to mark if parsing has finishes or not
+    private boolean parse_finished;
 
-    private int tokenCount = 0;
+    // Control FLow Graph
+    private Graph<BasicBlock, String> cfg;
 
+    // Def-Use Chain
+    //private DefUseChain du;
+
+    // HashMaps
+    private Map<Integer, BasicBlock> all_blocks = new HashMap<Integer, BasicBlock>();
+    private Map<String, BasicBlock> func_blocks = new HashMap<String, BasicBlock>();
+
+    //
+    private SymbolTable symbolTable = new SymbolTable();
+    private Function current_func = null;
+
+
+    // Global flags
+    private boolean parsing_function = false;
+    private boolean parsing_variable = false;
+    private boolean parsing_rest = false;
+
+
+    private enum IdentType {
+        VAR,
+        ARRAY,
+        FUNC
+    }
+    private Map<String, IdentType> identTypeMap = new HashMap<String, IdentType>();
+    private Map<String, List<Integer>> arrays = new HashMap<String, List<Integer>>();
+
+
+
+    // Constructor
     public Parser(String path) throws Exception {
-        s = new Scanner(path);
-       //initialize the first token
+        // initialization
+        this.s = new Scanner(path);
+        this.tokenCount = 0;
+        this.parse_finished = false;
+        this.cfg = new SimpleDirectedGraph<BasicBlock, String>();
+        //initialize the first token
         next();
         //computation();
         //System.out.println("Finished compiling "+s.getLineNumber()+" lines in "+path+".");
     }
 
-    private void next() throws IOException {
+    // Getters
+    public Graph getCFG() {
+        return parse_finished ? this.cfg : null;
+    }
+
+    // next()
+    private void next() {
         try {
             in = s.getSym();
             tokenCount++;
@@ -35,7 +86,6 @@ public class Parser {
     }
 
     // BEGIN RULES FOR PL241
-
     public Result.Condition relOp() throws Exception {
         switch(in) {
             // relation operators
@@ -52,19 +102,20 @@ public class Parser {
     }
 
     public Result ident() throws Exception {
-        Result r = new Result();
-        r.t = Result.Type.VAR;
+        Result res = new Result();
+        res.type = ResultType.VAR;
         if(accept(Token.ident)) {
+            res.name = s.getIdent();
             next();
         } else {
             error("Missing identifier");
         }
-        return r;
+        return res;
     }
 
     public Result number() throws Exception {
         Result r = new Result();
-        r.t = Result.Type.CONST;
+        r.type = ResultType.CONST;
         if(accept(Token.number)) {
             r.value = s.number;
             next();
@@ -80,7 +131,7 @@ public class Parser {
         if(accept(Token.ident)) {
             r = ident();
             while (accept(Token.openbracketToken)) {
-                r.t = Result.Type.ARR;
+                r.type = Result.Type.ARR;
                 next();
                 expression();
                 if(accept(Token.closebracketToken)) {
@@ -155,26 +206,25 @@ public class Parser {
     }
 
     public BasicBlock assignment() throws Exception {
-        BasicBlock b = new BasicBlock();
+        BasicBlock left = new BasicBlock("NORMAL");
+        return new BasicBlock1();
         if(accept(Token.letToken)) {
             next();
-            designator();
+            Result res = designator();
             if(accept(Token.becomesToken)) {
                 next();
-                expression();
+                //left.merge(right);
             } else {
                 error("Missing becomes token during assignment");
             }
         } else {
             error("Missing let token during assignment");
         }
-        b.instruction = "assignment";
-        b.exit = b;
-        return b;
+        return left;
     }
 
-    public Result funcCall() throws Exception {
-        Result x = null;
+    public BasicBlock funcCall() throws Exception {
+        BasicBlock block = new BasicBlock(BasicBlockType.NORMAL);
         if(accept(Token.callToken)) {
             next();
             ident();
@@ -196,14 +246,14 @@ public class Parser {
 //                error("Missing open paren in func call");
             }
         }
-        return x;
+        return block;
     }
 
-    public BasicBlock ifStatement() throws Exception {
-        BasicBlock b = new BasicBlock();
+    public BasicBlock1 ifStatement() throws Exception {
+        BasicBlock1 b = new BasicBlock1();
         b.instruction = "if";
         b.hasBranching = true;
-        BasicBlock join = new BasicBlock();
+        BasicBlock1 join = new BasicBlock1();
         join.instruction = "fi";
         b.right = join;
         if(accept(Token.ifToken)) {
@@ -233,11 +283,11 @@ public class Parser {
         return b;
     }
 
-    public BasicBlock whileStatement() throws Exception {
-        BasicBlock b = new BasicBlock();
+    public BasicBlock1 whileStatement() throws Exception {
+        BasicBlock1 b = new BasicBlock1();
         b.instruction = "while";
         b.hasBranching = true;
-        BasicBlock j = new BasicBlock();
+        BasicBlock1 j = new BasicBlock1();
         j.instruction = "od";
         b.right = j;            //exiting the while loop
         b.exit = j;
@@ -246,7 +296,7 @@ public class Parser {
             relation();
             if(accept(Token.doToken)) {
                 next();
-                BasicBlock leftSide = statSequence();
+                BasicBlock1 leftSide = statSequence();
                 leftSide.exit.left = b;
                 b.left = leftSide;
                 if(accept(Token.odToken)) {
@@ -263,8 +313,8 @@ public class Parser {
         return b;
     }
 
-    public BasicBlock returnStatement() throws Exception {
-        BasicBlock b = new BasicBlock();
+    public BasicBlock1 returnStatement() throws Exception {
+        BasicBlock1 b = new BasicBlock1();
         if(accept(Token.returnToken)) {
             next();
             expression();
@@ -282,10 +332,14 @@ public class Parser {
             return assignment();
         }
         else if(accept(Token.callToken)) {
-            funcCall();
-            BasicBlock b = new BasicBlock();
-            b.instruction = "calling func";
-            b.exit = b;
+            // function call to get the function name
+            //String func_name = funcCall();
+            BasicBlock b = new BasicBlock("NORMAL");
+            all_blocks.put(b.id, b);
+            Instruction in = new Instruction("FUNC");
+            in.addOperand("FP", func_name);
+            b.addInstruction(in);
+            //b.exit = b;
             return b;
         }
         else if(accept(Token.ifToken)) {
@@ -310,11 +364,11 @@ public class Parser {
             BasicBlock temp = statement();
             if(temp.hasBranching) {
                 //connect top and bottom
-                (start.exit).left = temp;
-                start.exit = temp.exit;
+                start.left = temp;
+                //start.exit = temp.exit;
             } else {
                 // just append instead
-                (start.exit).append(temp.instruction);
+                start.merge(temp);
                 //TODO: od and fi are considered part of basic blocks
                 // unsure if this is wanted behavior
             }
@@ -322,58 +376,88 @@ public class Parser {
         return start;
     }
 
-    public BasicBlock typeDecl() throws Exception {
-        BasicBlock b = new BasicBlock();
-        if(accept(Token.varToken) || accept(Token.arrToken)) {
+    public Result typeDecl() throws Exception {
+        Result res = new Result();
+        if (accept(Token.varToken)) {
+            res.type = ResultType.VAR;
+        }
+        if(accept(Token.arrToken)) {
+            res.type = ResultType.ARR;
+            List<Integer> dimensions = new LinkedList<Integer>();
             next();
             while(accept(Token.openbracketToken)) {
                 next();
-                number();
+                dimensions.add(number().value);
                 if(accept(Token.closebracketToken)) {
                     next();
                 } else {
                     error("Missing close parenthesis in type declaration");
                 }
             }
+            res.dimensions = new LinkedList<Integer>(dimensions);
         }
-        b.instruction = "typeDecl";
-        b.exit = b;
-        return b;
+        return res;
     }
 
     public BasicBlock varDecl() throws Exception {
-        BasicBlock b = new BasicBlock();
-        typeDecl();
-        ident();
-        while(accept(Token.commaToken)) {
-            next();
-            ident();
+        BasicBlock block = new BasicBlock("NORMAL");
+        Result t_res = typeDecl();
+        if(t_res.type == ResultType.ARR){
+            // if array
+            do {
+                Result i_res = ident();
+                Array arr = new Array(i_res.name);
+                arr.addDimensions(t_res.dimensions);
+                // add to the symbol table
+                symbolTable.addArray(arr);
+                // add instructions to the ??????
+                next();
+            }while(accept(Token.commaToken));
+
+        } else if (t_res.type == ResultType.VAR){
+            // if variable
+            do {
+                Result i_res = ident();
+                // add to the symbol table
+                symbolTable.addVariable(i_res.name);
+                // add instructions ?????
+                next();
+            }while(accept(Token.commaToken));
+        } else {
+            error("Wrong type for variable declaration");
         }
+
         if(accept(Token.semiToken)) {
             next();
         } else {
             error("Missing semicolon for var declaration");
         }
-        b.instruction = "varDecl";
-        b.exit = b;
-        return b;
+        return block;
     }
 
     public BasicBlock funcDecl() throws Exception {
-        BasicBlock b = new BasicBlock();
-        b.instruction = "funcDecl";
+        BasicBlock block = new BasicBlock(BasicBlockType.FUNCTION);
         if(accept(Token.funcToken) || accept(Token.procToken)) {
             next();
             if(accept(Token.ident)) {
+                Function func = new Function(s.getIdent());
+                symbolTable.addFunction(func);
+                this.current_func = func;
                 next();
                 //if not semiToken, then formalParams MUST be following
                 if(!accept(Token.semiToken)) {
-                    formalParam();
+                    func.addAllParameters(formalParam());
+                    // add instructions to the block
+                    /*for(int i = 0, len = func.parameters.size(); i < len; i++){
+                        Instruction in = new Instruction(InstructionType.LOADPARAM);
+                        in.addOperand(OperandType.FUNC_PARAM, String.valueOf(i));
+                        block.addInstruction(in);
+                    }*/
                 }
                 if(accept(Token.semiToken)) {
                     next();
-                    b.left = funcBody();
-                    b.exit = b.left.exit;
+                    block.merge(funcBody());
+                    func.entry = block;
                     if(accept(Token.semiToken)) {
                         next();
                     } else {
@@ -388,14 +472,15 @@ public class Parser {
         } else {
             error("Missing function or procedure heading");
         }
-        return b;
+        return block;
     }
 
-    public void formalParam() throws Exception {
+    public List<String> formalParam() throws Exception {
+        List<String> params = new LinkedList<String>();
         if(accept(Token.openparenToken)) {
             next();
             while(!accept(Token.closeparenToken)) {
-                ident();
+                params.add(ident().name);
                 if(accept(Token.commaToken)) {
                     next();
                 }
@@ -408,10 +493,11 @@ public class Parser {
         } else {
             error("Missing open paren for formal params");
         }
+        return params;
     }
 
-    public BasicBlock funcBody() throws Exception {
-        BasicBlock b = new BasicBlock();
+    public BasicBlock funcBody(Function func) throws Exception {
+        BasicBlock block = new BasicBlock(BasicBlockType.NORMAL);
         while(!accept(Token.beginToken)){
             if(accept(Token.varToken) || accept(Token.arrToken)) {
                 varDecl();
@@ -421,8 +507,8 @@ public class Parser {
         }
         if(accept(Token.beginToken)) {
             next();
-            b.left = statSequence();
-            b.exit = (b.left).exit;
+            block.merge(statSequence());
+            //b.exit = (b.left).exit;
             if(accept(Token.endToken)) {
                 next();
             } else {
@@ -431,22 +517,32 @@ public class Parser {
         } else {
             error("Missing open bracket for func body");
         }
-        return b;
+        return block;
     }
 
-    public BasicBlock computation() throws Exception {
-        BasicBlock b = new BasicBlock();
-        BasicBlock current = b;
+    public BasicBlock1 computation() throws Exception {
+        BasicBlock1 b = new BasicBlock1();
+        BasicBlock1 current = b;
         if(accept(Token.mainToken)) {
             next();
+            // Parsing variables
+            this.parsing_variable = true;
             while (accept(Token.varToken) || accept(Token.arrToken)) {
                 current.left = varDecl();
                 current = current.left;
             }
+            this.parsing_variable = false;
+
+            // Parsing functions
+            this.parsing_function = true;
             while (accept(Token.funcToken) || accept(Token.procToken)) {
                 current.left = funcDecl();
                 current = current.left;
             }
+            this.parsing_function = false;
+
+            // Parsing the rest of the program
+            this.parsing_rest = true;
             if (accept(Token.beginToken)){
                 next();
                 //if token is not }, must be statSequence option.
@@ -462,11 +558,12 @@ public class Parser {
             } else {
                 error("Missing open bracket for main");
             }
+            this.parsing_rest = false;
         } else {
             error("Missing main");
         }
         b.instruction = "main";
-        BasicBlock exit = new BasicBlock();
+        BasicBlock1 exit = new BasicBlock1();
         exit.instruction = "END";
         b.exit = exit;
         current.exit.left = exit;

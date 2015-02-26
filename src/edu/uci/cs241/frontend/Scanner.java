@@ -1,4 +1,4 @@
-package frontend;
+package edu.uci.cs241.frontend;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,6 +131,11 @@ public class Scanner {
     public int getSym() throws Exception {
         this.next();
         return currToken;
+    }
+
+    // return the last identifier
+    public String getIdent() {
+        return this.identifiers.get(id);
     }
 
     public void Error(String errorMsg) throws Exception {
