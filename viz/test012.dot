@@ -1,0 +1,25 @@
+digraph test012 {
+node [shape=box]
+225[label="main"]
+225 -> 226
+226[label="varDecl"]
+226 -> 228
+228[label="assignment
+assignment"]
+228 -> 230
+230[label="if"]
+230 -> 232
+232[label="assignment
+assignment
+assignment"]
+232 -> 231
+231[label="fi
+assignment
+calling func"]
+231 -> 239
+239[label="END"]
+230 -> 235
+235[label="assignment
+assignment"]
+235 -> 231
+}

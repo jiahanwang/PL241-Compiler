@@ -1,0 +1,31 @@
+digraph test023 {
+node [shape=box]
+459[label="main"]
+459 -> 460
+460[label="varDecl"]
+460 -> 462
+462[label="assignment
+assignment
+assignment
+assignment
+assignment"]
+462 -> 467
+467[label="while"]
+467 -> 469
+469[label="if"]
+469 -> 471
+471[label="assignment
+assignment"]
+471 -> 470
+470[label="fi"]
+470 -> 467
+469 -> 473
+473[label="assignment"]
+473 -> 470
+467 -> 468
+468[label="od
+assignment
+assignment"]
+468 -> 476
+476[label="END"]
+}

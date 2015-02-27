@@ -6,10 +6,11 @@ package edu.uci.cs241.ir.types;
 // OperandType Enum
 public enum OperandType {
     CONST,
-    INST,
-    NULL,
+    LINE,
     VARIABLE,
     ADDRESS,
+    INST,
+    NULL,
     FP,
     BASEADDRESS,
     FUNC_PARAM,

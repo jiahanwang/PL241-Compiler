@@ -1,0 +1,28 @@
+digraph test025 {
+node [shape=box]
+517[label="main"]
+517 -> 518
+518[label="varDecl"]
+518 -> 520
+520[label="assignment
+assignment
+assignment"]
+520 -> 523
+523[label="if"]
+523 -> 525
+525[label="assignment
+assignment
+assignment
+assignment
+assignment"]
+525 -> 524
+524[label="fi
+assignment
+assignment"]
+524 -> 534
+534[label="END"]
+523 -> 530
+530[label="assignment
+assignment"]
+530 -> 524
+}

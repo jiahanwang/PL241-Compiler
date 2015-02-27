@@ -45,4 +45,17 @@ public class   SymbolTable {
         }
     }
 
+
+    public boolean checkArray(String name){
+        return this.arrays.containsKey(name);
+    }
+
+    public boolean checkVariable(String name){
+        return this.variables.containsKey(name);
+    }
+
+    public boolean checkFunction(String name){
+        return this.functions.containsKey(name);
+    }
+
 }

@@ -11,15 +11,24 @@ import java.util.List;
 public class Result {
 
     public ResultType type;       // const, var, reg, arr or cond
-    public ConditionType con;    // if condition
+
 
     public int value;      // if constant
+    public String name;    // name if variable
+    public int line;       // line number of IR if line
+    public List<Integer> dimensions; // dimension if array
+
+
     public int regno;      // register number, if reg
-    public int address;    // address if var
-    public String name;
-    public List<Integer> dimensions; // if array
+    public int address;    // address if array
+    public ConditionType con;    // if condition
+
 
     public int fixuplocation;
+
+
+    public int start_line;
+    public int end_line;
 
     public String toString() {
         return "TYPE:"+ type.toString() +",COND:"+ con.toString() +

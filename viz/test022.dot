@@ -1,0 +1,32 @@
+digraph test022 {
+node [shape=box]
+443[label="main"]
+443 -> 444
+444[label="varDecl"]
+444 -> 446
+446[label="assignment
+assignment
+assignment"]
+446 -> 449
+449[label="while"]
+449 -> 451
+451[label="assignment"]
+451 -> 452
+452[label="while"]
+452 -> 454
+454[label="while"]
+454 -> 456
+456[label="assignment"]
+456 -> 454
+454 -> 455
+455[label="od"]
+455 -> 452
+452 -> 453
+453[label="od"]
+453 -> 449
+449 -> 450
+450[label="od
+assignment"]
+450 -> 458
+458[label="END"]
+}

@@ -10,41 +10,29 @@ import java.util.List;
  */
 public class BasicBlock {
 
-    public static int total;
-    static {
-        total = 0;
-    }
-
     public int id;
-    public BasicBlockType type;
-    public List<Instruction> instructions;
 
+    // For CFG
     public BasicBlock left;
     public BasicBlock right;
+    public boolean has_branching;
 
-    // Constructor for Normal type Basic Block
-    public BasicBlock(BasicBlockType type) {
-        this.id = total ++;
-        this.type = type;
-        this.instructions = new LinkedList<Instruction>();
+    // For IR
+    public int start_line;
+    public int end_line;
+
+    // Constructor
+    public BasicBlock() {
         this.left = null;
         this.right = null;
-    }
-
-//    // Constructor for Function type Basic Block
-//    public BasicBlock(BasicBlockType type, Function func){
-//        this(type);
-//        this.func = func;
-//    }
-
-    public boolean addInstruction(Instruction in) {
-        instructions.add(in);
-        return true;
+        this.has_branching = false;
+        this.start_line = 0;
+        this.end_line = 0;
     }
 
     public boolean merge(BasicBlock another){
-        if(this.type != another.type) return false;
-        instructions.addAll(another.instructions);
+        //if(this.type != another.type) return false;
+        //instructions.addAll(another.instructions);
         return true;
     }
 }

@@ -1,0 +1,17 @@
+digraph test015 {
+node [shape=box]
+295[label="main"]
+295 -> 296
+296[label="varDecl"]
+296 -> 298
+298[label="varDecl"]
+298 -> 300
+300[label="funcDecl"]
+300 -> 318
+318[label="funcDecl"]
+318 -> 333
+333[label="assignment
+assignment"]
+333 -> 335
+335[label="END"]
+}

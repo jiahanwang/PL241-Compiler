@@ -1,0 +1,19 @@
+digraph test004 {
+node [shape=box]
+83[label="main"]
+83 -> 84
+84[label="varDecl"]
+84 -> 86
+86[label="varDecl"]
+86 -> 88
+88[label="funcDecl"]
+88 -> 109
+109[label="assignment
+assignment
+assignment
+assignment
+assignment
+assignment"]
+109 -> 115
+115[label="END"]
+}

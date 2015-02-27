@@ -1,0 +1,12 @@
+digraph test006 {
+node [shape=box]
+122[label="main"]
+122 -> 123
+123[label="varDecl"]
+123 -> 125
+125[label="funcDecl"]
+125 -> 131
+131[label="calling func"]
+131 -> 132
+132[label="END"]
+}

@@ -1,0 +1,25 @@
+digraph test026 {
+node [shape=box]
+535[label="main"]
+535 -> 536
+536[label="varDecl"]
+536 -> 538
+538[label="varDecl"]
+538 -> 540
+540[label="assignment
+assignment"]
+540 -> 542
+542[label="while"]
+542 -> 544
+544[label="assignment
+assignment
+assignment
+assignment
+assignment"]
+544 -> 542
+542 -> 543
+543[label="od
+assignment"]
+543 -> 550
+550[label="END"]
+}

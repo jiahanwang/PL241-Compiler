@@ -1,0 +1,46 @@
+digraph test009 {
+node [shape=box]
+157[label="main"]
+157 -> 158
+158[label="varDecl"]
+158 -> 160
+160[label="assignment
+assignment
+assignment"]
+160 -> 163
+163[label="if"]
+163 -> 165
+165[label="assignment"]
+165 -> 166
+166[label="if"]
+166 -> 168
+168[label="assignment"]
+168 -> 169
+169[label="if"]
+169 -> 171
+171[label="assignment"]
+171 -> 170
+170[label="fi"]
+170 -> 167
+167[label="fi"]
+167 -> 164
+164[label="fi
+assignment
+calling func"]
+164 -> 179
+179[label="END"]
+169 -> 170
+166 -> 167
+163 -> 172
+172[label="assignment"]
+172 -> 173
+173[label="if"]
+173 -> 175
+175[label="assignment"]
+175 -> 174
+174[label="fi"]
+174 -> 164
+173 -> 176
+176[label="assignment"]
+176 -> 174
+}

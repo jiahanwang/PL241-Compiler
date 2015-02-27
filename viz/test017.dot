@@ -1,0 +1,20 @@
+digraph test017 {
+node [shape=box]
+375[label="main"]
+375 -> 376
+376[label="varDecl"]
+376 -> 378
+378[label="assignment
+assignment
+assignment"]
+378 -> 381
+381[label="if"]
+381 -> 383
+383[label="assignment"]
+383 -> 382
+382[label="fi
+assignment"]
+382 -> 385
+385[label="END"]
+381 -> 382
+}
