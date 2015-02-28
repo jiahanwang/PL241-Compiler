@@ -12,10 +12,6 @@ import java.util.List;
 public class Instruction {
 
     // static property to assign id
-    public static int total;
-    static {
-        total = 0;
-    }
 
     // declaration
     public int id;
@@ -25,7 +21,6 @@ public class Instruction {
 
     // constructor
     public Instruction(InstructionType type){
-        this.id = Instruction.total++;
         this.operator = type;
         this.operands = new LinkedList<Operand>();
         this.op_count = 0;
@@ -47,6 +42,7 @@ public class Instruction {
         public String address = null;
         public int value = 0;
         public int which_param = 0;
+        public int line  = 0;
         // constructor
         Operand(OperandType type, String input) {
             this.type = type;
@@ -65,6 +61,9 @@ public class Instruction {
                     break;
                 case FUNC_PARAM:
                     this.which_param = Integer.valueOf(input);
+                    break;
+                case INST:
+                    this.line = Integer.valueOf(input);
                     break;
                 default:
                     break;

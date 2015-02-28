@@ -30,7 +30,7 @@ public class BasicBlock {
         this.end_line = 0;
     }
 
-    public boolean merge(BasicBlock another){
+    public static boolean merge(BasicBlock one, BasicBlock another){
         //if(this.type != another.type) return false;
         //instructions.addAll(another.instructions);
         return true;

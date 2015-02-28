@@ -6,7 +6,6 @@ package edu.uci.cs241.ir.types;
 // OperandType Enum
 public enum OperandType {
     CONST,
-    LINE,
     VARIABLE,
     ADDRESS,
     INST,

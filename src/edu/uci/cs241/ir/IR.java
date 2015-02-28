@@ -11,8 +11,9 @@ public class IR {
     public List<Instruction> ins;
 
     public static int count;
+    // start from 1, because if Result returns 0, we know the former function did not add any instruction
     static {
-        count = 0;
+        count = 1;
     }
 
     public int pc;

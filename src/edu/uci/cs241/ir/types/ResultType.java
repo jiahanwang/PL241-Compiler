@@ -8,5 +8,7 @@ public enum ResultType {
     VAR,
     REG,
     ARR,
-    COND;
+    INST,
+    COND,
+    FUNC_CALL;
 }
