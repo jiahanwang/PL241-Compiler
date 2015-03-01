@@ -22,6 +22,8 @@ public class Function {
     public int start_line;
     public int end_line;
 
+    public boolean has_return;
+
     public Function(String name){
         this.name = name;
         this.parameters = new HashMap<String, Integer>();
@@ -31,6 +33,7 @@ public class Function {
         this.exit = null;
         this.start_line = 0;
         this.end_line = 0;
+        this.has_return = false;
     }
 
     // can be only called only

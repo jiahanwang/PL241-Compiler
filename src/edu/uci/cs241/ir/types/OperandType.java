@@ -7,11 +7,16 @@ package edu.uci.cs241.ir.types;
 public enum OperandType {
     CONST,
     VARIABLE,
-    ADDRESS,
+
+    ARR_ADDRESS,
+    BASE_ADDRESS,
+    MEM_ADDRESS,
+
     INST,
-    NULL,
+    JUMP_ADDRESS,
+
     FP,
-    BASEADDRESS,
     FUNC_PARAM,
-    LOCALVARIABLE
+    FUNC_RETURN_PARAM,
+    LOCAL_VARIABLE;
 }

@@ -1,0 +1,15 @@
+//Simple parsing test
+main
+var a, b, c;
+{
+	let a <- 1;
+	let b <- 2;
+	let c <- 3;
+	while a < b do
+		let a <- a + 1;
+		let c <- c + 1;
+		while b < c do
+			let b <- b + 1
+		od
+	od
+}.

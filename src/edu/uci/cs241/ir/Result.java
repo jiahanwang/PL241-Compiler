@@ -28,12 +28,8 @@ public class Result {
     public int fixuplocation;
 
 
-    public int start_line;
-    public int end_line;
+    public int start_line = Integer.MIN_VALUE;
+    public int end_line = Integer.MIN_VALUE;
 
-    public String toString() {
-        return "TYPE:"+ type.toString() +",COND:"+ con.toString() +
-                ",VALUE:" + value + ",REGNO:" + regno + ",FIXUP" + fixuplocation;
-    }
 
 }

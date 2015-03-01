@@ -19,6 +19,7 @@ public enum InstructionType {
     PHI("phi", Integer.MAX_VALUE),
 
     END("end", 0),
+
     BRA("bra", 1),
     BNE("bne", 2),
     BEQ("beq", 2),

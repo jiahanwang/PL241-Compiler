@@ -10,4 +10,23 @@ public enum ConditionType {
     LE,
     NE,
     EQ;
+
+    public ConditionType opposite() {
+        switch(this){
+            case GT:
+                return LE;
+            case LT:
+                return GE;
+            case GE:
+                return LT;
+            case LE:
+                return GT;
+            case NE:
+                return EQ;
+            case EQ:
+                return NE;
+            default:
+                return null;
+        }
+    }
 }
