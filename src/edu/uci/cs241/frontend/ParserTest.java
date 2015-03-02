@@ -16,18 +16,23 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser parser;
-            for(int i = 0; i <= 0; i++) {
+            for(int i = 1; i <= 1; i++) {
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
                 parser = new Parser("tests/test0"+String.format("%02d", i)+".txt");
                 BasicBlock block = parser.computation();
                 IR ir = parser.getIR();
+                // print out basic blocks
                 DFS_buildCFG(block, ir, pw);
                 // print out all the functions
+
                 pw.println("}");
                 pw.close();
+                // print out IR
+                System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 System.out.print(ir);
+                System.out.print("======================\n\n");
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,0 +1,40 @@
+digraph test001 {
+node [shape=box]
+1[label="main"]
+1 -> 3
+3[label="0: MOVE 51 x 
+1: MUL 2 x 
+2: MOVE [1] y 
+"]
+3 -> 5
+5[label="3: CMP x y 
+4: BLT JUMP[6] 
+5: BGE JUMP[14] 
+"]
+5 -> 7
+7[label="6: CMP x y 
+7: BEQ JUMP[9] 
+8: BNE JUMP[11] 
+"]
+7 -> 9
+9[label="9: MOVE 1 x 
+10: BRA JUMP[12] 
+"]
+9 -> 8
+8[label="12: MOVE 3 x 
+13: BRA JUMP[15] 
+"]
+8 -> 6
+6[label="join"]
+6 -> 13
+13[label="15: END 
+"]
+7 -> 10
+10[label="11: MOVE 1 y 
+"]
+10 -> 8
+5 -> 12
+12[label="14: MOVE 1 y 
+"]
+12 -> 6
+}

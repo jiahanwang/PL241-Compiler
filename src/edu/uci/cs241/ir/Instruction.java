@@ -139,8 +139,9 @@ public class Instruction {
                 case JUMP_ADDRESS:
                     return "JUMP[" + this.line + "]";
                 case INST:
-                case FUNC_RETURN_PARAM:
                     return "[" + this.line + "]";
+                case FUNC_RETURN_PARAM:
+                    return "PARAM[" + this.line + "]";
                 default:
                     return "" + this.value;
             }

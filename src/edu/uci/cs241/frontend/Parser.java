@@ -38,6 +38,10 @@ public class Parser {
     private boolean parsing_rest = false;
     private boolean parsing = false;
 
+    // Settings
+
+    public boolean arrayOverflowCheck = false;
+
 
     // Constructor
     public Parser(String path) throws Exception {
@@ -140,10 +144,15 @@ public class Parser {
                 // check if this array ident has been declared
                 Array arr = null;
                 if(this.parsing_function){
-                    if(!this.current_func.checkArray(name))
-                        error("Undefined Array " + name + "in Function" + this.current_func.name);
-                    else
+                    if(!this.current_func.checkArray(name)) {
+                        if(!this.symbolTable.checkArray(name)) {
+                            error("Undefined Array " + name + "in Function" + this.current_func.name);
+                        } else {
+                            arr = this.symbolTable.arrays.get(name);
+                        }
+                    } else {
                         arr = this.current_func.arrays.get(name);
+                    }
                 }else{
                     if(!this.symbolTable.checkArray(name))
                         error("Undefined Array " + name + "in Global");
@@ -151,64 +160,68 @@ public class Parser {
                         arr = this.symbolTable.arrays.get(name);
                 }
                 int i = 0, dimension, current_line, last_line = Integer.MIN_VALUE;
-                // deal with nested array
-                while(accept(Token.openbracketToken)){
+                Result x= null;
+                while (accept(Token.openbracketToken)) {
                     next();
-                    Result e_res = expression();
+                    x = expression();
+                    if(accept(Token.closebracketToken)) {
+                        next();
+                    } else {
+                        error("Missing close bracket in designator");
+                    }
                     dimension = arr.dimensions.get(i++);
-                    Instruction in = new Instruction(InstructionType.MUL);
-                    in.addOperand(OperandType.CONST, String.valueOf(dimension - 1));
-                    if(e_res.type == ResultType.CONST){
-                        // if it's constant, then we can check overflow
-                        if(e_res.value >= 0 && e_res.value < dimension){
-                            in.addOperand(OperandType.CONST, String.valueOf(e_res.value));
-                        }else{
+                    // if it's constant, then we can check overflow
+                    if(this.arrayOverflowCheck) {
+                        if (x.type == ResultType.CONST && (x.value < 0 || x.value >= dimension)) {
                             error("The " + (i + 1) + "Dimension of Array " + name + "Overflows");
                         }
-                    }else{
-                        // otherwise, we cannot check
-                        in.addOperand(OperandType.INST, String.valueOf(e_res.line));
                     }
+                    // one dimension array
+                    if(arr.dimensions.size() == 1)
+                        break;
+                    Instruction in = new Instruction(InstructionType.MUL);
+                    in.addOperand(OperandType.CONST, String.valueOf(dimension - 1));
+                    in.addOperandByResultType(x);
                     current_line = ir.addInstruction(in);
-                    // this is the first instruction, set start_line of res
-                    if(i == 1){
-                        res.start_line = current_line;
-                    }
-                    if(last_line != Integer.MIN_VALUE){
+                    // this is the first iteration, set start_line of res
+                    if (i == 1) {
+                        //res.start_line = x.start_line == Integer.MIN_VALUE ? current_line : x.start_line;
+                        last_line = current_line;
+                    } else {
                         Instruction next_in = new Instruction(InstructionType.ADD);
                         next_in.addOperand(OperandType.INST, String.valueOf(current_line));
                         next_in.addOperand(OperandType.INST, String.valueOf(last_line));
                         last_line = ir.addInstruction(next_in);
-                    }else{
-                        last_line = current_line;
                     }
-                    next();
+                    res.setRange(x, null,last_line);
                 }
 
+                // add arr retrieve instruction
                 Instruction retrieve_arr = new Instruction(InstructionType.ADDA);
                 retrieve_arr.addOperand(OperandType.BASE_ADDRESS, name);
-                retrieve_arr.addOperand(OperandType.INST, String.valueOf(last_line));
+                if(arr.dimensions.size() == 1){
+                    retrieve_arr.addOperandByResultType(x);
+                }else {
+                    retrieve_arr.addOperand(OperandType.INST, String.valueOf(last_line));
+                }
 
                 // set result
                 res.type = ResultType.ARR;
                 res.address = ir.addInstruction(retrieve_arr);
-                res.end_line = res.address;
-
-//                if(accept(Token.closebracketToken)) {
-//                    next();
-//                } else {
-//                    error("Missing close bracket in designator");
-//                    error("Missing close bracket in designator");
-//                }
+                if(arr.dimensions.size() == 1){
+                    res.setRange(x, null, res.address);
+                }else{
+                    res.setRange(null, null, res.address);
+                }
             // if it is variable
             }else{
                 // check if variable has been defined
                 if(this.parsing_function){
-                    if(!this.current_func.checkLocalVariable(name))
-                        error("Undefined Variable " + name + "in Function" + this.current_func.name);
+                    if(!this.current_func.checkVariable(name) && !this.symbolTable.checkVariable(name))
+                        error("Undefined Variable " + name + " in Function " + this.current_func.name);
                 }else{
                     if(!this.symbolTable.checkVariable(name))
-                        error("Undefined Variable " + name + "in Global");
+                        error("Undefined Variable " + name + " in Global");
                 }
                 // set result
                 res.type = ResultType.VAR;
@@ -282,9 +295,10 @@ public class Parser {
             }
             in.addOperandByResultType(y);
             last_line = this.ir.addInstruction(in);
+            res.setRange(x, y, last_line);
+            x = y;
         }
         // set up result
-        setRange(res, x, y, last_line);
         res.line = last_line;
         return res;
     }
@@ -319,9 +333,10 @@ public class Parser {
             }
             in.addOperandByResultType(y);
             last_line = this.ir.addInstruction(in);
+            res.setRange(x, y, last_line);
+            x = y;
         }
         // set up result
-        setRange(res, x, y, last_line);
         res.line = last_line;
         return res;
     }
@@ -338,7 +353,7 @@ public class Parser {
         in.addOperandByResultType(y);
         int line = this.ir.addInstruction(in);
         // set start and end lines
-        setRange(res, x, y, line);
+        res.setRange(x, y, line);
         res.line = line;
         return res;
     }
@@ -385,29 +400,46 @@ public class Parser {
         if(accept(Token.callToken)) {
             next();
             String name = ident();
-            if(this.symbolTable.checkFunction(name)){
-                error("Function " + name + "is not declared");
+            if(!this.symbolTable.checkFunction(name)){
+                error("Function " + name + " is not declared");
             }
             res.func_name = name;
             Function func = this.symbolTable.functions.get(name);
-            Instruction in = new Instruction(InstructionType.FUNC);
-            in.addOperand(OperandType.FP, func.name);
-
+            Instruction in = null;
+            // if predefined functions
+            if(func.predefined){
+                if(name.equals("InputNum")) {
+                    in = new Instruction(InstructionType.READ);
+                }
+                if(name.equals("OutputNum")) {
+                    in = new Instruction(InstructionType.WRITE);
+                }
+                if(name.equals("OutputNewLine")) {
+                    in = new Instruction(InstructionType.WLN);
+                }
+            } else {
+                in = new Instruction(InstructionType.FUNC);
+                in.addOperand(OperandType.FP, func.name);
+            }
             int i = func.parameters.size();
+            Result x = null, y = null;
             if(accept(Token.openparenToken)) {
                 next();
                 if(!accept(Token.closeparenToken)) {
-                    Result e_res = expression();
+                    x = expression();
                     if(--i < 0)
-                        error("Function " + name + " only take " + i + "parameters");
-                    res.start_line = e_res.start_line;
-                    in.addOperandByResultType(e_res);
+                        error("Function " + name + " only take " + func.parameters.size() + " parameters");
+                    in.addOperandByResultType(x);
+                    res.setRange(x, null, Integer.MIN_VALUE);
+                    // more than one parameters
                     while(accept(Token.commaToken)) {
                         next();
-                        e_res = expression();
+                        y = expression();
                         if(--i < 0)
-                            error("Function " + name + " only take " + i + "parameters");
-                        in.addOperandByResultType(e_res);
+                            error("Function " + name + " only take " + func.parameters.size() + " parameters");
+                        in.addOperandByResultType(y);
+                        res.setRange(x, y, res.line);
+                        x = y;
                     }
                 }
                 if(accept(Token.closeparenToken)) {
@@ -415,13 +447,17 @@ public class Parser {
                 } else {
                     error("Missing close paren in func call");
                 }
-            } else {
-                error("Missing open paren in func call");
             }
+//            else {
+//                error("Missing open paren in func call");
+//            }
             res.line = this.ir.addInstruction(in);
+            res.setRange(null, null, res.line);
             // add last parameter to tell function where to return to
-            in.addOperand(OperandType.FUNC_RETURN_PARAM, String.valueOf(res.line));
-            res.end_line = res.line;
+            if(!func.predefined) {
+                in.addOperand(OperandType.FUNC_RETURN_PARAM, String.valueOf(res.line));
+            }
+
         }
         return res;
     }
@@ -431,8 +467,9 @@ public class Parser {
     public BasicBlock ifStatement() throws Exception {
         BasicBlock b = new BasicBlock();
         b.has_branching = true;
-        BasicBlock join = new BasicBlock();
+        BasicBlock join = new BasicBlock("join");
         b.right = join;
+        b.exit = join;
         if(accept(Token.ifToken)) {
             next();
             Result r_res = relation();
@@ -453,18 +490,26 @@ public class Parser {
                 if (accept(Token.elseToken)) {
                     next();
                     Instruction left_exit = new Instruction(InstructionType.BRA);
-                    b.left.end_line = this.ir.addInstruction(left_exit);
+                    b.left.exit.end_line = this.ir.addInstruction(left_exit);
                     b.right = statSequence();
                     second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.start_line));
-                    left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.end_line + 1));
-                    b.right.exit = join;
+                    left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.end_line + 1));
                 // if no else
                 }else{
-                    second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.end_line + 1));
+                    second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.end_line + 1));
                 }
                 if(accept(Token.fiToken)) {
                     next();
-                    b.left.exit = join;
+                    // if there is no else
+//                    if(b.right == join) {
+//                        join.setRange(b.left.exit.end_line, b.left.exit.end_line);
+//                    }else{
+//                        join.setRange(b.right.exit.end_line, b.right.exit.end_line);
+//                    }
+                    b.left.exit.left= join;
+                    b.left.exit.exit = join;
+                    b.right.exit.left = join;
+                    b.right.exit.exit = join;
                     b.exit = join;
                 } else {
                     error("Missing fi token");
@@ -481,9 +526,8 @@ public class Parser {
     public BasicBlock whileStatement() throws Exception {
         BasicBlock b = new BasicBlock();
         b.has_branching = true;
-        BasicBlock join = new BasicBlock();
+        BasicBlock join = new BasicBlock("Join");
         b.right = join;
-        b.exit = join;
         if(accept(Token.whileToken)) {
             next();
             Result r_res = relation();
@@ -502,10 +546,11 @@ public class Parser {
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.start_line));
                 Instruction left_exit = new Instruction(InstructionType.BRA);
                 left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.start_line));
-                b.left.end_line = this.ir.addInstruction(left_exit);
-                second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.end_line + 1));
+                b.left.exit.end_line =  this.ir.addInstruction(left_exit);
+                second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.end_line + 1));
                 if(accept(Token.odToken)) {
                     next();
+                    join.setRange(b.left.exit.end_line, b.left.exit.end_line);
                     b.left.exit = join;
                     b.exit = join;
                 } else {
@@ -528,12 +573,14 @@ public class Parser {
             Result e_res = expression();
             b.start_line = e_res.start_line;
             Instruction in = new Instruction(InstructionType.LOADPARAM);
-            in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameters.size() + 1));
+            // Parameter starts from zero
+            in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameters.size()));
             int last_line = this.ir.addInstruction(in);
-            in = new Instruction(InstructionType.BRA);
-            in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
+            in = new Instruction(InstructionType.RETURN);
             // add return value;
             in.addOperandByResultType(e_res);
+            in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
+
             b.end_line = this.ir.addInstruction(in);
         } else {
             error("Missing return statement");
@@ -552,8 +599,9 @@ public class Parser {
             b.start_line = res.start_line;
             b.end_line = res.end_line;
             // branch to the function basic block
-            b.has_branching = true;
-            b.right = this.symbolTable.functions.get(res.func_name).entry;
+            b.has_branching = false;
+            //b.left = this.symbolTable.functions.get(res.func_name).entry;
+            //b.exit = b.left.exit;
             return b;
         }
         else if(accept(Token.ifToken)) {
@@ -572,7 +620,7 @@ public class Parser {
 
     public BasicBlock statSequence() throws Exception {
         BasicBlock start = statement();
-        BasicBlock cursor = start;
+        BasicBlock cursor = start.exit;
         while(accept(Token.semiToken)) {
             next();
             BasicBlock next = statement();
@@ -668,7 +716,7 @@ public class Parser {
             next();
             if(accept(Token.ident)) {
                 Function func = new Function(s.getIdent());
-                symbolTable.addFunction(func);
+                this.symbolTable.addFunction(func);
                 this.current_func = func;
                 next();
                 //then formalParams MUST be following
@@ -717,31 +765,39 @@ public class Parser {
 
     public BasicBlock funcBody() throws Exception {
         BasicBlock block = new BasicBlock();
-        if(!accept(Token.beginToken)) {
+        while(!accept(Token.beginToken)) {
             BasicBlock.merge(block, varDecl());
-        } else {
-            if (accept(Token.beginToken)) {
-                next();
-                BasicBlock.merge(block, statSequence());
-                if(!this.current_func.has_return){
-                    // add BRA
-                    Instruction in = new Instruction(InstructionType.LOADPARAM);
-                    in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameters.size() + 1));
-                    int last_line = this.ir.addInstruction(in);
-                    in = new Instruction(InstructionType.BRA);
-                    in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
-                    block.end_line = this.ir.addInstruction(in);
-                }
-                if (accept(Token.endToken)) {
-                    next();
-                } else {
-                    error("Missing closing bracket for func body");
-                }
-            } else {
-                error("Missing open bracket for func body");
-            }
         }
+        if (accept(Token.beginToken)) {
+            next();
+            BasicBlock.merge(block, statSequence());
+            if(!this.current_func.has_return){
+                // add BRA
+                Instruction in = new Instruction(InstructionType.LOADPARAM);
+                in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameters.size() + 1));
+                int last_line = this.ir.addInstruction(in);
+                in = new Instruction(InstructionType.RETURN);
+                in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
+                block.end_line = this.ir.addInstruction(in);
+            }
+            if (accept(Token.endToken)) {
+                next();
+            } else {
+                error("Missing closing bracket for func body");
+            }
+        } else {
+            error("Missing open bracket for func body");
+        }
+
         return block;
+    }
+
+    public BasicBlock end() {
+        Instruction in = new Instruction(InstructionType.END);
+        int last_line = this.ir.addInstruction(in);
+        BasicBlock b = new BasicBlock();
+        b.setRange(last_line, last_line);
+        return b;
     }
 
     public BasicBlock computation() throws Exception {
@@ -754,7 +810,6 @@ public class Parser {
             this.parsing_variable = true;
             while (accept(Token.varToken) || accept(Token.arrToken)) {
                 BasicBlock.merge(current, varDecl());
-                //current = current.left;
             }
             this.parsing_variable = false;
 
@@ -772,7 +827,9 @@ public class Parser {
                 next();
                 //if token is not }, must be statSequence option.
                 if(!accept(Token.endToken)){
-                    current.left = statSequence();
+                    BasicBlock body = statSequence();
+                    current.left = body;
+                    current = current.left.exit;
                 }
                 if(accept(Token.endToken)) {
                     next();
@@ -786,7 +843,16 @@ public class Parser {
         } else {
             error("Missing main");
         }
+        // add end
+        current.left = end();
+        staticReset();
         return b;
+    }
+
+    private void staticReset() {
+        // reset
+        IR.count = 0;
+        BasicBlock.count = 0;
     }
 
 
@@ -814,20 +880,9 @@ public class Parser {
     }
 
     private void error(String e) throws Exception {
-        throw new Exception("Parser encountered error "+e+" on line "+s.getLineNumber()+" near tokenNum:"
-                +tokenCount+" ="+Token.getRepresentation(in));
+        throw new Exception("Error: " + e + " on line " + s.getLineNumber() + " near tokenNum:"
+                + tokenCount + " = "+Token.getRepresentation(in));
     }
 
-    private void setRange(Result res, Result x, Result y, int line){
-        if(x.start_line == Integer.MIN_VALUE){
-            if(y.start_line == Integer.MIN_VALUE){
-                res.start_line = line;
-            }else {
-                res.start_line = y.start_line;
-            }
-        }else{
-            res.start_line= x.start_line;
-        }
-        res.end_line = line;
-    }
+
 }

@@ -48,6 +48,8 @@ public class BasicBlock {
             one.start_line = another.start_line;
         }
         one.end_line = another.end_line;
+        // Do not change exit
+        //one.exit = another.exit;
         return true;
     }
 

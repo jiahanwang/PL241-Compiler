@@ -1,10 +1,3 @@
 digraph test018 {
 node [shape=box]
-386[label="main"]
-386 -> 387
-387[label="funcDecl"]
-387 -> 412
-412[label="calling func"]
-412 -> 413
-413[label="END"]
 }

@@ -6,7 +6,7 @@ var a, b, c, d;
 	let c <- 3;
 	let d <- 4;
 	
-	if a< b then
+	if a < b then
 		let a <- a + 1;
 		while c < d do
 			let c <- c + 2;

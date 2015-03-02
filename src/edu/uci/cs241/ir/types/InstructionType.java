@@ -29,12 +29,13 @@ public enum InstructionType {
     BGT("bgt", 2),
 
     READ("read", 0),
-    WRITE("write", 0),
+    WRITE("write", 1),
     WLN("wln", 0),
 
     // added instructions
     FUNC("func", Integer.MAX_VALUE),
-    LOADPARAM("loadparam", 1);
+    LOADPARAM("loadparam", 1),
+    RETURN("return", 2);
 
     public final String representation;
 

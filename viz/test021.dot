@@ -1,13 +1,3 @@
 digraph test021 {
 node [shape=box]
-435[label="main"]
-435 -> 436
-436[label="varDecl"]
-436 -> 438
-438[label="assignment
-assignment
-assignment
-assignment"]
-438 -> 442
-442[label="END"]
 }

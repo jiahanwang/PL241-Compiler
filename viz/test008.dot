@@ -1,18 +1,3 @@
 digraph test008 {
 node [shape=box]
-148[label="main"]
-148 -> 149
-149[label="varDecl"]
-149 -> 151
-151[label="assignment
-assignment"]
-151 -> 153
-153[label="while"]
-153 -> 155
-155[label="assignment"]
-155 -> 153
-153 -> 154
-154[label="od"]
-154 -> 156
-156[label="END"]
 }

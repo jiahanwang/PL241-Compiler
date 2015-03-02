@@ -1,32 +1,3 @@
 digraph test030 {
 node [shape=box]
-595[label="main"]
-595 -> 596
-596[label="varDecl"]
-596 -> 598
-598[label="assignment
-assignment
-assignment"]
-598 -> 601
-601[label="if"]
-601 -> 603
-603[label="while"]
-603 -> 605
-605[label="assignment"]
-605 -> 606
-606[label="while"]
-606 -> 608
-608[label="assignment"]
-608 -> 606
-606 -> 607
-607[label="od"]
-607 -> 603
-603 -> 604
-604[label="od"]
-604 -> 602
-602[label="fi
-assignment"]
-602 -> 610
-610[label="END"]
-601 -> 602
 }

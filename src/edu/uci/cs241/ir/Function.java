@@ -23,6 +23,7 @@ public class Function {
     public int end_line;
 
     public boolean has_return;
+    public boolean predefined;
 
     public Function(String name){
         this.name = name;
@@ -34,6 +35,7 @@ public class Function {
         this.start_line = 0;
         this.end_line = 0;
         this.has_return = false;
+        this.predefined = false;
     }
 
     // can be only called only
@@ -66,11 +68,13 @@ public class Function {
     }
 
     public boolean checkArray(String name){
+
         return this.arrays.containsKey(name);
     }
 
-    public boolean checkLocalVariable(String name){
-        return this.local_variables.containsKey(name);
+    public boolean checkVariable(String name){
+
+        return this.parameters.containsKey(name) || this.local_variables.containsKey(name);
     }
 
 

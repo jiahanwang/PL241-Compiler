@@ -1,11 +1,3 @@
 digraph test005 {
 node [shape=box]
-116[label="main"]
-116 -> 117
-117[label="varDecl"]
-117 -> 119
-119[label="assignment
-calling func"]
-119 -> 121
-121[label="END"]
 }
