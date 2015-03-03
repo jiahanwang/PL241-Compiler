@@ -54,6 +54,12 @@ public class BasicBlock {
     }
 
     public void setRange(int start, int end){
+        if(this.start_line != Integer.MIN_VALUE){
+            if(end != Integer.MIN_VALUE){
+                this.end_line = end;
+            }
+            return;
+        }
         if(start == Integer.MIN_VALUE) {
             this.start_line = end;
             this.end_line = end;

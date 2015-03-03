@@ -1,3 +1,68 @@
 digraph test004 {
 node [shape=box]
+1[label="MAIN"]
+1 -> 22
+22[label="28: ADDA input_base_address 1 
+29: MOVE 22 ARR[28] 
+30: ADDA input_base_address 2 
+31: MOVE 61 ARR[30] 
+32: ADDA input_base_address 3 
+33: MOVE 17 ARR[32] 
+34: ADDA input_base_address 4 
+35: MOVE 34 ARR[34] 
+36: ADDA input_base_address 5 
+37: MOVE 11 ARR[36] 
+38: ADDA input_base_address 1 
+39: ADDA input_base_address 2 
+40: ADDA input_base_address 3 
+41: ADDA input_base_address 4 
+42: FUNC max ARR[38] ARR[39] ARR[40] ARR[41] PARAM[42] 
+43: MOVE [42] maxnumber 
+"]
+22 -> 28
+28[label="44: END 
+"]
+4[label="FUNCTION: max"]
+4 -> 7
+7[label="0: ADDA arg_base_address 1 
+1: MOVE a1 ARR[0] 
+2: ADDA arg_base_address 2 
+3: MOVE a2 ARR[2] 
+4: ADDA arg_base_address 3 
+5: MOVE a3 ARR[4] 
+6: ADDA arg_base_address 4 
+7: MOVE a4 ARR[6] 
+8: ADDA arg_base_address 5 
+9: MOVE a5 ARR[8] 
+10: MOVE 5 size 
+11: MOVE 2 i 
+12: ADDA arg_base_address 1 
+13: MOVE ARR[12] temp 
+"]
+7 -> 15
+15[label="14: CMP i size 
+15: BLE JUMP[17] 
+16: BGT JUMP[26] 
+"]
+15 -> 17
+17[label="17: ADDA arg_base_address i 
+18: CMP ARR[17] temp 
+19: BGT JUMP[21] 
+20: BLE JUMP[23] 
+"]
+17 -> 19
+19[label="21: ADDA arg_base_address i 
+22: MOVE ARR[21] temp 
+"]
+19 -> 18
+18[label="23: ADD i 1 
+24: MOVE [23] i 
+25: BRA JUMP[14] 
+"]
+18 -> 15
+17 -> 18
+15 -> 16
+16[label="26: LOADPARAM 5 
+27: RETURN temp JUMP[26] 
+"]
 }

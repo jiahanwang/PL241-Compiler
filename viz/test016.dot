@@ -1,3 +1,65 @@
 digraph test016 {
 node [shape=box]
+1[label="MAIN"]
+1 -> 24
+24[label="24: FUNC foo PARAM[24] 
+25: FUNC bar 1 PARAM[25] 
+26: ADD 3 7 
+27: SUB [26] 2 
+28: MOVE [27] x 
+29: MUL 895 2 
+30: MUL [29] 2 
+31: DIV [30] 2 
+32: MOVE [31] y 
+33: FUNC baz x y PARAM[33] 
+34: FUNC boo 2 4 PARAM[34] 
+35: ADD y [34] 
+36: MOVE [35] y 
+"]
+24 -> 30
+30[label="37: END 
+"]
+17[label="FUNCTION: boo"]
+17 -> 19
+19[label="14: MOVE 0 i 
+"]
+19 -> 20
+20[label="15: CMP i y 
+16: BLT JUMP[18] 
+17: BGE JUMP[21] 
+"]
+20 -> 22
+22[label="18: MUL x x 
+19: MOVE [18] x 
+20: BRA JUMP[15] 
+"]
+22 -> 20
+20 -> 21
+21[label="21: ADD x 4 
+22: LOADPARAM 2 
+23: RETURN [21] JUMP[22] 
+"]
+14[label="FUNCTION: baz"]
+14 -> 16
+16[label="11: MOVE 1 c 
+12: LOADPARAM 3 
+13: RETURN JUMP[12] 
+"]
+3[label="FUNCTION: foo"]
+3 -> 5
+5[label="0: MOVE 1 a 
+1: MOVE 2 b 
+2: MOVE a x 
+3: MOVE b y 
+4: LOADPARAM 1 
+5: RETURN JUMP[4] 
+"]
+9[label="FUNCTION: bar"]
+9 -> 11
+11[label="6: MOVE 1 b 
+7: MOVE 1 c 
+8: MOVE b y 
+9: LOADPARAM 2 
+10: RETURN JUMP[9] 
+"]
 }

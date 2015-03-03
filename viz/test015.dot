@@ -1,3 +1,96 @@
 digraph test015 {
 node [shape=box]
+1[label="MAIN"]
+1 -> 33
+33[label="44: ADD 3 too 
+45: MOVE [44] foo 
+46: ADD foo 6 
+47: MOVE [46] af 
+"]
+33 -> 35
+35[label="48: END 
+"]
+20[label="FUNCTION: foo"]
+20 -> 22
+22[label="24: MOVE 9 q 
+25: MOVE 3 par 
+"]
+22 -> 24
+24[label="26: CMP 3 par 
+27: BLT JUMP[29] 
+28: BGE JUMP[40] 
+"]
+24 -> 26
+26[label="29: ADD par q 
+30: MOVE [29] q 
+"]
+26 -> 27
+27[label="31: CMP 4 q 
+32: BGE JUMP[34] 
+33: BLT JUMP[37] 
+"]
+27 -> 29
+29[label="34: SUB par q 
+35: MOVE [34] q 
+36: BRA JUMP[31] 
+"]
+29 -> 27
+27 -> 28
+28[label="37: SUB q 3 
+38: MOVE [37] par 
+39: BRA JUMP[26] 
+"]
+28 -> 24
+24 -> 25
+25[label="40: ADD par q 
+41: MOVE [40] x 
+42: LOADPARAM 1 
+43: RETURN x JUMP[42] 
+"]
+4[label="FUNCTION: bar"]
+4 -> 6
+6[label="0: MOVE 9 q 
+1: MOVE 3 par 
+"]
+6 -> 8
+8[label="2: CMP 3 par 
+3: BLT JUMP[5] 
+4: BGE JUMP[19] 
+"]
+8 -> 10
+10[label="5: CMP 2 3 
+6: BLT JUMP[8] 
+7: BGE JUMP[10] 
+"]
+10 -> 12
+12[label="8: ADD par q 
+9: MOVE [8] q 
+"]
+12 -> 11
+11[label="join"]
+11 -> 13
+13[label="10: CMP 4 q 
+11: BGE JUMP[13] 
+12: BLT JUMP[16] 
+"]
+13 -> 15
+15[label="13: SUB par q 
+14: MOVE [13] q 
+15: BRA JUMP[10] 
+"]
+15 -> 13
+13 -> 14
+14[label="16: SUB q 3 
+17: MOVE [16] par 
+18: BRA JUMP[2] 
+"]
+14 -> 8
+10 -> 11
+8 -> 9
+9[label="19: ADD par q 
+20: MOVE [19] x 
+21: MOVE 4 af 
+22: LOADPARAM 1 
+23: RETURN x JUMP[22] 
+"]
 }

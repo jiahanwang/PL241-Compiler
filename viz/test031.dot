@@ -1,3 +1,32 @@
 digraph test031 {
 node [shape=box]
+1[label="MAIN"]
+1 -> 3
+3[label="0: READ 
+1: MOVE [0] a 
+2: WRITE a 
+3: WLN 
+"]
+3 -> 6
+6[label="4: CMP b c 
+5: BGT JUMP[7] 
+6: BLE JUMP[16] 
+"]
+6 -> 8
+8[label="7: READ 
+8: MOVE [7] d 
+9: ADD c 1 
+10: MOVE [9] c 
+11: WRITE d 
+12: WLN 
+13: ADD b 1 
+14: MOVE [13] b 
+15: BRA JUMP[4] 
+"]
+8 -> 6
+6 -> 7
+7[label="Join"]
+7 -> 13
+13[label="16: END 
+"]
 }

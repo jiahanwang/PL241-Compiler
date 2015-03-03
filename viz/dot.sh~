@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Compile Vars
+path='~/Coding/Java/PL241-Compiler/viz/test0'
+
+#opt level
+for i in `seq -w 1 31`;
+do 
+	$(dot -Tpng test0$i.dot -o test0$i.dot.png)
+done

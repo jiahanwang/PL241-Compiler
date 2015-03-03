@@ -1,3 +1,90 @@
 digraph test003 {
 node [shape=box]
+1[label="MAIN"]
+1 -> 15
+15[label="12: MUL 1 0 
+13: MUL 2 2 
+14: ADD [13] [12] 
+15: MUL 3 3 
+16: ADD [15] [14] 
+17: ADDA a_base_address [16] 
+18: MOVE 1 ARR[17] 
+19: MUL 1 0 
+20: MUL 2 2 
+21: ADD [20] [19] 
+22: MUL 3 2 
+23: ADD [22] [21] 
+24: ADDA a_base_address [23] 
+25: MOVE 2 ARR[24] 
+"]
+15 -> 17
+17[label="26: MUL 1 0 
+27: MUL 2 2 
+28: ADD [27] [26] 
+29: MUL 3 3 
+30: ADD [29] [28] 
+31: ADDA a_base_address [30] 
+32: MUL 1 0 
+33: MUL 2 2 
+34: ADD [33] [32] 
+35: MUL 3 2 
+36: ADD [35] [34] 
+37: ADDA a_base_address [36] 
+38: CMP ARR[31] ARR[37] 
+39: BGT JUMP[41] 
+40: BLE JUMP[50] 
+"]
+17 -> 19
+19[label="41: MUL 1 0 
+42: MUL 2 2 
+43: ADD [42] [41] 
+44: MUL 3 1 
+45: ADD [44] [43] 
+46: ADDA a_base_address [45] 
+47: FUNC foo PARAM[47] 
+48: MOVE [47] ARR[46] 
+49: BRA JUMP[58] 
+"]
+19 -> 18
+18[label="58: MUL 1 0 
+59: MUL 2 2 
+60: ADD [59] [58] 
+61: MUL 3 1 
+62: ADD [61] [60] 
+63: ADDA a_base_address [62] 
+64: MOVE ARR[63] b 
+65: WRITE b 
+"]
+18 -> 23
+23[label="66: END 
+"]
+17 -> 20
+20[label="50: MUL 1 0 
+51: MUL 2 2 
+52: ADD [51] [50] 
+53: MUL 3 1 
+54: ADD [53] [52] 
+55: ADDA a_base_address [54] 
+56: FUNC foo PARAM[56] 
+57: MOVE [56] ARR[55] 
+"]
+20 -> 18
+5[label="FUNCTION: foo"]
+5 -> 6
+6[label="0: WRITE 55 
+1: MOVE 2 b 
+2: MOVE 3 c 
+3: ADD b c 
+4: LOADPARAM 0 
+5: RETURN [3] JUMP[4] 
+"]
+10[label="FUNCTION: bar"]
+10 -> 11
+11[label="6: WRITE 35 
+7: MOVE 3 b 
+8: MOVE 4 c 
+9: ADD b c 
+10: LOADPARAM 0 
+11: RETURN [9] JUMP[10] 
+"]
 }

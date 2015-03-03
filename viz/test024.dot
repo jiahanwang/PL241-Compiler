@@ -1,3 +1,127 @@
 digraph test024 {
 node [shape=box]
+1[label="MAIN"]
+1 -> 3
+3[label="0: MOVE 1 a 
+1: MOVE 2 b 
+2: MOVE 3 c 
+3: MOVE 4 d 
+4: MOVE 5 e 
+5: MOVE 6 f 
+6: MOVE 7 g 
+7: MOVE 8 h 
+"]
+3 -> 11
+11[label="8: DIV b 4 
+9: ADD [8] 5 
+10: CMP [9] 8 
+11: BLT JUMP[13] 
+12: BGE JUMP[66] 
+"]
+11 -> 13
+13[label="13: MUL a 7 
+14: ADD [13] 9 
+15: MOVE [14] a 
+"]
+13 -> 14
+14[label="16: CMP c d 
+17: BLT JUMP[19] 
+18: BGE JUMP[31] 
+"]
+14 -> 16
+16[label="19: SUB g 5 
+20: MUL [19] h 
+21: MOVE [20] g 
+"]
+16 -> 17
+17[label="22: CMP g h 
+23: BGT JUMP[25] 
+24: BLE JUMP[28] 
+"]
+17 -> 19
+19[label="25: ADD h 1 
+26: MOVE [25] h 
+27: BRA JUMP[22] 
+"]
+19 -> 17
+17 -> 18
+18[label="28: ADD g h 
+29: MOVE [28] g 
+30: BRA JUMP[65] 
+"]
+18 -> 15
+15[label="65: BRA JUMP[8] 
+"]
+15 -> 11
+14 -> 21
+21[label="31: CMP c d 
+32: BGE JUMP[34] 
+33: BLT JUMP[50] 
+"]
+21 -> 23
+23[label="34: MUL f f 
+35: MUL [34] 7 
+36: SUB [35] 2 
+37: MOVE [36] e 
+"]
+23 -> 24
+24[label="38: SUB d 7 
+39: CMP [38] e 
+40: BNE JUMP[42] 
+41: BEQ JUMP[47] 
+"]
+24 -> 26
+26[label="42: SUB d 1 
+43: MOVE [42] d 
+44: ADD e 1 
+45: MOVE [44] e 
+46: BRA JUMP[38] 
+"]
+26 -> 24
+24 -> 25
+25[label="47: MUL f e 
+48: MOVE [47] f 
+49: BRA JUMP[63] 
+"]
+25 -> 22
+22[label="63: ADD g h 
+64: MOVE [63] g 
+"]
+22 -> 15
+21 -> 29
+29[label="50: MOVE 725 g 
+"]
+29 -> 30
+30[label="51: SUB d 8 
+52: CMP [51] e 
+53: BNE JUMP[55] 
+54: BEQ JUMP[60] 
+"]
+30 -> 32
+32[label="55: SUB d 1 
+56: MOVE [55] d 
+57: ADD e 1 
+58: MOVE [57] e 
+59: BRA JUMP[51] 
+"]
+32 -> 30
+30 -> 31
+31[label="60: MUL g f 
+61: DIV [60] 4 
+62: MOVE [61] f 
+"]
+31 -> 22
+11 -> 12
+12[label="66: MUL a d 
+67: MOVE [66] c 
+68: ADD g h 
+69: SUB [68] 7 
+70: MOVE [69] h 
+71: MUL b c 
+72: ADD f [71] 
+73: MOVE [72] e 
+"]
+12 -> 39
+39[label="74: END 
+"]
 }
