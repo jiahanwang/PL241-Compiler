@@ -5,14 +5,11 @@ import java.util.ArrayList;
 /**
  * Created by hanplusplus on 2/27/15.
  */
-public class IR {
+public class IR implements Cloneable{
 
     public ArrayList<Instruction> ins;
 
-    public static int count;
-    static {
-        count = 0;
-    }
+    public int count = 0;
 
     public int pc;
 
@@ -21,6 +18,7 @@ public class IR {
         this.ins = new ArrayList<Instruction>();
         this.pc = 0;
     }
+
 
     public int addInstruction(Instruction in){
         in.id = count ++;
@@ -48,6 +46,12 @@ public class IR {
             builder.append("\n");
         }
         return builder.toString();
+    }
+
+    public Object clone () throws CloneNotSupportedException {
+        IR newObject = new IR();
+        newObject.ins = new ArrayList<Instruction>(this.ins);
+        return newObject;
     }
 
 }

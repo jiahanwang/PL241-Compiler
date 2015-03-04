@@ -1,27 +1,27 @@
 digraph test017 {
 node [shape=box]
-1[label="MAIN"]
-1 -> 3
-3[label="0: MOVE 1 a 
+330[label="main"]
+330 -> 332
+332[label="0: MOVE 1 a 
 1: MOVE a b 
 2: MUL 4 b 
 3: MOVE [2] c 
 "]
-3 -> 6
-6[label="4: CMP c b 
+332 -> 335
+335[label="4: CMP c b 
 5: BGT JUMP[7] 
 6: BLE JUMP[9] 
 "]
-6 -> 8
-8[label="7: ADD b 2 
+335 -> 337
+337[label="7: ADD b 2 
 8: MOVE [7] d 
 "]
-8 -> 7
-7[label="9: ADD a b 
+337 -> 336
+336[label="9: ADD a b 
 10: MOVE [9] e 
 "]
-7 -> 10
-10[label="11: END 
+336 -> 339
+339[label="11: END 
 "]
-6 -> 7
+335 -> 336
 }

@@ -1,41 +1,41 @@
 digraph test020 {
 node [shape=box]
-1[label="MAIN"]
-1 -> 6
-6[label="2: MOVE 1 b 
-3: MOVE 19 c 
-4: MUL 4 4 
-5: MUL 9 9 
-6: ADD [5] [4] 
-7: FUNC foo PARAM[7] 
-8: ADD 1 [7] 
-9: MUL 14 [8] 
-10: ADD [9] [6] 
-11: MUL b c 
-12: MUL 19 [11] 
-13: ADD [12] [10] 
-14: ADDA a_base_address [13] 
-15: MOVE 45 ARR[14] 
-16: MUL 4 4 
-17: MUL 9 9 
-18: ADD [17] [16] 
-19: FUNC foo PARAM[19] 
-20: ADD [19] 1 
-21: MUL 14 [20] 
-22: ADD [21] [18] 
-23: MUL c b 
-24: MUL 19 [23] 
-25: ADD [24] [22] 
-26: ADDA a_base_address [25] 
-27: ADD ARR[26] 2 
-28: MOVE [27] d 
+373[label="main"]
+373 -> 378
+378[label="0: MOVE 1 b 
+1: MOVE 19 c 
+2: MUL 4 4 
+3: MUL 9 9 
+4: ADD [3] [2] 
+5: FUNC foo PARAM[5] 
+6: ADD 1 [5] 
+7: MUL 14 [6] 
+8: ADD [7] [4] 
+9: MUL b c 
+10: MUL 19 [9] 
+11: ADD [10] [8] 
+12: ADDA a_base_address [11] 
+13: MOVE 45 ARR[12] 
+14: MUL 4 4 
+15: MUL 9 9 
+16: ADD [15] [14] 
+17: FUNC foo PARAM[17] 
+18: ADD [17] 1 
+19: MUL 14 [18] 
+20: ADD [19] [16] 
+21: MUL c b 
+22: MUL 19 [21] 
+23: ADD [22] [20] 
+24: ADDA a_base_address [23] 
+25: ADD ARR[24] 2 
+26: MOVE [25] d 
 "]
-6 -> 10
-10[label="29: END 
+378 -> 382
+382[label="27: END 
 "]
-4[label="FUNCTION: foo"]
-4 -> 5
-5[label="0: LOADPARAM 0 
+376[label="foo"]
+376 -> 377
+377[label="0: LOADPARAM 0 
 1: RETURN 14 JUMP[0] 
 "]
 }

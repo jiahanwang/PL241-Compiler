@@ -20,22 +20,6 @@ public class   SymbolTable {
         this.variables = new HashMap<String, Integer>();
         this.functions = new HashMap<String, Function>();
         this.arrays = new HashMap<String, Array>();
-        // Predefined functions
-        Function func = new Function("InputNum");
-        func.has_return = true;
-        func.predefined = true;
-        this.functions.put("InputNum", func);
-        func = new Function("OutputNum");
-        try {
-            func.addAllParameters(Arrays.asList(new String[]{"x"}));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        func.predefined = true;
-        this.functions.put("OutputNum", func);
-        func = new Function("OutputNewLine");
-        func.predefined = true;
-        this.functions.put("OutputNewLine", func);
     }
 
     public void addFunction(Function func) throws Exception {

@@ -13,14 +13,18 @@ public class Function {
     public String name;
 
     public Map<String, Integer> parameters;
-    public Map<String, Integer> local_variables;
-    public Map<String, Array> arrays;
+//    public Map<String, Integer> local_variables;
+//    public Map<String, Array> arrays;
+
+    public SymbolTable symbolTable;
 
     public BasicBlock entry;
-    public BasicBlock exit;
+    //public BasicBlock exit;
 
     public int start_line;
     public int end_line;
+
+    public IR ir;
 
     public boolean has_return;
     public boolean predefined;
@@ -28,12 +32,11 @@ public class Function {
     public Function(String name){
         this.name = name;
         this.parameters = new HashMap<String, Integer>();
-        this.local_variables = new HashMap<String, Integer>();
-        this.arrays = new HashMap<String, Array>();
+//        this.local_variables = new HashMap<String, Integer>();
+//        this.arrays = new HashMap<String, Array>();
+        this.symbolTable = new SymbolTable();
         this.entry = null;
-        this.exit = null;
-        this.start_line = 0;
-        this.end_line = 0;
+        this.ir = new IR();
         this.has_return = false;
         this.predefined = false;
     }
@@ -51,30 +54,45 @@ public class Function {
         }
     }
 
-    public void addLocalVariable(String ident) throws Exception {
-        if(this.local_variables.containsKey(ident)){
-            throw new Exception("Duplicate Declaration of " + ident + " in Function " + this.name);
-        }else{
-            this.local_variables.put(ident, 0);
-        }
+    public void addVariable(String ident) throws Exception {
+        this.symbolTable.addVariable(ident);
     }
 
     public void addArray(Array arr) throws Exception {
-        if(this.arrays.containsKey(arr.name)){
-            throw new Exception("Duplicate Declaration of Array" + arr.name + " in Function " + this.name);
-        }else{
-            this.arrays.put(arr.name, arr);
-        }
+        this.symbolTable.addArray(arr);
+    }
+
+    public void addFunction(Function func) throws Exception {
+        this.symbolTable.addFunction(func);
+    }
+
+    public void addIR(IR ir) throws CloneNotSupportedException {
+        // deep copy
+        this.ir = (IR)ir.clone();
+    }
+
+    public Array getArray(String indent){
+        return this.symbolTable.arrays.get(indent);
+    }
+
+    public Function getFunction(String indent){
+        return this.symbolTable.functions.get(indent);
+    }
+
+    public List<Function> getFunctions(){
+        return new ArrayList<Function>(this.symbolTable.functions.values());
     }
 
     public boolean checkArray(String name){
-
-        return this.arrays.containsKey(name);
+        return this.symbolTable.checkArray(name);
     }
 
     public boolean checkVariable(String name){
+        return this.parameters.containsKey(name) || this.symbolTable.checkVariable(name);
+    }
 
-        return this.parameters.containsKey(name) || this.local_variables.containsKey(name);
+    public boolean checkFunction(String name){
+        return this.symbolTable.checkFunction(name);
     }
 
 

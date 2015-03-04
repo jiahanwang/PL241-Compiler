@@ -19,24 +19,26 @@ public class ParserTest {
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
                 parser = new Parser("tests/test0"+String.format("%02d", i)+".txt");
-                BasicBlock block = parser.computation();
-                IR ir = parser.getIR();
-                // print out IR
-                System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
-                System.out.print(ir);
-                System.out.print("======================\n\n");
-                // print out basic blocks
+                /** Get all functions **/
+                Function main = parser.computation();
+                List<Function> funcs = new ArrayList<Function>();
+                funcs.add(main);
+                funcs.addAll(main.getFunctions());
                 boolean[] explored = new boolean[1000000];
-                DFS_buildCFG(block, ir, pw, explored);
-                // print out all the functions
-                List<Function> funcs = parser.getFunctions();
+                /** Print out all functions **/
+                System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 for(Function func : funcs){
-                    if(func.entry != null)
-                        DFS_buildCFG(func.entry, ir, pw, explored);
+                    if(func.predefined) continue;
+                    // print out ir
+                    System.out.print(func.name + ":\n");
+                    System.out.print(func.ir);
+                    System.out.print("-----------------------\n");
+                    // print out CFG
+                    DFS_buildCFG(func.entry, func.ir, pw, explored);
                 }
+                System.out.print("======================\n\n\n");
                 pw.println("}");
                 pw.close();
-
             }
         } catch (Exception e) {
             e.printStackTrace();

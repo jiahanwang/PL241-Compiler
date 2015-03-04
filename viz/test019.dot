@@ -1,14 +1,14 @@
 digraph test019 {
 node [shape=box]
-1[label="MAIN"]
-1 -> 3
-3[label="0: MOVE a b 
+366[label="main"]
+366 -> 368
+368[label="0: MOVE a b 
 1: MOVE b c 
 2: MOVE c d 
 3: ADD d 1 
 4: MOVE [3] d 
 "]
-3 -> 7
-7[label="5: END 
+368 -> 372
+372[label="5: END 
 "]
 }

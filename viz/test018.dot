@@ -1,15 +1,15 @@
 digraph test018 {
 node [shape=box]
-1[label="MAIN"]
-1 -> 25
-25[label="33: FUNC foo PARAM[33] 
+340[label="main"]
+340 -> 364
+364[label="0: FUNC foo PARAM[0] 
 "]
-25 -> 26
-26[label="34: END 
+364 -> 365
+365[label="1: END 
 "]
-2[label="FUNCTION: foo"]
-2 -> 4
-4[label="0: ADD a b 
+341[label="foo"]
+341 -> 343
+343[label="0: ADD a b 
 1: MOVE [0] c 
 2: MOVE c d 
 3: MUL d d 
@@ -20,18 +20,18 @@ node [shape=box]
 8: ADD g d 
 9: MOVE [8] a 
 "]
-4 -> 10
-10[label="10: CMP a c 
+343 -> 349
+349[label="10: CMP a c 
 11: BLT JUMP[13] 
 12: BGE JUMP[16] 
 "]
-10 -> 12
-12[label="13: ADD g 1 
+349 -> 351
+351[label="13: ADD g 1 
 14: MOVE [13] h 
 15: BRA JUMP[22] 
 "]
-12 -> 11
-11[label="22: MUL g a 
+351 -> 350
+350[label="22: MUL g a 
 23: MOVE [22] b 
 24: WRITE a 
 25: WRITE b 
@@ -43,20 +43,20 @@ node [shape=box]
 31: LOADPARAM 1 
 32: RETURN JUMP[31] 
 "]
-10 -> 13
-13[label="16: SUB d g 
+349 -> 352
+352[label="16: SUB d g 
 17: MOVE [16] f 
 "]
-13 -> 14
-14[label="18: CMP f a 
+352 -> 353
+353[label="18: CMP f a 
 19: BGT JUMP[21] 
 20: BLE JUMP[22] 
 "]
-14 -> 16
-16[label="21: MOVE 2 c 
+353 -> 355
+355[label="21: MOVE 2 c 
 "]
-16 -> 15
-15[label="join"]
-15 -> 11
-14 -> 15
+355 -> 354
+354[label="join"]
+354 -> 350
+353 -> 354
 }

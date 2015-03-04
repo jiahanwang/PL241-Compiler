@@ -1,29 +1,29 @@
 digraph test002 {
 node [shape=box]
-1[label="MAIN"]
-1 -> 28
-28[label="38: MOVE 0 x 
-39: MOVE 0 y 
-40: MOVE 0 z 
-41: FUNC bar x z PARAM[41] 
-42: FUNC foo PARAM[42] 
-43: MOVE [42] c 
-44: WRITE c 
+14[label="main"]
+14 -> 41
+41[label="0: MOVE 0 x 
+1: MOVE 0 y 
+2: MOVE 0 z 
+3: FUNC bar x z PARAM[3] 
+4: FUNC foo PARAM[4] 
+5: MOVE [4] c 
+6: WRITE c 
 "]
-28 -> 34
-34[label="45: END 
+41 -> 47
+47[label="7: END 
 "]
-6[label="FUNCTION: foo"]
-6 -> 8
-8[label="0: MOVE 0 i 
+19[label="foo"]
+19 -> 21
+21[label="0: MOVE 0 i 
 "]
-8 -> 9
-9[label="1: CMP i 10 
+21 -> 22
+22[label="1: CMP i 10 
 2: BLT JUMP[4] 
 3: BGE JUMP[13] 
 "]
-9 -> 11
-11[label="4: ADD y 2 
+22 -> 24
+24[label="4: ADD y 2 
 5: MOVE [4] y 
 6: ADD x 2 
 7: MOVE [6] z 
@@ -33,47 +33,47 @@ node [shape=box]
 11: MOVE [10] i 
 12: BRA JUMP[1] 
 "]
-11 -> 9
-9 -> 10
-10[label="13: LOADPARAM 0 
-14: RETURN d JUMP[13] 
-"]
-16[label="FUNCTION: bar"]
-16 -> 18
-18[label="15: MOVE 0 i 
-16: MOVE 0 j 
-"]
-18 -> 20
-20[label="17: CMP i 4 
-18: BLT JUMP[20] 
-19: BGE JUMP[36] 
-"]
-20 -> 22
-22[label="20: CMP j 4 
-21: BLT JUMP[23] 
-22: BGE JUMP[31] 
-"]
-22 -> 24
-24[label="23: MUL 3 i 
-24: MUL 3 j 
-25: ADD [24] [23] 
-26: ADDA b_base_address [25] 
-27: MOVE j ARR[26] 
-28: ADD j 1 
-29: MOVE [28] j 
-30: BRA JUMP[20] 
-"]
 24 -> 22
 22 -> 23
-23[label="31: ADDA a_base_address i 
-32: MOVE i ARR[31] 
-33: ADD i 1 
-34: MOVE [33] i 
-35: BRA JUMP[17] 
+23[label="13: LOADPARAM 0 
+14: RETURN d JUMP[13] 
 "]
-23 -> 20
-20 -> 21
-21[label="36: LOADPARAM 3 
-37: RETURN JUMP[36] 
+29[label="bar"]
+29 -> 31
+31[label="0: MOVE 0 i 
+1: MOVE 0 j 
+"]
+31 -> 33
+33[label="2: CMP i 4 
+3: BLT JUMP[5] 
+4: BGE JUMP[21] 
+"]
+33 -> 35
+35[label="5: CMP j 4 
+6: BLT JUMP[8] 
+7: BGE JUMP[16] 
+"]
+35 -> 37
+37[label="8: MUL 3 i 
+9: MUL 3 j 
+10: ADD [9] [8] 
+11: ADDA b_base_address [10] 
+12: MOVE j ARR[11] 
+13: ADD j 1 
+14: MOVE [13] j 
+15: BRA JUMP[5] 
+"]
+37 -> 35
+35 -> 36
+36[label="16: ADDA a_base_address i 
+17: MOVE i ARR[16] 
+18: ADD i 1 
+19: MOVE [18] i 
+20: BRA JUMP[2] 
+"]
+36 -> 33
+33 -> 34
+34[label="21: LOADPARAM 3 
+22: RETURN JUMP[21] 
 "]
 }

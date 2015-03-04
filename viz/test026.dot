@@ -1,21 +1,21 @@
 digraph test026 {
 node [shape=box]
-1[label="MAIN"]
-1 -> 4
-4[label="0: ADDA a_base_address i 
+478[label="main"]
+478 -> 481
+481[label="0: ADDA a_base_address i 
 1: MOVE ARR[0] x 
 2: ADDA a_base_address i 
 3: MOVE ARR[2] k 
 "]
-4 -> 6
-6[label="4: ADDA a_base_address i 
+481 -> 483
+483[label="4: ADDA a_base_address i 
 5: ADDA b_base_address j 
 6: CMP ARR[4] ARR[5] 
 7: BLT JUMP[9] 
 8: BGE JUMP[20] 
 "]
-6 -> 8
-8[label="9: ADDA a_base_address i 
+483 -> 485
+485[label="9: ADDA a_base_address i 
 10: MOVE ARR[9] x 
 11: ADDA a_base_address j 
 12: MOVE ARR[11] y 
@@ -27,12 +27,12 @@ node [shape=box]
 18: MOVE ARR[17] z 
 19: BRA JUMP[4] 
 "]
-8 -> 6
-6 -> 7
-7[label="20: ADDA a_base_address i 
+485 -> 483
+483 -> 484
+484[label="20: ADDA a_base_address i 
 21: MOVE ARR[20] w 
 "]
-7 -> 14
-14[label="22: END 
+484 -> 491
+491[label="22: END 
 "]
 }
