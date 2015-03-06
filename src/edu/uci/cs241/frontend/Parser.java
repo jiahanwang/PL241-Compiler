@@ -1,8 +1,8 @@
 package edu.uci.cs241.frontend;
 
-import com.sun.org.apache.bcel.internal.generic.IREM;
 import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.*;
+import edu.uci.cs241.ir.Result;
 
 import java.util.*;
 
