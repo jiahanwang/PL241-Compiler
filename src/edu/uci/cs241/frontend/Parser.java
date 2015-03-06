@@ -721,6 +721,7 @@ public class Parser {
         b.right = join;
         /** SSA **/
         // Copy and push into stack
+        Function current_func = this.getCurrentFunction();
         Map<String, PhiFunction> current_phi_map = current_func.copyAddPhiMap();
         if(accept(Token.whileToken)) {
             next();
@@ -781,7 +782,11 @@ public class Parser {
                     }
                     // insert into the node
                     if(phis.size() != 0) {
-                        current_func.ir.insertInstructions(phis, first_line);
+                        current_func.ir.insertPhiInstructions(phis, r_res.start_line);
+                        b.insertInstructions(phis, 0);
+                        Instruction last_jump = current_func.ir.getLastInstruction();
+                        last_jump.operands.get(0).line -= phis.size();
+
                         // fix the last jump line
                         // reassign start and end line for all blocks in while body
                     }

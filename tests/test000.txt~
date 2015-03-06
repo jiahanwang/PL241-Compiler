@@ -1,17 +1,18 @@
-//Simple parsing test
 main
-var a, b, c;
-function max(a1);
-var temp, i;
-array[2][2] arr;
+var i, j;
 {
-	let i <- a1;
-        let temp <- aaa;
-        return temp
-        
-}
-;
-{
-	call max(a)
-	
+	let i <- 0;
+	let j <- 0;
+	while i < 1000 do
+		let j <- j + 1;
+		let j <- j + 2;
+		let i <- i + 1;
+		while i < 1000 do
+			let j <- j + 1;
+			let j <- j + 2;
+			let i <- i + 1
+		od
+	od;
+	let j <- j + 1;
+	let i <- i + 1
 }.

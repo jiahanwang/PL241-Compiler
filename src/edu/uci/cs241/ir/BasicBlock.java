@@ -5,6 +5,7 @@ import edu.uci.cs241.ir.types.BasicBlockType;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Created by hanplusplus on 2/23/15.
@@ -53,6 +54,10 @@ public class BasicBlock {
 
     public void addInstructions(List<Instruction> ins){
         this.ins.addAll(ins);
+    }
+
+    public void insertInstructions(List<Instruction> ins, int start){
+        this.ins.addAll(start, ins);
     }
 
     public int getStart(){
