@@ -51,7 +51,7 @@ public class ParserTest {
             return;
         }
         if (b != null) {
-            String output = b.start_line == Integer.MIN_VALUE ? b.name : ir.toStringOfRange(b.start_line, b.end_line);
+            String output = b.getStart() == Integer.MIN_VALUE ? b.name : b.toStringOfInstructions();
             pw.println(b.id + "[label=\"" + output + "\"]");
             explored[b.id] = true;
         }

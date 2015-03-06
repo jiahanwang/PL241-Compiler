@@ -1,50 +1,50 @@
 digraph test030 {
 node [shape=box]
-532[label="main"]
-532 -> 534
-534[label="0: MOVE 1 a 
-1: MOVE 2 b 
-2: MOVE 3 c 
+1[label="main"]
+1 -> 3
+3[label="0: MOVE 1 a_1 
+1: MOVE 2 b_1 
+2: MOVE 3 c_1 
 "]
-534 -> 537
-537[label="3: CMP b c 
+3 -> 6
+6[label="3: CMP b_0 c_0 
 4: BLT JUMP[6] 
 5: BGE JUMP[20] 
 "]
-537 -> 539
-539[label="6: ADD b 1 
-7: CMP [6] c 
+6 -> 8
+8[label="6: ADD b_0 1 
+7: CMP [6] c_0 
 8: BLT JUMP[10] 
 9: BGE JUMP[20] 
 "]
-539 -> 541
-541[label="10: ADD a 1 
-11: MOVE [10] a 
+8 -> 10
+10[label="10: ADD a_0 1 
+11: MOVE [10] a_2 
 "]
-541 -> 542
-542[label="12: ADD b 2 
-13: CMP [12] c 
+10 -> 11
+11[label="12: ADD b_0 2 
+13: CMP [12] c_0 
 14: BLT JUMP[16] 
 15: BGE JUMP[19] 
 "]
-542 -> 544
-544[label="16: ADD b 1 
-17: MOVE [16] b 
+11 -> 13
+13[label="16: ADD b_0 1 
+17: MOVE [16] b_2 
 18: BRA JUMP[12] 
 "]
-544 -> 542
-542 -> 543
-543[label="19: BRA JUMP[6] 
+13 -> 11
+11 -> 12
+12[label="19: BRA JUMP[6] 
 "]
-543 -> 539
-539 -> 540
-540[label="Join"]
-540 -> 538
-538[label="20: ADD c 1 
-21: MOVE [20] b 
+12 -> 8
+8 -> 9
+9[label="Join"]
+9 -> 7
+7[label="20: ADD c_0 1 
+21: MOVE [20] b_3 
 "]
-538 -> 546
-546[label="22: END 
+7 -> 15
+15[label="22: END 
 "]
-537 -> 538
+6 -> 7
 }

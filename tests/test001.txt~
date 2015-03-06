@@ -2,17 +2,7 @@
 main 
 var x, y;
 {
-
     let x <- 51; 
-    let y <- 2 * x;
-    if x < y then 
-	if x == y then 
-		let x <- 1
-    	else
-		let y <- 1
-    	fi;
-	let x <- 3
-    else
-	let y <- 1
-    fi
+    //let y <- 2 * x;
+    //call OutputNum(y)
 }.

@@ -1,7 +1,10 @@
 package edu.uci.cs241.ir;
 
+import sun.awt.image.ImageWatched;
+
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -9,7 +12,6 @@ import java.util.Map;
  */
 public class   SymbolTable {
 
-    // Integer is the current value for SSA
     public Map<String, Integer> variables;
 
     public Map<String, Function> functions;

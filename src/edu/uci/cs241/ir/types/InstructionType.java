@@ -14,7 +14,7 @@ public enum InstructionType {
 
     ADDA("adda", 2),
     LOAD("load", 1),
-    STORE("store", 1),
+    STORE("store", 2),
     MOVE("move", 2),
     PHI("phi", Integer.MAX_VALUE),
 

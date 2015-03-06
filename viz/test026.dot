@@ -1,38 +1,94 @@
 digraph test026 {
 node [shape=box]
-478[label="main"]
-478 -> 481
-481[label="0: ADDA a_base_address i 
-1: MOVE ARR[0] x 
-2: ADDA a_base_address i 
-3: MOVE ARR[2] k 
+1[label="main"]
+1 -> 4
+4[label="0: ADDA a_base_address i_0 
+1: LOAD ARR[0] 
+2: MOVE [1] x_1 
+3: ADDA a_base_address i_0 
+4: LOAD ARR[3] 
+5: MOVE [4] k_1 
 "]
-481 -> 483
-483[label="4: ADDA a_base_address i 
-5: ADDA b_base_address j 
-6: CMP ARR[4] ARR[5] 
-7: BLT JUMP[9] 
-8: BGE JUMP[20] 
+4 -> 6
+6[label="0: ADDA a_base_address i_0 
+1: LOAD ARR[0] 
+2: MOVE [1] x_1 
+3: ADDA a_base_address i_0 
+4: LOAD ARR[3] 
+5: MOVE [4] k_1 
+6: ADDA a_base_address i_0 
+7: LOAD ARR[6] 
+8: ADDA b_base_address j_0 
+9: LOAD ARR[8] 
+10: CMP [7] [9] 
+11: BLT JUMP[0] 
+12: BGE JUMP[28] 
 "]
-483 -> 485
-485[label="9: ADDA a_base_address i 
-10: MOVE ARR[9] x 
-11: ADDA a_base_address j 
-12: MOVE ARR[11] y 
-13: ADDA a_base_address k 
-14: MOVE z ARR[13] 
-15: ADDA b_base_address j 
-16: MOVE ARR[15] z 
-17: ADDA a_base_address j 
-18: MOVE ARR[17] z 
-19: BRA JUMP[4] 
+6 -> 8
+8[label="0: ADDA a_base_address i_0 
+1: LOAD ARR[0] 
+2: MOVE [1] x_1 
+3: ADDA a_base_address i_0 
+4: LOAD ARR[3] 
+5: MOVE [4] k_1 
+6: ADDA a_base_address i_0 
+7: LOAD ARR[6] 
+8: ADDA b_base_address j_0 
+9: LOAD ARR[8] 
+10: CMP [7] [9] 
+11: BLT JUMP[0] 
+12: BGE JUMP[28] 
+13: ADDA a_base_address i_0 
+14: LOAD ARR[13] 
+15: MOVE [14] x_2 
+16: ADDA a_base_address j_0 
+17: LOAD ARR[16] 
+18: MOVE [17] y_1 
+19: ADDA a_base_address k_2 
+20: STORE z_0 ARR[19] 
+21: ADDA b_base_address j_0 
+22: LOAD ARR[21] 
+23: MOVE [22] z_1 
+24: ADDA a_base_address j_0 
+25: LOAD ARR[24] 
+26: MOVE [25] z_2 
+27: BRA JUMP[0] 
 "]
-485 -> 483
-483 -> 484
-484[label="20: ADDA a_base_address i 
-21: MOVE ARR[20] w 
+8 -> 6
+6 -> 7
+7[label="0: ADDA a_base_address i_0 
+1: LOAD ARR[0] 
+2: MOVE [1] x_1 
+3: ADDA a_base_address i_0 
+4: LOAD ARR[3] 
+5: MOVE [4] k_1 
+6: ADDA a_base_address i_0 
+7: LOAD ARR[6] 
+8: ADDA b_base_address j_0 
+9: LOAD ARR[8] 
+10: CMP [7] [9] 
+11: BLT JUMP[0] 
+12: BGE JUMP[28] 
+13: ADDA a_base_address i_0 
+14: LOAD ARR[13] 
+15: MOVE [14] x_2 
+16: ADDA a_base_address j_0 
+17: LOAD ARR[16] 
+18: MOVE [17] y_1 
+19: ADDA a_base_address k_2 
+20: STORE z_0 ARR[19] 
+21: ADDA b_base_address j_0 
+22: LOAD ARR[21] 
+23: MOVE [22] z_1 
+24: ADDA a_base_address j_0 
+25: LOAD ARR[24] 
+26: MOVE [25] z_2 
+27: BRA JUMP[0] 
+28: ADDA a_base_address i_0 
+29: LOAD ARR[28] 
+30: MOVE [29] w_1 
 "]
-484 -> 491
-491[label="22: END 
+7 -> 14
+14[label="31: END 
 "]
 }

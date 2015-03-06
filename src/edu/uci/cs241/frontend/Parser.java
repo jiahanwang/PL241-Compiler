@@ -1,5 +1,6 @@
 package edu.uci.cs241.frontend;
 
+import com.sun.org.apache.bcel.internal.generic.IREM;
 import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.*;
 
@@ -18,20 +19,9 @@ public class Parser {
     // Def-Use Chain
     //private DefUseChain du;
 
-    // Symbol Table
-    //private SymbolTable symbolTable = new SymbolTable();
-
-    // IR
-    //public IR ir = new IR();
-
     private Function main;
 
-
-    //private Map<Function, IR> ir_map;
-
-    //
     private Function current_func;
-
 
     // Global flags
     private boolean parsing_function;
@@ -42,6 +32,11 @@ public class Parser {
     // Settings
     public boolean arrayOverflowCheck;
 
+    // SSA
+    private boolean if_ssa;
+    private boolean while_ssa;
+    private boolean left_side;
+
 
     // Constructor
     public Parser(String path) throws Exception {
@@ -51,7 +46,6 @@ public class Parser {
 
         // Predefined functions
         this.main = new Function("main");
-
         Function func = new Function("InputNum");
         func.has_return = true;
         func.predefined = true;
@@ -67,10 +61,6 @@ public class Parser {
         func = new Function("OutputNewLine");
         func.predefined = true;
         this.main.addFunction(func);
-
-        //this.ir_map = new HashMap<Function, IR>();
-        //this.ir_map.put(main, new IR());
-
         this.current_func = null;
 
         this.parsing_function = false;
@@ -79,30 +69,28 @@ public class Parser {
         this.parsing= false;
 
         this.arrayOverflowCheck = false;
+
+        this.if_ssa = false;
+        this.while_ssa = false;
+        this.left_side = false;
+
         //initialize the first token
         next();
     }
 
-//    // Getters
-//    public IR getIR() {
-//        if(!this.parsing){
-//            return this.ir;
-//        }else{
-//            return null;
-//        }
-//    }
-//
-//    public List<Function> getFunctions () {
-//        return new ArrayList<Function>(this.symbolTable.functions.values());
-//    }
-
     // Helper
-    private IR getCurrentIR(){
-        return this.parsing_function ? this.current_func.ir : this.main.ir;
-    }
-
     private Function getCurrentFunction(){
         return this.parsing_function ? this.current_func : this.main;
+    }
+
+    private void staticReset() {
+        BasicBlock.count = 0;
+    }
+
+    public int getStart(int a, int b, int c){
+        if(a != Integer.MIN_VALUE) return a;
+        if(b != Integer.MIN_VALUE) return b;
+        return c;
     }
 
     /**
@@ -112,7 +100,7 @@ public class Parser {
     public Function computation() throws Exception {
         BasicBlock b = new BasicBlock("main");
         BasicBlock current = b;
-        if(accept(Token.mainToken)) {
+        if (accept(Token.mainToken)) {
             next();
             this.parsing = true;
             // Parsing variables
@@ -132,15 +120,15 @@ public class Parser {
 
             // Parsing the rest of the program
             this.parsing_rest = true;
-            if (accept(Token.beginToken)){
+            if (accept(Token.beginToken)) {
                 next();
                 //if token is not }, must be statSequence option.
-                if(!accept(Token.endToken)){
+                if (!accept(Token.endToken)) {
                     BasicBlock body = statSequence();
                     current.left = body;
                     current = current.left.exit;
                 }
-                if(accept(Token.endToken)) {
+                if (accept(Token.endToken)) {
                     next();
                 } else {
                     error("Missing closing bracket for main");
@@ -156,16 +144,9 @@ public class Parser {
         current.left = end();
         //
         main.entry = b;
-
-        //staticReset();
+        staticReset();
         return main;
     }
-
-//    private void staticReset() {
-//        // reset
-//        IR.count = 0;
-//        BasicBlock.count = 0;
-//    }
 
     /**
      *
@@ -173,8 +154,7 @@ public class Parser {
      *
      * **/
 
-
-    /**
+     /**
      * RelOp
      *
      * */
@@ -233,8 +213,8 @@ public class Parser {
     /**
      * Designator
      *
-     * if it is array, designator will add instructions, thus it will return the start and end position
-     *    in the instruction list and the address of array element
+     * if it is array, designator will add instructions, thus it will return  the address of array element if write (store),
+     *                 line of INST if read (load)
      * if variable, designator just return the variable name
      *
      */
@@ -246,10 +226,11 @@ public class Parser {
             if(accept(Token.openbracketToken)){
                 // check if this array ident has been declared
                 Array arr = null;
+                IR current_ir = this.getCurrentFunction().ir;
                 if(this.parsing_function){
                     if(!this.current_func.checkArray(name)) {
                         if(!this.main.checkArray(name)) {
-                            error("Undefined Array " + name + "in Function" + this.current_func.name);
+                            error("Undefined Array " + name + " ");
                         } else {
                             arr = this.main.getArray(name);
                         }
@@ -258,12 +239,12 @@ public class Parser {
                     }
                 }else{
                     if(!this.main.checkArray(name))
-                        error("Undefined Array " + name + "in Global");
+                        error("Undefined Array " + name + " ");
                     else
                         arr = this.main.getArray(name);
                 }
                 int i = 0, dimension, current_line, last_line = Integer.MIN_VALUE;
-                Result x= null;
+                Result x = null;
                 while (accept(Token.openbracketToken)) {
                     next();
                     x = expression();
@@ -280,12 +261,11 @@ public class Parser {
                         }
                     }
                     // one dimension array
-                    if(arr.dimensions.size() == 1)
-                        break;
+                    if(arr.dimensions.size() == 1) break;
                     Instruction in = new Instruction(InstructionType.MUL);
                     in.addOperand(OperandType.CONST, String.valueOf(dimension - 1));
                     in.addOperandByResultType(x);
-                    current_line = this.getCurrentIR().addInstruction(in);
+                    current_line = current_ir.addInstruction(in);
                     // this is the first iteration, set start_line of res
                     if (i == 1) {
                         //res.start_line = x.start_line == Integer.MIN_VALUE ? current_line : x.start_line;
@@ -294,7 +274,7 @@ public class Parser {
                         Instruction next_in = new Instruction(InstructionType.ADD);
                         next_in.addOperand(OperandType.INST, String.valueOf(current_line));
                         next_in.addOperand(OperandType.INST, String.valueOf(last_line));
-                        last_line = this.getCurrentIR().addInstruction(next_in);
+                        last_line = current_ir.addInstruction(next_in);
                     }
                     res.setRange(x, null,last_line);
                 }
@@ -308,27 +288,54 @@ public class Parser {
                     retrieve_arr.addOperand(OperandType.INST, String.valueOf(last_line));
                 }
 
-                // set result
-                res.type = ResultType.ARR;
-                res.address = this.getCurrentIR().addInstruction(retrieve_arr);
-                if(arr.dimensions.size() == 1){
-                    res.setRange(x, null, res.address);
+                if(!left_side){
+                    // just load from this address
+                    Instruction load = new Instruction(InstructionType.LOAD);
+                    load.addOperand(OperandType.INST, String.valueOf(current_ir.addInstruction(retrieve_arr)));
+                    res.type = ResultType.INST;
+                    res.line = current_ir.addInstruction(load);
+                    if(arr.dimensions.size() == 1){
+                        res.setRange(x, null, res.value);
+                    }else{
+                        res.setRange(null, null, res.value);
+                    }
                 }else{
-                    res.setRange(null, null, res.address);
+                    // left side of assignment, return address for assignment to use in STORE
+                    res.type = ResultType.ARR;
+                    res.address = current_ir.addInstruction(retrieve_arr);
+                    if(arr.dimensions.size() == 1){
+                        res.setRange(x, null, res.address);
+                    }else{
+                        res.setRange(null, null, res.address);
+                    }
                 }
             // if it is variable
             }else{
                 // check if variable has been defined
                 if(this.parsing_function){
                     if(!this.current_func.checkVariable(name) && !this.main.checkVariable(name))
-                        error("Undefined Variable " + name + " in Function " + this.current_func.name);
+                        error("Undefined Variable " + name + " ");
                 }else{
                     if(!this.main.checkVariable(name))
-                        error("Undefined Variable " + name + " in Global");
+                        error("Undefined Variable " + name + " ");
                 }
-                // set result
+
+                /**  SSA  **/
                 res.type = ResultType.VAR;
-                res.name = name;
+                Map<String, PhiFunction> current_phi_map = this.getCurrentFunction().ssa_stack.peek();
+                PhiFunction current_phi = current_phi_map.get(name);
+                int which;
+                if(current_phi == null){
+                    // non-local reference
+                    res.name = name;
+                }else {
+                    if (left_side) {
+                        which = ++current_phi.current;
+                    } else {
+                        which = current_phi.last;
+                    }
+                    res.name = name + "_" + which;
+                }
             }
         } else {
             error("Missing identifier from designator");
@@ -397,7 +404,7 @@ public class Parser {
                 in.addOperand(OperandType.INST, String.valueOf(last_line));
             }
             in.addOperandByResultType(y);
-            last_line = this.getCurrentIR().addInstruction(in);
+            last_line = this.getCurrentFunction().ir.addInstruction(in);
             res.setRange(x, y, last_line);
             x = y;
         }
@@ -435,7 +442,7 @@ public class Parser {
                 in.addOperand(OperandType.INST, String.valueOf(last_line));
             }
             in.addOperandByResultType(y);
-            last_line = this.getCurrentIR().addInstruction(in);
+            last_line = this.getCurrentFunction().ir.addInstruction(in);
             res.setRange(x, y, last_line);
             x = y;
         }
@@ -454,7 +461,7 @@ public class Parser {
         Instruction in = new Instruction(InstructionType.CMP);
         in.addOperandByResultType(x);
         in.addOperandByResultType(y);
-        int line = this.getCurrentIR().addInstruction(in);
+        int line = this.getCurrentFunction().ir.addInstruction(in);
         // set start and end lines
         res.setRange(x, y, line);
         res.line = line;
@@ -471,16 +478,38 @@ public class Parser {
         BasicBlock block = new BasicBlock();
         if(accept(Token.letToken)) {
             next();
+            /** SSA **/
+            // tell designator, it is left side the assignment
+            this.left_side = true;
             Result d_res = designator();
             if(accept(Token.becomesToken)) {
                 next();
+                IR current_ir = this.getCurrentFunction().ir;
+                /** SSA **/
+                // tell designator (if used), it is the right side of the assignment
+                this.left_side = false;
                 Result e_res = expression();
-                Instruction assi = new Instruction(InstructionType.MOVE);
+                // if left side is array, use STORE instead of MOVE
+                Instruction assi = d_res.type == ResultType.ARR ? new Instruction(InstructionType.STORE) : new Instruction(InstructionType.MOVE);
                 assi.addOperandByResultType(e_res);
                 assi.addOperandByResultType(d_res);
                 // if it is array, designator have already added instructions
-                int start = d_res.type == ResultType.ARR ? d_res.start_line : e_res.start_line;
-                block.setRange(start, this.getCurrentIR().addInstruction(assi));
+                //int start; = d_res.type == ResultType.ARR ? d_res.start_line : e_res.start_line;
+                int last_line = current_ir.addInstruction(assi);
+                for(int i = this.getStart(d_res.start_line, e_res.start_line, last_line); i <= last_line; i++){
+                    block.addInstruction(current_ir.ins.get(i));
+                }
+                //block.setRange(start, this.getCurrentFunction().ir.addInstruction(assi));
+                /** SSA **/
+                // Finished assignment, update last
+                if(d_res.type == ResultType.VAR) {
+                    String variable = d_res.name.split("_")[0];
+                    PhiFunction phi = this.getCurrentFunction().getPhiFunction(variable);
+                    if (phi != null) {
+                        phi.last = phi.current;
+                    }// otherwise, non-local reference
+                }// otherwise, array
+
             } else {
                 error("Missing becomes token during assignment");
             }
@@ -524,14 +553,14 @@ public class Parser {
                 in = new Instruction(InstructionType.FUNC);
                 in.addOperand(OperandType.FP, func.name);
             }
-            int i = func.parameters.size();
+            int i = func.parameter_size;
             Result x = null, y = null;
             if(accept(Token.openparenToken)) {
                 next();
                 if(!accept(Token.closeparenToken)) {
                     x = expression();
                     if(--i < 0)
-                        error("Function " + name + " only take " + func.parameters.size() + " parameters");
+                        error("Function " + name + " only take " + func.parameter_size + " parameters");
                     in.addOperandByResultType(x);
                     res.setRange(x, null, Integer.MIN_VALUE);
                     // more than one parameters
@@ -539,7 +568,7 @@ public class Parser {
                         next();
                         y = expression();
                         if(--i < 0)
-                            error("Function " + name + " only take " + func.parameters.size() + " parameters");
+                            error("Function " + name + " only take " + func.parameter_size + " parameters");
                         in.addOperandByResultType(y);
                         res.setRange(x, y, res.line);
                         x = y;
@@ -554,7 +583,7 @@ public class Parser {
 //            else {
 //                error("Missing open paren in func call");
 //            }
-            res.line = this.getCurrentIR().addInstruction(in);
+            res.line = this.getCurrentFunction().ir.addInstruction(in);
             res.setRange(null, null, res.line);
             // add last parameter to tell function where to return to
             if(!func.predefined) {
@@ -566,7 +595,6 @@ public class Parser {
     }
 
 
-
     public BasicBlock ifStatement() throws Exception {
         BasicBlock b = new BasicBlock();
         b.has_branching = true;
@@ -575,49 +603,104 @@ public class Parser {
         b.exit = join;
         if(accept(Token.ifToken)) {
             next();
+            IR current_ir =  this.getCurrentFunction().ir;
             Result r_res = relation();
-            b.start_line = r_res.start_line;
+//            for(int i = r_res.start_line, len = r_res.end_line; i <= len; i++){
+//                b.addInstruction(current_ir.ins.get(i));
+//            }
+            //b.start_line = r_res.start_line;
+
             // add first instruction
             Instruction first = Instruction.createInstructionByConditionType(r_res.con);
             first.addOperandByResultType(r_res);
-            this.getCurrentIR().addInstruction(first);
+            current_ir.addInstruction(first);
             // add second instruction
             Instruction second = Instruction.createInstructionByConditionType(r_res.con.opposite());
             second.addOperandByResultType(r_res);
-            b.end_line = this.getCurrentIR().addInstruction(second);
+            //b.end_line = current_ir.addInstruction(second);
+            current_ir.addInstruction(second);
+            // Set Instructions in Block
+            // relation has already added instructions
+            for(int i = r_res.start_line, len = r_res.end_line + 2; i <= len; i++){
+                b.addInstruction(current_ir.ins.get(i));
+            }
+
+            Function current_func = this.getCurrentFunction();
+            /** SSA **/
+            // Copy and push into stack
+            Map<String, PhiFunction> current_phi_map = current_func.copyAddPhiMap();
             if(accept(Token.thenToken)) {
                 next();
                 b.left = statSequence();
-                first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.start_line));
+                first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
+                //first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.start_line));
+                /** SSA **/
+                // save left
+                for(PhiFunction phi : current_phi_map.values()){
+                    phi.operands.add(phi.last);
+                    phi.lead = ++phi.current;
+                    phi.last = phi.original;
+                }
                 // if there is else
                 if (accept(Token.elseToken)) {
                     next();
                     Instruction left_exit = new Instruction(InstructionType.BRA);
                     //
-                    b.left.exit.setRange(Integer.MIN_VALUE, this.getCurrentIR().addInstruction(left_exit));
+                    current_ir.addInstruction(left_exit);
+                    b.left.exit.addInstruction(left_exit);
+                    //b.left.exit.setRange(Integer.MIN_VALUE, current_ir.addInstruction(left_exit));
                     b.right = statSequence();
-                    second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.start_line));
-                    left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.end_line + 1));
+                    second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.getStart()));
+                    left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.getEnd() + 1));
+                    //second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.start_line));
+                    //left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.end_line + 1));
                 // if no else
                 }else{
-                    second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.end_line + 1));
+                    second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.getEnd() + 1));
+                }
+                /** SSA **/
+                // save right, add it no matter there is else or not
+                for(PhiFunction phi : current_phi_map.values()){
+                    phi.operands.add(phi.last);
                 }
                 if(accept(Token.fiToken)) {
                     next();
-//                    // Temp: could be removed after SSA
-//                    if(join.end_line == Integer.MIN_VALUE){
-//                        // temporary to tell how deep this whole if is
-//                        join.end_line = b.right.exit.end_line;
-//                    }
-                    if(b.right == join) {
-                        join.end_line = b.left.exit.end_line;
+                    /** SSA **/
+                    // create phi function for join
+                    List<Instruction> phis = new ArrayList<Instruction>();
+                    Map<String, PhiFunction> pre_phi_map = current_phi_map;
+                    this.getCurrentFunction().ssa_stack.pop();
+                    current_phi_map = this.getCurrentFunction().ssa_stack.peek();
+                    for(PhiFunction phi : pre_phi_map.values()) {
+                        PhiFunction cur_phi = current_phi_map.get(phi.id);
+                        // both branches do not change
+                        if ((phi.operands.get(0) == phi.operands.get(1)) && (phi.operands.get(1) == phi.original)){
+                            cur_phi.current = phi.current - 1;
+                            continue;
+                        }else{
+                            cur_phi.current = phi.current;
+                            cur_phi.last = phi.lead;
+                        }
+                        phis.add(phi.toInstruction());
+                    }
+                    // ?????????????????????????????????????????
+                    if(phis.size() == 0){
+                        // nothing in join node, then as least mark size of the whole if statement
+                        if(b.right == join) {
+                            join.end_line = b.left.exit.end_line;
+                        }else{
+                            join.end_line = b.right.exit.end_line;
+                        }
                     }else{
-                        join.end_line = b.right.exit.end_line;
+                        // set range for join
+                        current_func.ir.addInstructions(phis);
+                        join.addInstructions(phis);
+
+//                        join.end_line = current_func.ir.addInstructions(phis);
+//                        join.start_line = join.end_line - phis.size() + 1;
                     }
                     b.left.exit.left= join;
-                    //b.left.exit.exit = join;
                     b.right.exit.left = join;
-                    //b.right.exit.exit = join;
                     b.exit = join;
                 } else {
                     error("Missing fi token");
@@ -634,38 +717,80 @@ public class Parser {
     public BasicBlock whileStatement() throws Exception {
         BasicBlock b = new BasicBlock();
         b.has_branching = true;
-        BasicBlock join = new BasicBlock("Join");
+        BasicBlock join = new BasicBlock("join"); // if actually has nothing from while in it
         b.right = join;
+        /** SSA **/
+        // Copy and push into stack
+        Map<String, PhiFunction> current_phi_map = current_func.copyAddPhiMap();
         if(accept(Token.whileToken)) {
             next();
+            IR current_ir = this.getCurrentFunction().ir;
             Result r_res = relation();
-            b.start_line = r_res.start_line;
+            //b.start_line = r_res.start_line;
+//            for(int i = r_res.start_line, len = r_res.end_line; i <= len; i++){
+//                b.addInstruction(current_ir.ins.get(i));
+//            }
             // add first instruction
             Instruction first = Instruction.createInstructionByConditionType(r_res.con);
             first.addOperandByResultType(r_res);
-            this.getCurrentIR().addInstruction(first);
+            int first_line = current_ir.addInstruction(first);
             // add second instruction
             Instruction second = Instruction.createInstructionByConditionType(r_res.con.opposite());
             second.addOperandByResultType(r_res);
-            b.end_line = this.getCurrentIR().addInstruction(second);
+            current_ir.addInstruction(second);
+            //b.end_line = current_ir.addInstruction(second);
+            // Set Instructions in Block
+            // relation has already add instructions
+            for(int i = r_res.start_line, len = r_res.end_line + 2; i <= len; i++){
+                b.addInstruction(current_ir.ins.get(i));
+            }
             if(accept(Token.doToken)) {
                 next();
                 b.left = statSequence();
-                first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.start_line));
+                first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
+//                first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.start_line));
                 Instruction left_exit = new Instruction(InstructionType.BRA);
-                left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.start_line));
+                left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.getStart()));
+//                left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.start_line));
                 // set range for last join
-                b.left.exit.setRange(Integer.MIN_VALUE, this.getCurrentIR().addInstruction(left_exit));
-                second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.end_line + 1));
+                current_ir.addInstruction(left_exit);
+                b.left.exit.addInstruction(left_exit);
+//                b.left.exit.setRange(Integer.MIN_VALUE, current_ir.addInstruction(left_exit));//!!!!!!!!!!!!!
+                second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.getEnd() + 1));
+//               second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.end_line + 1));
                 if(accept(Token.odToken)) {
                     next();
+                    /** SSA **/
+                    // create phi function
+                    List<Instruction> phis = new ArrayList<Instruction>();
+                    Map<String, PhiFunction> pre_phi_map = current_phi_map;
+                    this.getCurrentFunction().ssa_stack.pop();
+                    current_phi_map = this.getCurrentFunction().ssa_stack.peek();
+                    for(PhiFunction phi : pre_phi_map.values()) {
+                        PhiFunction cur_phi = current_phi_map.get(phi.id);
+                        // never used
+                        if (phi.current == phi.original){
+                            continue;
+                        }
+                        cur_phi.current = ++phi.current;
+                        cur_phi.last = phi.current;
+                        phi.lead = phi.current;
+                        phi.operands.add(phi.original);
+                        phi.operands.add(phi.last);
+                        phis.add(phi.toInstruction());
+                    }
+                    // insert into the node
+                    if(phis.size() != 0) {
+                        current_func.ir.insertInstructions(phis, first_line);
+                        // fix the last jump line
+                        // reassign start and end line for all blocks in while body
+                    }
                     // Temp: could be removed after SSA
                     if(join.end_line == Integer.MIN_VALUE){
                         // temporary to tell how deep this whole while is
                         join.end_line = b.left.exit.end_line;
                     }
                     b.left.exit.left = b;
-                    //b.left.exit = join;
                     b.exit = join;
                 } else {
                     error("Missing od token");
@@ -686,16 +811,23 @@ public class Parser {
             next();
             Result e_res = expression();
             //b.start_line = e_res.start_line;
+            IR current_ir = this.getCurrentFunction().ir;
             Instruction in = new Instruction(InstructionType.LOADPARAM);
             // Parameter starts from zero
-            in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameters.size()));
-            int last_line = this.getCurrentIR().addInstruction(in);
-            b.setRange(e_res.start_line, last_line);
+            in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameter_size));
+            int start_line = current_ir.addInstruction(in);
+            //int last_line = current_ir.addInstruction(in);
+            //b.setRange(e_res.start_line, last_line);
             in = new Instruction(InstructionType.RETURN);
             // add return value;
             in.addOperandByResultType(e_res);
-            in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
-            b.setRange(Integer.MIN_VALUE, this.getCurrentIR().addInstruction(in));
+            in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(start_line));
+            int last_line = current_ir.addInstruction(in);
+            //int start = e_res.start_line == Integer.MIN_VALUE ? start_line : e_res.start_line;
+            for(int i = getStart(e_res.start_line, start_line, 0); i <= last_line; i++){
+                b.addInstruction(current_ir.ins.get(i));
+            }
+            //b.setRange(Integer.MIN_VALUE, current_ir.addInstruction(in));
         } else {
             error("Missing return statement");
         }
@@ -708,10 +840,15 @@ public class Parser {
             return assignment();
         }
         else if(accept(Token.callToken)) {
+            IR current_ir = this.getCurrentFunction().ir;
             BasicBlock b = new BasicBlock();
             Result res = funcCall();
-            b.start_line = res.start_line;
-            b.end_line = res.end_line;
+            //funcCall has alreay added instructions
+            for(int i = res.start_line, len = res.end_line; i<= len; i++){
+                b.addInstruction(current_ir.ins.get(i));
+            }
+            //b.start_line = res.start_line;
+            //b.end_line = res.end_line;
             // branch to the function basic block
             b.has_branching = false;
             //b.left = this.symbolTable.functions.get(res.func_name).entry;
@@ -787,13 +924,7 @@ public class Parser {
                 String name = ident();
                 Array arr = new Array(name);
                 arr.addDimensions(t_res.dimensions);
-                if(this.parsing_function){
-                    // add to function scope
-                    this.current_func.addArray(arr);
-                }else{
-                    // add to global scope
-                    this.main.addArray(arr);
-                }
+                this.getCurrentFunction().addArray(arr);
                 //next();
             }while(accept(Token.commaToken));
 
@@ -803,13 +934,7 @@ public class Parser {
                 if(accept(Token.commaToken))
                     next();
                 String name = ident();
-                if(this.parsing_function){
-                    // add to function scope
-                    this.current_func.addVariable(name);
-                }else {
-                    // add to global scope
-                    this.main.addVariable(name);
-                }
+                this.getCurrentFunction().addVariable(name);
                 //next();
             }while(accept(Token.commaToken));
         } else {
@@ -825,6 +950,7 @@ public class Parser {
     }
 
     public BasicBlock funcDecl() throws Exception {
+        // the first block of function only contains name
         BasicBlock block = new BasicBlock();
         if(accept(Token.funcToken) || accept(Token.procToken)) {
             next();
@@ -839,7 +965,6 @@ public class Parser {
                     next();
                     block.left = funcBody();
                     block.name = func.name;
-//                    BasicBlock.merge(block, funcBody());
                     func.entry = block;
                     if(accept(Token.semiToken)) {
                         next();
@@ -891,13 +1016,16 @@ public class Parser {
             //BasicBlock.merge(block, statSequence());
             if(!this.current_func.has_return){
                 // add BRA
+                IR current_ir = this.getCurrentFunction().ir;
                 Instruction in = new Instruction(InstructionType.LOADPARAM);
-                in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameters.size() + 1));
-                int last_line = this.getCurrentIR().addInstruction(in);
-                block.exit.setRange(Integer.MIN_VALUE, last_line);
+                in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameter_size + 1));
+                int last_line = current_ir.addInstruction(in);
+                block.exit.addInstruction(in);
+                //block.exit.setRange(Integer.MIN_VALUE, last_line);
                 in = new Instruction(InstructionType.RETURN);
                 in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
-                block.exit.setRange(Integer.MIN_VALUE, this.getCurrentIR().addInstruction(in));
+                block.exit.addInstruction(in);
+                //block.exit.setRange(Integer.MIN_VALUE, current_ir.addInstruction(in));
             }
             if (accept(Token.endToken)) {
                 next();
@@ -913,9 +1041,10 @@ public class Parser {
 
     public BasicBlock end() {
         Instruction in = new Instruction(InstructionType.END);
-        int last_line = this.getCurrentIR().addInstruction(in);
+        this.getCurrentFunction().ir.addInstruction(in);
         BasicBlock b = new BasicBlock();
-        b.setRange(last_line, last_line);
+        b.addInstruction(in);
+        //b.setRange(last_line, last_line);
         return b;
     }
 

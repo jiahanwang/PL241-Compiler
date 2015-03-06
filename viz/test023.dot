@@ -1,52 +1,52 @@
 digraph test023 {
 node [shape=box]
-405[label="main"]
-405 -> 407
-407[label="0: MOVE 1 a 
-1: MOVE 2 b 
-2: MOVE 3 c 
-3: MOVE 4 d 
-4: MOVE 5 e 
+1[label="main"]
+1 -> 3
+3[label="0: MOVE 1 a_1 
+1: MOVE 2 b_1 
+2: MOVE 3 c_1 
+3: MOVE 4 d_1 
+4: MOVE 5 e_1 
 "]
-407 -> 412
-412[label="5: ADD c 4 
-6: CMP [5] d 
+3 -> 8
+8[label="5: ADD c_0 4 
+6: CMP [5] d_0 
 7: BLT JUMP[9] 
 8: BGE JUMP[24] 
 "]
-412 -> 414
-414[label="9: ADD a 5 
-10: SUB [9] b 
-11: MUL b 6 
+8 -> 10
+10[label="9: ADD a_0 5 
+10: SUB [9] b_0 
+11: MUL b_0 6 
 12: CMP [10] [11] 
 13: BGT JUMP[15] 
 14: BLE JUMP[21] 
 "]
-414 -> 416
-416[label="15: DIV a c 
-16: MUL [15] d 
-17: MOVE [16] a 
-18: SUB d 1 
-19: MOVE [18] d 
+10 -> 12
+12[label="15: DIV a_0 c_0 
+16: MUL [15] d_0 
+17: MOVE [16] a_2 
+18: SUB d_0 1 
+19: MOVE [18] d_2 
 20: BRA JUMP[23] 
 "]
-416 -> 415
-415[label="23: BRA JUMP[5] 
+12 -> 11
+11[label="23: BRA JUMP[5] 
 "]
-415 -> 412
-414 -> 418
-418[label="21: ADD a b 
-22: MOVE [21] d 
+11 -> 8
+10 -> 14
+14[label="21: ADD a_0 b_0 
+22: MOVE [21] d_3 
 "]
-418 -> 415
-412 -> 413
-413[label="24: SUB c a 
-25: ADD [24] b 
-26: MOVE [25] e 
-27: ADD a b 
-28: MOVE [27] a 
+14 -> 11
+8 -> 9
+9[label="24: SUB c_0 a_0 
+25: ADD [24] b_0 
+26: MOVE [25] e_2 
+27: ADD a_0 b_0 
+28: MOVE [27] a_3 
 "]
-413 -> 421
-421[label="29: END 
+9 -> 17
+17[label="29: END 
 "]
 }

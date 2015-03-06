@@ -1,72 +1,72 @@
 digraph test009 {
 node [shape=box]
-134[label="main"]
-134 -> 136
-136[label="0: MOVE 1 a 
-1: MOVE 2 b 
-2: MOVE 3 c 
+1[label="main"]
+1 -> 3
+3[label="0: MOVE 1 a_1 
+1: MOVE 2 b_1 
+2: MOVE 3 c_1 
 "]
-136 -> 139
-139[label="3: CMP a b 
+3 -> 6
+6[label="3: CMP a_0 b_0 
 4: BGT JUMP[6] 
 5: BLE JUMP[18] 
 "]
-139 -> 141
-141[label="6: ADD a 1 
-7: MOVE [6] a 
+6 -> 8
+8[label="6: ADD a_0 1 
+7: MOVE [6] a_2 
 "]
-141 -> 142
-142[label="8: CMP a b 
+8 -> 9
+9[label="8: CMP a_0 b_0 
 9: BLT JUMP[11] 
 10: BGE JUMP[17] 
 "]
-142 -> 144
-144[label="11: MUL a 4 
-12: MOVE [11] a 
+9 -> 11
+11[label="11: MUL a_0 4 
+12: MOVE [11] a_3 
 "]
-144 -> 145
-145[label="13: CMP c a 
+11 -> 12
+12[label="13: CMP c_0 a_0 
 14: BNE JUMP[16] 
 15: BEQ JUMP[17] 
 "]
-145 -> 147
-147[label="16: MOVE a c 
+12 -> 14
+14[label="16: MOVE a_0 c_2 
 "]
-147 -> 146
-146[label="join"]
-146 -> 143
-143[label="17: BRA JUMP[28] 
+14 -> 13
+13[label="join"]
+13 -> 10
+10[label="17: BRA JUMP[28] 
 "]
-143 -> 140
-140[label="28: ADD a 1 
-29: MOVE [28] a 
-30: WRITE a 
+10 -> 7
+7[label="28: ADD a_0 1 
+29: MOVE [28] a_6 
+30: WRITE a_0 
 "]
-140 -> 155
-155[label="31: END 
+7 -> 22
+22[label="31: END 
 "]
-145 -> 146
-142 -> 143
-139 -> 148
-148[label="18: ADD b 5 
-19: MOVE [18] b 
+12 -> 13
+9 -> 10
+6 -> 15
+15[label="18: ADD b_0 5 
+19: MOVE [18] b_2 
 "]
-148 -> 149
-149[label="20: CMP a b 
+15 -> 16
+16[label="20: CMP a_0 b_0 
 21: BLT JUMP[23] 
 22: BGE JUMP[26] 
 "]
-149 -> 151
-151[label="23: SUB a 2 
-24: MOVE [23] a 
+16 -> 18
+18[label="23: SUB a_0 2 
+24: MOVE [23] a_4 
 25: BRA JUMP[28] 
 "]
-151 -> 150
-150[label="join"]
-150 -> 140
-149 -> 152
-152[label="26: ADD a 3 
-27: MOVE [26] a 
+18 -> 17
+17[label="join"]
+17 -> 7
+16 -> 19
+19[label="26: ADD a_0 3 
+27: MOVE [26] a_5 
 "]
-152 -> 150
+19 -> 17
 }

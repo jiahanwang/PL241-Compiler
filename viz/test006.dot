@@ -1,16 +1,16 @@
 digraph test006 {
 node [shape=box]
-104[label="main"]
-104 -> 110
-110[label="0: FUNC foo PARAM[0] 
+1[label="main"]
+1 -> 7
+7[label="0: FUNC foo PARAM[0] 
 "]
-110 -> 111
-111[label="1: END 
+7 -> 8
+8[label="1: END 
 "]
-106[label="foo"]
-106 -> 108
-108[label="0: MOVE 0 i 
+3[label="foo"]
+3 -> 5
+5[label="0: MOVE 0 i_1 
 1: LOADPARAM 0 
-2: RETURN i JUMP[1] 
+2: RETURN i_1 JUMP[1] 
 "]
 }

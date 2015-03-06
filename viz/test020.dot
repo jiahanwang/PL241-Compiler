@@ -1,9 +1,9 @@
 digraph test020 {
 node [shape=box]
-373[label="main"]
-373 -> 378
-378[label="0: MOVE 1 b 
-1: MOVE 19 c 
+1[label="main"]
+1 -> 6
+6[label="0: MOVE 1 b_1 
+1: MOVE 19 c_1 
 2: MUL 4 4 
 3: MUL 9 9 
 4: ADD [3] [2] 
@@ -11,11 +11,11 @@ node [shape=box]
 6: ADD 1 [5] 
 7: MUL 14 [6] 
 8: ADD [7] [4] 
-9: MUL b c 
+9: MUL b_2 c_2 
 10: MUL 19 [9] 
 11: ADD [10] [8] 
 12: ADDA a_base_address [11] 
-13: MOVE 45 ARR[12] 
+13: STORE 45 ARR[12] 
 14: MUL 4 4 
 15: MUL 9 9 
 16: ADD [15] [14] 
@@ -23,19 +23,20 @@ node [shape=box]
 18: ADD [17] 1 
 19: MUL 14 [18] 
 20: ADD [19] [16] 
-21: MUL c b 
+21: MUL c_0 b_0 
 22: MUL 19 [21] 
 23: ADD [22] [20] 
 24: ADDA a_base_address [23] 
-25: ADD ARR[24] 2 
-26: MOVE [25] d 
+25: LOAD ARR[24] 
+26: ADD [25] 2 
+27: MOVE [26] d_1 
 "]
-378 -> 382
-382[label="27: END 
+6 -> 10
+10[label="28: END 
 "]
-376[label="foo"]
-376 -> 377
-377[label="0: LOADPARAM 0 
+4[label="foo"]
+4 -> 5
+5[label="0: LOADPARAM 0 
 1: RETURN 14 JUMP[0] 
 "]
 }

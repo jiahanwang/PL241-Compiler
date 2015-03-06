@@ -1,0 +1,380 @@
+digraph test000 {
+node [shape=box]
+1[label="main"]
+1 -> 49
+49[label="0: MUL x_0 2 
+1: ADD [0] x_0 
+2: ADD [1] 1 
+3: MOVE [2] x_1 
+4: ADD y_0 1 
+5: MOVE [4] y_1 
+"]
+49 -> 51
+51[label="6: CMP x_1 3 
+7: BLT JUMP[9] 
+8: BGE JUMP[68] 
+"]
+51 -> 53
+53[label="9: ADD x_1 5 
+10: MOVE [9] x_2 
+"]
+53 -> 54
+54[label="11: CMP x_2 0 
+12: BLT JUMP[14] 
+13: BGE JUMP[52] 
+"]
+54 -> 56
+56[label="14: MUL x_2 y_1 
+15: ADD x_2 [14] 
+16: SUB [15] 3 
+17: MOVE [16] x_3 
+"]
+56 -> 57
+57[label="18: CMP x_3 0 
+19: BLT JUMP[21] 
+20: BGE JUMP[45] 
+"]
+57 -> 59
+59[label="21: MUL x_3 y_1 
+22: ADD x_3 [21] 
+23: SUB [22] 3 
+24: MOVE [23] x_4 
+"]
+59 -> 60
+60[label="25: CMP x_4 0 
+26: BLT JUMP[28] 
+27: BGE JUMP[40] 
+"]
+60 -> 62
+62[label="28: ADD x_4 10 
+29: MOVE [28] x_5 
+"]
+62 -> 63
+63[label="30: CMP x_5 0 
+31: BLT JUMP[33] 
+32: BGE JUMP[36] 
+"]
+63 -> 65
+65[label="33: ADD y_1 10 
+34: MOVE [33] y_2 
+35: BRA JUMP[38] 
+"]
+65 -> 64
+64[label="38: PHI y_3 y_2 y_1 
+39: PHI x_6 x_5 x_7 
+"]
+64 -> 61
+61[label="40: PHI y_4 y_3 y_1 
+41: PHI x_8 x_6 x_4 
+42: ADD x_8 5 
+43: MOVE [42] x_9 
+44: BRA JUMP[47] 
+"]
+61 -> 58
+58[label="47: PHI y_5 y_4 y_1 
+48: PHI x_10 x_9 x_11 
+49: ADD x_10 5 
+50: MOVE [49] x_12 
+51: BRA JUMP[63] 
+"]
+58 -> 55
+55[label="63: PHI y_6 y_5 y_1 
+64: PHI x_13 x_12 x_16 
+65: ADD x_13 1 
+66: MOVE [65] x_18 
+67: BRA JUMP[103] 
+"]
+55 -> 52
+52[label="103: PHI y_7 y_6 y_10 
+104: PHI x_19 x_18 x_27 
+105: ADD x_19 1 
+106: MOVE [105] x_28 
+107: ADD x_28 1 
+108: MOVE [107] x_29 
+"]
+52 -> 93
+93[label="109: END 
+"]
+63 -> 66
+66[label="36: ADD x_5 10 
+37: MOVE [36] x_7 
+"]
+66 -> 64
+60 -> 61
+57 -> 68
+68[label="45: ADD x_3 5 
+46: MOVE [45] x_11 
+"]
+68 -> 58
+54 -> 70
+70[label="52: SUB x_2 3 
+53: MOVE [52] x_14 
+"]
+70 -> 71
+71[label="54: CMP x_14 0 
+55: BLT JUMP[57] 
+56: BGE JUMP[60] 
+"]
+71 -> 73
+73[label="57: ADD x_14 10 
+58: MOVE [57] x_15 
+59: BRA JUMP[62] 
+"]
+73 -> 72
+72[label="62: PHI x_16 x_15 x_17 
+"]
+72 -> 55
+71 -> 74
+74[label="60: ADD x_14 5 
+61: MOVE [60] x_17 
+"]
+74 -> 72
+51 -> 76
+76[label="68: ADD x_1 5 
+69: MOVE [68] x_20 
+"]
+76 -> 77
+77[label="70: CMP x_20 0 
+71: BLT JUMP[73] 
+72: BGE JUMP[88] 
+"]
+77 -> 79
+79[label="73: SUB x_20 3 
+74: MOVE [73] x_21 
+"]
+79 -> 80
+80[label="75: CMP x_21 0 
+76: BLT JUMP[78] 
+77: BGE JUMP[81] 
+"]
+80 -> 82
+82[label="78: ADD y_7 10 
+79: MOVE [78] y_8 
+80: BRA JUMP[83] 
+"]
+82 -> 81
+81[label="83: PHI y_9 y_8 y_7 
+84: PHI x_22 x_21 x_23 
+85: ADD x_22 5 
+86: MOVE [85] x_24 
+87: BRA JUMP[99] 
+"]
+81 -> 78
+78[label="99: PHI y_10 y_9 y_12 
+100: PHI x_25 x_24 x_26 
+101: ADD x_25 1 
+102: MOVE [101] x_27 
+"]
+78 -> 52
+80 -> 83
+83[label="81: ADD x_21 5 
+82: MOVE [81] x_23 
+"]
+83 -> 81
+77 -> 85
+85[label="88: CMP x_20 0 
+89: BLT JUMP[91] 
+90: BGE JUMP[94] 
+"]
+85 -> 87
+87[label="91: ADD y_10 10 
+92: MOVE [91] y_11 
+93: BRA JUMP[96] 
+"]
+87 -> 86
+86[label="96: PHI y_12 y_11 y_13 
+97: ADD x_20 5 
+98: MOVE [97] x_26 
+"]
+86 -> 78
+85 -> 88
+88[label="94: ADD y_10 5 
+95: MOVE [94] y_13 
+"]
+88 -> 86
+3[label="foo"]
+3 -> 5
+5[label="0: ADD x 1 
+1: MOVE [0] a_1 
+2: ADD y 1 
+3: MOVE [2] b_1 
+"]
+5 -> 7
+7[label="4: CMP a_1 3 
+5: BLT JUMP[7] 
+6: BGE JUMP[62] 
+"]
+7 -> 9
+9[label="7: ADD y 5 
+8: MOVE [7] a_2 
+"]
+9 -> 10
+10[label="9: CMP a_2 0 
+10: BLT JUMP[12] 
+11: BGE JUMP[46] 
+"]
+10 -> 12
+12[label="12: SUB a_2 3 
+13: MOVE [12] a_3 
+"]
+12 -> 13
+13[label="14: CMP a_3 0 
+15: BLT JUMP[17] 
+16: BGE JUMP[39] 
+"]
+13 -> 15
+15[label="17: SUB a_3 3 
+18: MOVE [17] a_4 
+"]
+15 -> 16
+16[label="19: CMP a_4 0 
+20: BLT JUMP[22] 
+21: BGE JUMP[34] 
+"]
+16 -> 18
+18[label="22: ADD a_4 10 
+23: MOVE [22] a_5 
+"]
+18 -> 19
+19[label="24: CMP a_5 0 
+25: BLT JUMP[27] 
+26: BGE JUMP[30] 
+"]
+19 -> 21
+21[label="27: ADD b_1 10 
+28: MOVE [27] b_2 
+29: BRA JUMP[32] 
+"]
+21 -> 20
+20[label="32: PHI b_3 b_2 b_1 
+33: PHI a_6 a_5 a_7 
+"]
+20 -> 17
+17[label="34: PHI b_4 b_3 b_1 
+35: PHI a_8 a_6 a_4 
+36: ADD a_8 5 
+37: MOVE [36] a_9 
+38: BRA JUMP[41] 
+"]
+17 -> 14
+14[label="41: PHI b_5 b_4 b_1 
+42: PHI a_10 a_9 a_11 
+43: ADD a_10 5 
+44: MOVE [43] a_12 
+45: BRA JUMP[57] 
+"]
+14 -> 11
+11[label="57: PHI b_6 b_5 b_1 
+58: PHI a_13 a_12 a_16 
+59: ADD a_13 1 
+60: MOVE [59] a_18 
+61: BRA JUMP[97] 
+"]
+11 -> 8
+8[label="97: PHI b_7 b_6 b_10 
+98: PHI a_19 a_18 a_27 
+99: ADD a_19 1 
+100: MOVE [99] a_28 
+101: ADD a_28 1 
+102: MOVE [101] a_29 
+103: LOADPARAM 1 
+0: RETURN JUMP[103] 
+"]
+19 -> 22
+22[label="30: ADD a_5 10 
+31: MOVE [30] a_7 
+"]
+22 -> 20
+16 -> 17
+13 -> 24
+24[label="39: ADD a_3 5 
+40: MOVE [39] a_11 
+"]
+24 -> 14
+10 -> 26
+26[label="46: SUB a_2 3 
+47: MOVE [46] a_14 
+"]
+26 -> 27
+27[label="48: CMP a_14 0 
+49: BLT JUMP[51] 
+50: BGE JUMP[54] 
+"]
+27 -> 29
+29[label="51: ADD a_14 10 
+52: MOVE [51] a_15 
+53: BRA JUMP[56] 
+"]
+29 -> 28
+28[label="56: PHI a_16 a_15 a_17 
+"]
+28 -> 11
+27 -> 30
+30[label="54: ADD a_14 5 
+55: MOVE [54] a_17 
+"]
+30 -> 28
+7 -> 32
+32[label="62: ADD a_1 5 
+63: MOVE [62] a_20 
+"]
+32 -> 33
+33[label="64: CMP a_20 0 
+65: BLT JUMP[67] 
+66: BGE JUMP[82] 
+"]
+33 -> 35
+35[label="67: SUB a_20 3 
+68: MOVE [67] a_21 
+"]
+35 -> 36
+36[label="69: CMP a_21 0 
+70: BLT JUMP[72] 
+71: BGE JUMP[75] 
+"]
+36 -> 38
+38[label="72: ADD b_7 10 
+73: MOVE [72] b_8 
+74: BRA JUMP[77] 
+"]
+38 -> 37
+37[label="77: PHI b_9 b_8 b_7 
+78: PHI a_22 a_21 a_23 
+79: ADD a_22 5 
+80: MOVE [79] a_24 
+81: BRA JUMP[93] 
+"]
+37 -> 34
+34[label="93: PHI b_10 b_9 b_12 
+94: PHI a_25 a_24 a_26 
+95: ADD a_25 1 
+96: MOVE [95] a_27 
+"]
+34 -> 8
+36 -> 39
+39[label="75: ADD a_21 5 
+76: MOVE [75] a_23 
+"]
+39 -> 37
+33 -> 41
+41[label="82: CMP a_20 0 
+83: BLT JUMP[85] 
+84: BGE JUMP[88] 
+"]
+41 -> 43
+43[label="85: ADD b_10 10 
+86: MOVE [85] b_11 
+87: BRA JUMP[90] 
+"]
+43 -> 42
+42[label="90: PHI b_12 b_11 b_13 
+91: ADD a_20 5 
+92: MOVE [91] a_26 
+"]
+42 -> 34
+41 -> 44
+44[label="88: ADD b_10 5 
+89: MOVE [88] b_13 
+"]
+44 -> 42
+}

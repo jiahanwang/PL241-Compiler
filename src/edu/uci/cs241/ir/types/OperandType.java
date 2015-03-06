@@ -16,7 +16,7 @@ public enum OperandType {
     JUMP_ADDRESS,
 
     FP,
-    FUNC_PARAM,
-    FUNC_RETURN_PARAM,
-    LOCAL_VARIABLE;
+    FUNC_PARAM, // number of the param
+    FUNC_RETURN_PARAM, // line
+    LOCAL_VARIABLE
 }

@@ -1,84 +1,31 @@
 digraph test011 {
 node [shape=box]
-174[label="main"]
-174 -> 176
-176[label="0: MOVE 1 a 
-1: MOVE 2 b 
-2: MOVE 3 c 
-3: MOVE 4 d 
+1[label="main"]
+1 -> 3
+3[label="0: CMP b_0 d_0 
+1: BLT JUMP[3] 
+2: BGE JUMP[10] 
 "]
-176 -> 180
-180[label="4: CMP a b 
-5: BLT JUMP[7] 
-6: BGE JUMP[18] 
+3 -> 5
+5[label="3: CMP a_0 d_0 
+4: BGT JUMP[6] 
+5: BLE JUMP[8] 
 "]
-180 -> 182
-182[label="7: ADD a 1 
-8: MOVE [7] a 
+5 -> 7
+7[label="6: MOVE c_0 b_1 
+7: BRA JUMP[9] 
 "]
-182 -> 183
-183[label="9: CMP c d 
-10: BLT JUMP[12] 
-11: BGE JUMP[17] 
+7 -> 6
+6[label="9: BRA JUMP[0] 
 "]
-183 -> 185
-185[label="12: ADD c 2 
-13: MOVE [12] c 
-14: ADD d 1 
-15: MOVE [14] d 
-16: BRA JUMP[9] 
+6 -> 3
+5 -> 8
+8[label="8: MOVE b_0 c_1 
 "]
-185 -> 183
-183 -> 184
-184[label="17: BRA JUMP[28] 
+8 -> 6
+3 -> 4
+4[label="Join"]
+4 -> 9
+9[label="10: END 
 "]
-184 -> 181
-181[label="join"]
-181 -> 192
-192[label="28: CMP b d 
-29: BLT JUMP[31] 
-30: BGE JUMP[38] 
-"]
-192 -> 194
-194[label="31: CMP a d 
-32: BGT JUMP[34] 
-33: BLE JUMP[36] 
-"]
-194 -> 196
-196[label="34: MOVE c b 
-35: BRA JUMP[37] 
-"]
-196 -> 195
-195[label="37: BRA JUMP[28] 
-"]
-195 -> 192
-194 -> 197
-197[label="36: MOVE b c 
-"]
-197 -> 195
-192 -> 193
-193[label="Join"]
-193 -> 198
-198[label="38: END 
-"]
-180 -> 187
-187[label="18: ADD a 2 
-19: MOVE [18] a 
-"]
-187 -> 188
-188[label="20: CMP c d 
-21: BLT JUMP[23] 
-22: BGE JUMP[28] 
-"]
-188 -> 190
-190[label="23: ADD c 3 
-24: MOVE [23] c 
-25: ADD d 2 
-26: MOVE [25] d 
-27: BRA JUMP[20] 
-"]
-190 -> 188
-188 -> 189
-189[label="Join"]
-189 -> 181
 }
