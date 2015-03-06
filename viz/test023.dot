@@ -1,0 +1,56 @@
+digraph test023 {
+node [shape=box]
+1[label="main"]
+1 -> 3
+3[label="0: MOVE 1 a_1 
+1: MOVE 2 b_1 
+2: MOVE 3 c_1 
+3: MOVE 4 d_1 
+4: MOVE 5 e_1 
+"]
+3 -> 8
+8[label="5: PHI d_5 d_1 d_3 
+6: PHI a_4 a_1 a_3 
+7: ADD c_1 4 
+8: CMP [7] d_5 
+9: BLT JUMP[11] 
+10: BGE JUMP[28] 
+"]
+8 -> 10
+10[label="11: ADD a_4 5 
+12: SUB [11] b_1 
+13: MUL b_1 6 
+14: CMP [12] [13] 
+15: BGT JUMP[17] 
+16: BLE JUMP[23] 
+"]
+10 -> 12
+12[label="17: DIV a_4 c_1 
+18: MUL [17] d_5 
+19: MOVE [18] a_2 
+20: SUB d_5 1 
+21: MOVE [20] d_2 
+22: BRA JUMP[25] 
+"]
+12 -> 11
+11[label="25: PHI d_3 d_2 d_4 
+26: PHI a_3 a_2 a_1 
+27: BRA JUMP[5] 
+"]
+11 -> 8
+10 -> 14
+14[label="23: ADD a_4 b_1 
+24: MOVE [23] d_4 
+"]
+14 -> 11
+8 -> 9
+9[label="28: SUB c_1 a_4 
+29: ADD [28] b_1 
+30: MOVE [29] e_2 
+31: ADD a_4 b_1 
+32: MOVE [31] a_5 
+"]
+9 -> 17
+17[label="33: END 
+"]
+}

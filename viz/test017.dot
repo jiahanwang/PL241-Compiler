@@ -1,0 +1,28 @@
+digraph test017 {
+node [shape=box]
+1[label="main"]
+1 -> 3
+3[label="0: MOVE 1 a_1 
+1: MOVE a_1 b_1 
+2: MUL 4 b_1 
+3: MOVE [2] c_1 
+"]
+3 -> 6
+6[label="4: CMP c_1 b_1 
+5: BGT JUMP[7] 
+6: BLE JUMP[9] 
+"]
+6 -> 8
+8[label="7: ADD b_1 2 
+8: MOVE [7] d_1 
+"]
+8 -> 7
+7[label="9: PHI d_2 d_1 d_0 
+10: ADD a_1 b_1 
+11: MOVE [10] e_1 
+"]
+7 -> 10
+10[label="12: END 
+"]
+6 -> 7
+}

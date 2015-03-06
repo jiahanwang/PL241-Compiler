@@ -1,0 +1,79 @@
+digraph test009 {
+node [shape=box]
+1[label="main"]
+1 -> 3
+3[label="0: MOVE 1 a_1 
+1: MOVE 2 b_1 
+2: MOVE 3 c_1 
+"]
+3 -> 6
+6[label="3: CMP a_1 b_1 
+4: BGT JUMP[6] 
+5: BLE JUMP[21] 
+"]
+6 -> 8
+8[label="6: ADD a_1 1 
+7: MOVE [6] a_2 
+"]
+8 -> 9
+9[label="8: CMP a_2 b_1 
+9: BLT JUMP[11] 
+10: BGE JUMP[18] 
+"]
+9 -> 11
+11[label="11: MUL a_2 4 
+12: MOVE [11] a_3 
+"]
+11 -> 12
+12[label="13: CMP c_1 a_3 
+14: BNE JUMP[16] 
+15: BEQ JUMP[17] 
+"]
+12 -> 14
+14[label="16: MOVE a_3 c_2 
+"]
+14 -> 13
+13[label="17: PHI c_3 c_2 c_1 
+"]
+13 -> 10
+10[label="18: PHI c_4 c_3 c_1 
+19: PHI a_4 a_3 a_2 
+20: BRA JUMP[32] 
+"]
+10 -> 7
+7[label="32: PHI b_2 b_1 b_3 
+33: PHI c_5 c_4 c_1 
+34: PHI a_5 a_4 a_7 
+35: ADD a_5 1 
+36: MOVE [35] a_9 
+37: WRITE a_9 
+"]
+7 -> 22
+22[label="38: END 
+"]
+12 -> 13
+9 -> 10
+6 -> 15
+15[label="21: ADD b_1 5 
+22: MOVE [21] b_3 
+"]
+15 -> 16
+16[label="23: CMP a_1 b_3 
+24: BLT JUMP[26] 
+25: BGE JUMP[29] 
+"]
+16 -> 18
+18[label="26: SUB a_5 2 
+27: MOVE [26] a_6 
+28: BRA JUMP[31] 
+"]
+18 -> 17
+17[label="31: PHI a_7 a_6 a_8 
+"]
+17 -> 7
+16 -> 19
+19[label="29: ADD a_5 3 
+30: MOVE [29] a_8 
+"]
+19 -> 17
+}
