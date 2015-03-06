@@ -24,15 +24,15 @@ node [shape=box]
 17: MUL 3 3 
 18: ADD [17] [16] 
 19: ADDA a_base_address [18] 
-20: LOAD [19] 
+20: LOAD ARR[19] 
 21: MUL 1 0 
 22: MUL 2 2 
 23: ADD [22] [21] 
 24: MUL 3 2 
 25: ADD [24] [23] 
 26: ADDA a_base_address [25] 
-27: LOAD [26] 
-28: CMP [20] [27] 
+27: LOAD ARR[26] 
+28: CMP ARR[20] ARR[27] 
 29: BGT JUMP[31] 
 30: BLE JUMP[40] 
 "]
@@ -54,8 +54,8 @@ node [shape=box]
 51: MUL 3 1 
 52: ADD [51] [50] 
 53: ADDA a_base_address [52] 
-54: LOAD [53] 
-55: MOVE [54] b_1 
+54: LOAD ARR[53] 
+55: MOVE ARR[54] b_1 
 56: WRITE b_1 
 "]
 18 -> 23

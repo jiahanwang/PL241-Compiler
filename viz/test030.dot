@@ -7,44 +7,49 @@ node [shape=box]
 2: MOVE 3 c_1 
 "]
 3 -> 6
-6[label="3: CMP b_0 c_0 
+6[label="3: CMP b_1 c_1 
 4: BLT JUMP[6] 
-5: BGE JUMP[20] 
+5: BGE JUMP[23] 
 "]
 6 -> 8
-8[label="6: ADD b_0 1 
-7: CMP [6] c_0 
-8: BLT JUMP[10] 
-9: BGE JUMP[20] 
+8[label="6: PHI b_4 b_1 b_3 
+7: PHI a_3 a_1 a_2 
+8: ADD b_4 1 
+9: CMP [8] c_1 
+10: BLT JUMP[12] 
+11: BGE JUMP[23] 
 "]
 8 -> 10
-10[label="10: ADD a_0 1 
-11: MOVE [10] a_2 
+10[label="12: ADD a_3 1 
+13: MOVE [12] a_2 
 "]
 10 -> 11
-11[label="12: ADD b_0 2 
-13: CMP [12] c_0 
-14: BLT JUMP[16] 
-15: BGE JUMP[19] 
+11[label="14: PHI b_3 b_1 b_2 
+15: ADD b_4 2 
+16: CMP [15] c_1 
+17: BLT JUMP[19] 
+18: BGE JUMP[22] 
 "]
 11 -> 13
-13[label="16: ADD b_0 1 
-17: MOVE [16] b_2 
-18: BRA JUMP[12] 
+13[label="19: ADD b_4 1 
+20: MOVE [19] b_2 
+21: BRA JUMP[14] 
 "]
 13 -> 11
 11 -> 12
-12[label="19: BRA JUMP[6] 
+12[label="22: BRA JUMP[6] 
 "]
 12 -> 8
 8 -> 9
-9[label="Join"]
+9[label="join"]
 9 -> 7
-7[label="20: ADD c_0 1 
-21: MOVE [20] b_3 
+7[label="23: PHI b_5 b_4 b_1 
+24: PHI a_4 a_3 a_1 
+25: ADD c_1 1 
+26: MOVE [25] b_6 
 "]
 7 -> 15
-15[label="22: END 
+15[label="27: END 
 "]
 6 -> 7
 }

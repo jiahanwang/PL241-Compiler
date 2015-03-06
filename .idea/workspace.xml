@@ -8,24 +8,74 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/frontend/Result.class" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/BasicBlock1.class" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/BasicBlock.class" afterPath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/BasicBlock.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/IR$1.class" afterPath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/IR$1.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/IR.class" afterPath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/IR.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/Instruction$1.class" afterPath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/Instruction$1.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/Instruction$Operand.class" afterPath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/Instruction$Operand.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/Instruction.class" afterPath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/ir/Instruction.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/frontend/Parser.class" afterPath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/frontend/Parser.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/frontend/ParserTest.class" afterPath="$PROJECT_DIR$/out/production/PL241-Compiler/edu/uci/cs241/frontend/ParserTest.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test000.dot.png" afterPath="$PROJECT_DIR$/viz/test000.dot.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test000.dot" afterPath="$PROJECT_DIR$/viz/test000.dot" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test001.dot.png" afterPath="$PROJECT_DIR$/viz/test001.dot.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test002.dot.png" afterPath="$PROJECT_DIR$/viz/test002.dot.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test003.dot.png" afterPath="$PROJECT_DIR$/viz/test003.dot.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test004.dot.png" afterPath="$PROJECT_DIR$/viz/test004.dot.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test005.dot.png" afterPath="$PROJECT_DIR$/viz/test005.dot.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test006.dot.png" afterPath="$PROJECT_DIR$/viz/test006.dot.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test007.dot.png" afterPath="$PROJECT_DIR$/viz/test007.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test008.dot.png" afterPath="$PROJECT_DIR$/viz/test008.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test009.dot.png" afterPath="$PROJECT_DIR$/viz/test009.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test010.dot.png" afterPath="$PROJECT_DIR$/viz/test010.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test011.dot.png" afterPath="$PROJECT_DIR$/viz/test011.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test012.dot.png" afterPath="$PROJECT_DIR$/viz/test012.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test013.dot.png" afterPath="$PROJECT_DIR$/viz/test013.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test014.dot.png" afterPath="$PROJECT_DIR$/viz/test014.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test015.dot.png" afterPath="$PROJECT_DIR$/viz/test015.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test016.dot.png" afterPath="$PROJECT_DIR$/viz/test016.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test017.dot.png" afterPath="$PROJECT_DIR$/viz/test017.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test018.dot.png" afterPath="$PROJECT_DIR$/viz/test018.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test019.dot.png" afterPath="$PROJECT_DIR$/viz/test019.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test020.dot.png" afterPath="$PROJECT_DIR$/viz/test020.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test021.dot.png" afterPath="$PROJECT_DIR$/viz/test021.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test022.dot.png" afterPath="$PROJECT_DIR$/viz/test022.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test023.dot.png" afterPath="$PROJECT_DIR$/viz/test023.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test024.dot.png" afterPath="$PROJECT_DIR$/viz/test024.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test025.dot.png" afterPath="$PROJECT_DIR$/viz/test025.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test026.dot.png" afterPath="$PROJECT_DIR$/viz/test026.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test027.dot.png" afterPath="$PROJECT_DIR$/viz/test027.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test028.dot.png" afterPath="$PROJECT_DIR$/viz/test028.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test029.dot.png" afterPath="$PROJECT_DIR$/viz/test029.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test030.dot.png" afterPath="$PROJECT_DIR$/viz/test030.dot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test031.dot.png" afterPath="$PROJECT_DIR$/viz/test031.dot.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/edu/uci/cs241/ir/BasicBlock.java" afterPath="$PROJECT_DIR$/src/edu/uci/cs241/ir/BasicBlock.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/edu/uci/cs241/ir/IR.java" afterPath="$PROJECT_DIR$/src/edu/uci/cs241/ir/IR.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/edu/uci/cs241/ir/Instruction.java" afterPath="$PROJECT_DIR$/src/edu/uci/cs241/ir/Instruction.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java" afterPath="$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/edu/uci/cs241/frontend/ParserTest.java" afterPath="$PROJECT_DIR$/src/edu/uci/cs241/frontend/ParserTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test000.dot" afterPath="$PROJECT_DIR$/viz/test000.dot" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test000.txt" afterPath="$PROJECT_DIR$/tests/test000.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test002.dot" afterPath="$PROJECT_DIR$/viz/test002.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test003.dot" afterPath="$PROJECT_DIR$/viz/test003.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test004.dot" afterPath="$PROJECT_DIR$/viz/test004.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test008.dot" afterPath="$PROJECT_DIR$/viz/test008.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test009.dot" afterPath="$PROJECT_DIR$/viz/test009.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test010.dot" afterPath="$PROJECT_DIR$/viz/test010.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test011.dot" afterPath="$PROJECT_DIR$/viz/test011.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test012.dot" afterPath="$PROJECT_DIR$/viz/test012.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test013.dot" afterPath="$PROJECT_DIR$/viz/test013.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test014.dot" afterPath="$PROJECT_DIR$/viz/test014.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test015.dot" afterPath="$PROJECT_DIR$/viz/test015.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test016.dot" afterPath="$PROJECT_DIR$/viz/test016.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test017.dot" afterPath="$PROJECT_DIR$/viz/test017.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test018.dot" afterPath="$PROJECT_DIR$/viz/test018.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test019.dot" afterPath="$PROJECT_DIR$/viz/test019.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test020.dot" afterPath="$PROJECT_DIR$/viz/test020.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test021.dot" afterPath="$PROJECT_DIR$/viz/test021.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test022.dot" afterPath="$PROJECT_DIR$/viz/test022.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test023.dot" afterPath="$PROJECT_DIR$/viz/test023.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test024.dot" afterPath="$PROJECT_DIR$/viz/test024.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test025.dot" afterPath="$PROJECT_DIR$/viz/test025.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test026.dot" afterPath="$PROJECT_DIR$/viz/test026.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test027.dot" afterPath="$PROJECT_DIR$/viz/test027.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test028.dot" afterPath="$PROJECT_DIR$/viz/test028.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test029.dot" afterPath="$PROJECT_DIR$/viz/test029.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test030.dot" afterPath="$PROJECT_DIR$/viz/test030.dot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viz/test031.dot" afterPath="$PROJECT_DIR$/viz/test031.dot" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="PL241-Compiler.iws" />
@@ -55,38 +105,38 @@
       <file leaf-file-name="ParserTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/frontend/ParserTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="5" max-vertical-offset="1380">
-              <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="729" max-vertical-offset="1380">
+              <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Parser.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Parser.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.4" vertical-offset="9556" max-vertical-offset="21720">
-              <caret line="476" column="22" selection-start-line="476" selection-start-column="22" selection-end-line="476" selection-end-column="22" />
+            <state vertical-scroll-proportion="-10.870968" vertical-offset="23" max-vertical-offset="20740">
+              <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
               <folding>
-                <element signature="e#2111#2112#0" expanded="true" />
-                <element signature="e#2147#2148#0" expanded="true" />
-                <element signature="e#24276#24289#0" expanded="true" />
-                <element signature="e#29201#29214#0" expanded="true" />
-                <element signature="e#34813#34822#0" expanded="true" />
-                <element signature="e#37881#37889#0" expanded="true" />
-                <element signature="e#40438#40439#0" expanded="true" />
-                <element signature="e#40474#40475#0" expanded="true" />
-                <element signature="e#40509#40510#0" expanded="true" />
-                <element signature="e#40546#40547#0" expanded="true" />
+                <element signature="e#1990#1991#0" expanded="true" />
+                <element signature="e#2026#2027#0" expanded="true" />
+                <element signature="e#23467#23480#0" expanded="true" />
+                <element signature="e#27430#27443#0" expanded="true" />
+                <element signature="e#32285#32294#0" expanded="true" />
+                <element signature="e#35301#35309#0" expanded="true" />
+                <element signature="e#37637#37638#0" expanded="true" />
+                <element signature="e#37673#37674#0" expanded="true" />
+                <element signature="e#37708#37709#0" expanded="true" />
+                <element signature="e#37745#37746#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Function.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Function.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/Function.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="420" max-vertical-offset="2200">
+            <state vertical-scroll-proportion="0.42833608" vertical-offset="480" max-vertical-offset="2200">
               <caret line="37" column="32" selection-start-line="37" selection-start-column="32" selection-end-line="37" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -99,17 +149,17 @@
       <file leaf-file-name="BasicBlock.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/BasicBlock.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="298" max-vertical-offset="2180">
-              <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1269" max-vertical-offset="1740">
+              <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
               <folding>
-                <element signature="e#1073#1074#0" expanded="true" />
-                <element signature="e#1105#1106#0" expanded="true" />
-                <element signature="e#1162#1163#0" expanded="true" />
-                <element signature="e#1198#1199#0" expanded="true" />
-                <element signature="e#1269#1270#0" expanded="true" />
-                <element signature="e#1312#1313#0" expanded="true" />
-                <element signature="e#1822#1823#0" expanded="true" />
-                <element signature="e#1887#1888#0" expanded="true" />
+                <element signature="e#997#998#0" expanded="true" />
+                <element signature="e#1029#1030#0" expanded="true" />
+                <element signature="e#1086#1087#0" expanded="true" />
+                <element signature="e#1122#1123#0" expanded="true" />
+                <element signature="e#1193#1194#0" expanded="true" />
+                <element signature="e#1236#1237#0" expanded="true" />
+                <element signature="e#1742#1743#0" expanded="true" />
+                <element signature="e#1807#1808#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -118,8 +168,8 @@
       <file leaf-file-name="IR.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/IR.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="961" max-vertical-offset="2420">
-              <caret line="66" column="107" selection-start-line="66" selection-start-column="107" selection-end-line="66" selection-end-column="107" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2062" max-vertical-offset="2520">
+              <caret line="53" column="32" selection-start-line="53" selection-start-column="32" selection-end-line="53" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#875#891#0" expanded="true" />
@@ -128,16 +178,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PhiFunction.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/PhiFunction.java">
+      <file leaf-file-name="Result.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/Result.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="163" max-vertical-offset="1340">
-              <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#886#887#0" expanded="true" />
-                <element signature="e#916#917#0" expanded="true" />
-              </folding>
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1420">
+              <caret line="41" column="5" selection-start-line="41" selection-start-column="5" selection-end-line="41" selection-end-column="5" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -145,18 +191,8 @@
       <file leaf-file-name="Instruction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/Instruction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3220">
-              <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OperandType.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/types/OperandType.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="540">
-              <caret line="19" column="4" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3180">
+              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -173,10 +209,12 @@
         <option value="$PROJECT_DIR$/src/edu/uci/cs241/ir/PhiFunction.java" />
         <option value="$PROJECT_DIR$/src/edu/uci/cs241/ir/Function.java" />
         <option value="$PROJECT_DIR$/src/edu/uci/cs241/ir/types/OperandType.java" />
-        <option value="$PROJECT_DIR$/src/edu/uci/cs241/frontend/ParserTest.java" />
-        <option value="$PROJECT_DIR$/src/edu/uci/cs241/ir/BasicBlock.java" />
-        <option value="$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java" />
         <option value="$PROJECT_DIR$/src/edu/uci/cs241/ir/IR.java" />
+        <option value="$PROJECT_DIR$/src/edu/uci/cs241/ir/Result.java" />
+        <option value="$PROJECT_DIR$/src/edu/uci/cs241/frontend/ParserTest.java" />
+        <option value="$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java" />
+        <option value="$PROJECT_DIR$/src/edu/uci/cs241/ir/BasicBlock.java" />
+        <option value="$PROJECT_DIR$/src/edu/uci/cs241/ir/Instruction.java" />
       </list>
     </option>
   </component>
@@ -184,6 +222,8 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
+    <option name="x" value="-1366" />
+    <option name="y" value="-768" />
     <option name="width" value="1366" />
     <option name="height" value="768" />
   </component>
@@ -641,16 +681,16 @@
       <created>1425521536655</created>
       <option name="number" value="Default" />
       <updated>1425521536655</updated>
-      <workItem from="1425521537442" duration="48810000" />
+      <workItem from="1425521537442" duration="67104000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48810000" />
+    <option name="totallyTimeSpent" value="67104000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1366" height="768" extended-state="6" />
-    <editor active="true" />
+    <frame x="-1366" y="-768" width="1366" height="768" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -661,7 +701,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.7597122" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4532374" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.6086331" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -669,12 +709,12 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294964" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19650987" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.03566009" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1168437" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.79856116" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19195752" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.06330935" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -700,24 +740,35 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java</url>
-          <line>784</line>
+          <line>707</line>
           <properties />
-          <option name="timeStamp" value="21" />
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java</url>
+          <line>789</line>
+          <properties />
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java</url>
+          <line>636</line>
+          <properties />
+          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="22" />
+      <option name="time" value="35" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
         <watch expression="current_phi_map" language="JAVA" custom="" />
         <watch expression="this.main.ir" language="JAVA" custom="" />
-        <watch expression="current_phi.left_changed" language="JAVA" custom="" />
-        <watch expression="this.ins" language="JAVA" custom="" />
+        <watch expression="block" language="JAVA" custom="" />
       </configuration>
     </watches-manager>
   </component>
@@ -736,7 +787,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/PhiFunction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="163" max-vertical-offset="1340">
+        <state vertical-scroll-proportion="-1.3183521" vertical-offset="752" max-vertical-offset="1340">
           <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -748,60 +799,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/types/OperandType.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="540">
-          <caret line="19" column="4" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/frontend/ParserTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5" max-vertical-offset="1380">
-          <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.33571428" vertical-offset="26" max-vertical-offset="540">
+          <caret line="6" column="25" selection-start-line="6" selection-start-column="24" selection-end-line="6" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/BasicBlock.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="298" max-vertical-offset="2180">
-          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1269" max-vertical-offset="1740">
+          <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
           <folding>
-            <element signature="e#1073#1074#0" expanded="true" />
-            <element signature="e#1105#1106#0" expanded="true" />
-            <element signature="e#1162#1163#0" expanded="true" />
-            <element signature="e#1198#1199#0" expanded="true" />
-            <element signature="e#1269#1270#0" expanded="true" />
-            <element signature="e#1312#1313#0" expanded="true" />
-            <element signature="e#1822#1823#0" expanded="true" />
-            <element signature="e#1887#1888#0" expanded="true" />
+            <element signature="e#997#998#0" expanded="true" />
+            <element signature="e#1029#1030#0" expanded="true" />
+            <element signature="e#1086#1087#0" expanded="true" />
+            <element signature="e#1122#1123#0" expanded="true" />
+            <element signature="e#1193#1194#0" expanded="true" />
+            <element signature="e#1236#1237#0" expanded="true" />
+            <element signature="e#1742#1743#0" expanded="true" />
+            <element signature="e#1807#1808#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/Function.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="420" max-vertical-offset="2200">
-          <caret line="37" column="32" selection-start-line="37" selection-start-column="32" selection-end-line="37" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2257#2278#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/Instruction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3220">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/IR.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="961" max-vertical-offset="2420">
-          <caret line="66" column="107" selection-start-line="66" selection-start-column="107" selection-end-line="66" selection-end-column="107" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="975" max-vertical-offset="2520">
+          <caret line="53" column="32" selection-start-line="53" selection-start-column="32" selection-end-line="53" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#875#891#0" expanded="true" />
@@ -809,21 +833,56 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/Result.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1420">
+          <caret line="41" column="5" selection-start-line="41" selection-start-column="5" selection-end-line="41" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/Instruction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3180">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/frontend/ParserTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="729" max-vertical-offset="1380">
+          <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/frontend/Parser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.4" vertical-offset="9556" max-vertical-offset="21720">
-          <caret line="476" column="22" selection-start-line="476" selection-start-column="22" selection-end-line="476" selection-end-column="22" />
+        <state vertical-scroll-proportion="-10.870968" vertical-offset="23" max-vertical-offset="20740">
+          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
           <folding>
-            <element signature="e#2111#2112#0" expanded="true" />
-            <element signature="e#2147#2148#0" expanded="true" />
-            <element signature="e#24276#24289#0" expanded="true" />
-            <element signature="e#29201#29214#0" expanded="true" />
-            <element signature="e#34813#34822#0" expanded="true" />
-            <element signature="e#37881#37889#0" expanded="true" />
-            <element signature="e#40438#40439#0" expanded="true" />
-            <element signature="e#40474#40475#0" expanded="true" />
-            <element signature="e#40509#40510#0" expanded="true" />
-            <element signature="e#40546#40547#0" expanded="true" />
+            <element signature="e#1990#1991#0" expanded="true" />
+            <element signature="e#2026#2027#0" expanded="true" />
+            <element signature="e#23467#23480#0" expanded="true" />
+            <element signature="e#27430#27443#0" expanded="true" />
+            <element signature="e#32285#32294#0" expanded="true" />
+            <element signature="e#35301#35309#0" expanded="true" />
+            <element signature="e#37637#37638#0" expanded="true" />
+            <element signature="e#37673#37674#0" expanded="true" />
+            <element signature="e#37708#37709#0" expanded="true" />
+            <element signature="e#37745#37746#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/edu/uci/cs241/ir/Function.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.42833608" vertical-offset="480" max-vertical-offset="2200">
+          <caret line="37" column="32" selection-start-line="37" selection-start-column="32" selection-end-line="37" selection-end-column="32" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2257#2278#0" expanded="true" />
           </folding>
         </state>
       </provider>

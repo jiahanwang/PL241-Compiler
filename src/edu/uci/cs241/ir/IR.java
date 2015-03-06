@@ -64,13 +64,18 @@ public class IR implements Cloneable{
                     // Update the usage in the while
                     case VARIABLE:
                         // do not replace the left side of assignment
-                        if(in.operator == InstructionType.MOVE && in.operands.indexOf(operand) == 1) break;
+                        if(in.operator == InstructionType.PHI || in.operator == InstructionType.MOVE && in.operands.indexOf(operand) == 1) break;
                         String base = operand.name.split("_")[0];
                         if(replace_map.containsKey(base)){
                             operand.name = replace_map.get(base);
                         }
                 }
             }
+        }
+        // change id of phi in
+        int i = start;
+        for(Instruction in : ins){
+            in.id = i++;
         }
         this.ins.addAll(start, ins);
         count += ins.size();

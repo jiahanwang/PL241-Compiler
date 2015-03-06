@@ -4,91 +4,48 @@ node [shape=box]
 1 -> 4
 4[label="0: ADDA a_base_address i_0 
 1: LOAD ARR[0] 
-2: MOVE [1] x_1 
+2: MOVE ARR[1] x_1 
 3: ADDA a_base_address i_0 
 4: LOAD ARR[3] 
-5: MOVE [4] k_1 
+5: MOVE ARR[4] k_1 
 "]
 4 -> 6
-6[label="0: ADDA a_base_address i_0 
-1: LOAD ARR[0] 
-2: MOVE [1] x_1 
-3: ADDA a_base_address i_0 
-4: LOAD ARR[3] 
-5: MOVE [4] k_1 
-6: ADDA a_base_address i_0 
-7: LOAD ARR[6] 
-8: ADDA b_base_address j_0 
-9: LOAD ARR[8] 
-10: CMP [7] [9] 
-11: BLT JUMP[0] 
-12: BGE JUMP[28] 
+6[label="6: PHI z_3 z_0 z_2 
+7: PHI y_2 y_0 y_1 
+8: PHI x_3 x_1 x_2 
+9: ADDA a_base_address i_0 
+10: LOAD ARR[9] 
+11: ADDA b_base_address j_0 
+12: LOAD ARR[11] 
+13: CMP ARR[10] ARR[12] 
+14: BLT JUMP[16] 
+15: BGE JUMP[32] 
 "]
 6 -> 8
-8[label="0: ADDA a_base_address i_0 
-1: LOAD ARR[0] 
-2: MOVE [1] x_1 
-3: ADDA a_base_address i_0 
-4: LOAD ARR[3] 
-5: MOVE [4] k_1 
-6: ADDA a_base_address i_0 
-7: LOAD ARR[6] 
-8: ADDA b_base_address j_0 
-9: LOAD ARR[8] 
-10: CMP [7] [9] 
-11: BLT JUMP[0] 
-12: BGE JUMP[28] 
-13: ADDA a_base_address i_0 
-14: LOAD ARR[13] 
-15: MOVE [14] x_2 
-16: ADDA a_base_address j_0 
+8[label="16: ADDA a_base_address i_0 
 17: LOAD ARR[16] 
-18: MOVE [17] y_1 
-19: ADDA a_base_address k_2 
-20: STORE z_0 ARR[19] 
-21: ADDA b_base_address j_0 
-22: LOAD ARR[21] 
-23: MOVE [22] z_1 
-24: ADDA a_base_address j_0 
-25: LOAD ARR[24] 
-26: MOVE [25] z_2 
-27: BRA JUMP[0] 
+18: MOVE ARR[17] x_2 
+19: ADDA a_base_address j_0 
+20: LOAD ARR[19] 
+21: MOVE ARR[20] y_1 
+22: ADDA a_base_address k_1 
+23: LOAD ARR[22] 
+24: STORE z_3 ARR[23] 
+25: ADDA b_base_address j_0 
+26: LOAD ARR[25] 
+27: MOVE ARR[26] z_1 
+28: ADDA a_base_address j_0 
+29: LOAD ARR[28] 
+30: MOVE ARR[29] z_2 
+31: BRA JUMP[6] 
 "]
 8 -> 6
 6 -> 7
-7[label="0: ADDA a_base_address i_0 
-1: LOAD ARR[0] 
-2: MOVE [1] x_1 
-3: ADDA a_base_address i_0 
-4: LOAD ARR[3] 
-5: MOVE [4] k_1 
-6: ADDA a_base_address i_0 
-7: LOAD ARR[6] 
-8: ADDA b_base_address j_0 
-9: LOAD ARR[8] 
-10: CMP [7] [9] 
-11: BLT JUMP[0] 
-12: BGE JUMP[28] 
-13: ADDA a_base_address i_0 
-14: LOAD ARR[13] 
-15: MOVE [14] x_2 
-16: ADDA a_base_address j_0 
-17: LOAD ARR[16] 
-18: MOVE [17] y_1 
-19: ADDA a_base_address k_2 
-20: STORE z_0 ARR[19] 
-21: ADDA b_base_address j_0 
-22: LOAD ARR[21] 
-23: MOVE [22] z_1 
-24: ADDA a_base_address j_0 
-25: LOAD ARR[24] 
-26: MOVE [25] z_2 
-27: BRA JUMP[0] 
-28: ADDA a_base_address i_0 
-29: LOAD ARR[28] 
-30: MOVE [29] w_1 
+7[label="32: ADDA a_base_address i_0 
+33: LOAD ARR[32] 
+34: MOVE ARR[33] w_1 
 "]
 7 -> 14
-14[label="31: END 
+14[label="35: END 
 "]
 }

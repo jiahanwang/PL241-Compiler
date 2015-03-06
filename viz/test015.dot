@@ -4,7 +4,7 @@ node [shape=box]
 1 -> 33
 33[label="0: ADD 3 too_0 
 1: MOVE [0] foo_1 
-2: ADD foo_0 6 
+2: ADD foo_1 6 
 3: MOVE [2] af_1 
 "]
 33 -> 35
@@ -16,36 +16,39 @@ node [shape=box]
 1: MOVE 3 par_1 
 "]
 22 -> 24
-24[label="2: CMP 3 par_0 
-3: BLT JUMP[5] 
-4: BGE JUMP[16] 
+24[label="2: PHI par_3 par_1 par_2 
+3: PHI q_5 q_1 q_4 
+4: CMP 3 par_3 
+5: BLT JUMP[7] 
+6: BGE JUMP[19] 
 "]
 24 -> 26
-26[label="5: ADD par_0 q_0 
-6: MOVE [5] q_2 
+26[label="7: ADD par_3 q_5 
+8: MOVE [7] q_2 
 "]
 26 -> 27
-27[label="7: CMP 4 q_0 
-8: BGE JUMP[10] 
-9: BLT JUMP[13] 
+27[label="9: PHI q_4 q_2 q_3 
+10: CMP 4 q_5 
+11: BGE JUMP[13] 
+12: BLT JUMP[16] 
 "]
 27 -> 29
-29[label="10: SUB par_0 q_0 
-11: MOVE [10] q_3 
-12: BRA JUMP[7] 
+29[label="13: SUB par_3 q_5 
+14: MOVE [13] q_3 
+15: BRA JUMP[9] 
 "]
 29 -> 27
 27 -> 28
-28[label="13: SUB q_0 3 
-14: MOVE [13] par_2 
-15: BRA JUMP[2] 
+28[label="16: SUB q_5 3 
+17: MOVE [16] par_2 
+18: BRA JUMP[2] 
 "]
 28 -> 24
 24 -> 25
-25[label="16: ADD par_0 q_0 
-17: MOVE [16] x_1 
-18: LOADPARAM 1 
-19: RETURN x_0 JUMP[18] 
+25[label="19: ADD par_3 q_5 
+20: MOVE [19] x_1 
+21: LOADPARAM 1 
+22: RETURN x_1 JUMP[21] 
 "]
 4[label="bar"]
 4 -> 6
@@ -53,44 +56,48 @@ node [shape=box]
 1: MOVE 3 par_1 
 "]
 6 -> 8
-8[label="2: CMP 3 par_0 
-3: BLT JUMP[5] 
-4: BGE JUMP[19] 
+8[label="2: PHI par_3 par_1 par_2 
+3: PHI q_6 q_1 q_5 
+4: CMP 3 par_3 
+5: BLT JUMP[7] 
+6: BGE JUMP[23] 
 "]
 8 -> 10
-10[label="5: CMP 2 3 
-6: BLT JUMP[8] 
-7: BGE JUMP[10] 
+10[label="7: CMP 2 3 
+8: BLT JUMP[10] 
+9: BGE JUMP[12] 
 "]
 10 -> 12
-12[label="8: ADD par_0 q_0 
-9: MOVE [8] q_2 
+12[label="10: ADD par_3 q_6 
+11: MOVE [10] q_2 
 "]
 12 -> 11
-11[label="join"]
+11[label="12: PHI q_3 q_2 q_1 
+"]
 11 -> 13
-13[label="10: CMP 4 q_0 
-11: BGE JUMP[13] 
-12: BLT JUMP[16] 
+13[label="13: PHI q_5 q_3 q_4 
+14: CMP 4 q_6 
+15: BGE JUMP[17] 
+16: BLT JUMP[20] 
 "]
 13 -> 15
-15[label="13: SUB par_0 q_0 
-14: MOVE [13] q_3 
-15: BRA JUMP[10] 
+15[label="17: SUB par_3 q_6 
+18: MOVE [17] q_4 
+19: BRA JUMP[13] 
 "]
 15 -> 13
 13 -> 14
-14[label="16: SUB q_0 3 
-17: MOVE [16] par_2 
-18: BRA JUMP[2] 
+14[label="20: SUB q_6 3 
+21: MOVE [20] par_2 
+22: BRA JUMP[2] 
 "]
 14 -> 8
 10 -> 11
 8 -> 9
-9[label="19: ADD par_0 q_0 
-20: MOVE [19] x_1 
-21: MOVE 4 af 
-22: LOADPARAM 1 
-23: RETURN x_0 JUMP[22] 
+9[label="23: ADD par_3 q_6 
+24: MOVE [23] x_1 
+25: MOVE 4 af 
+26: LOADPARAM 1 
+27: RETURN x_1 JUMP[26] 
 "]
 }

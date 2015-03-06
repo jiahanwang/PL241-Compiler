@@ -33,10 +33,7 @@ public class Parser {
     public boolean arrayOverflowCheck;
 
     // SSA
-    private boolean if_ssa;
-    private boolean while_ssa;
     private boolean left_side;
-
 
     // Constructor
     public Parser(String path) throws Exception {
@@ -70,8 +67,6 @@ public class Parser {
 
         this.arrayOverflowCheck = false;
 
-        this.if_ssa = false;
-        this.while_ssa = false;
         this.left_side = false;
 
         //initialize the first token
@@ -115,7 +110,6 @@ public class Parser {
                 this.parsing_function = true;
                 funcDecl();
                 this.parsing_function = false;
-                //current = current.left;
             }
 
             // Parsing the rest of the program
@@ -142,7 +136,6 @@ public class Parser {
         }
         // add end
         current.left = end();
-        //
         main.entry = b;
         staticReset();
         return main;
@@ -268,7 +261,6 @@ public class Parser {
                     current_line = current_ir.addInstruction(in);
                     // this is the first iteration, set start_line of res
                     if (i == 1) {
-                        //res.start_line = x.start_line == Integer.MIN_VALUE ? current_line : x.start_line;
                         last_line = current_line;
                     } else {
                         Instruction next_in = new Instruction(InstructionType.ADD);
@@ -276,7 +268,9 @@ public class Parser {
                         next_in.addOperand(OperandType.INST, String.valueOf(last_line));
                         last_line = current_ir.addInstruction(next_in);
                     }
-                    res.setRange(x, null,last_line);
+                    if (res.start_line == Integer.MIN_VALUE) {
+                        res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : last_line;
+                    }
                 }
 
                 // add arr retrieve instruction
@@ -291,22 +285,25 @@ public class Parser {
                 if(!left_side){
                     // just load from this address
                     Instruction load = new Instruction(InstructionType.LOAD);
-                    load.addOperand(OperandType.INST, String.valueOf(current_ir.addInstruction(retrieve_arr)));
-                    res.type = ResultType.INST;
-                    res.line = current_ir.addInstruction(load);
+                    int start_Line = current_ir.addInstruction(retrieve_arr);
+                    load.addOperand(OperandType.ARR_ADDRESS, String.valueOf(start_Line));
+                    res.type = ResultType.ARR;
+                    res.address = current_ir.addInstruction(load);
                     if(arr.dimensions.size() == 1){
-                        res.setRange(x, null, res.value);
+                        res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : start_Line;
+                        res.end_line = res.address;
                     }else{
-                        res.setRange(null, null, res.value);
+                        res.end_line = res.line;
                     }
                 }else{
                     // left side of assignment, return address for assignment to use in STORE
                     res.type = ResultType.ARR;
                     res.address = current_ir.addInstruction(retrieve_arr);
                     if(arr.dimensions.size() == 1){
-                        res.setRange(x, null, res.address);
+                        res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : res.address;
+                        res.end_line = res.address;
                     }else{
-                        res.setRange(null, null, res.address);
+                        res.end_line = res.address;
                     }
                 }
             // if it is variable
@@ -353,6 +350,8 @@ public class Parser {
     public Result factor() throws Exception {
         Result res = null;
         if(accept(Token.ident)) {
+            // to deal with variable in array's brackets
+            this.left_side = false;
             res = designator();
         }
         else if(accept(Token.number)) {
@@ -493,13 +492,10 @@ public class Parser {
                 Instruction assi = d_res.type == ResultType.ARR ? new Instruction(InstructionType.STORE) : new Instruction(InstructionType.MOVE);
                 assi.addOperandByResultType(e_res);
                 assi.addOperandByResultType(d_res);
-                // if it is array, designator have already added instructions
-                //int start; = d_res.type == ResultType.ARR ? d_res.start_line : e_res.start_line;
                 int last_line = current_ir.addInstruction(assi);
                 for(int i = this.getStart(d_res.start_line, e_res.start_line, last_line); i <= last_line; i++){
                     block.addInstruction(current_ir.ins.get(i));
                 }
-                //block.setRange(start, this.getCurrentFunction().ir.addInstruction(assi));
                 /** SSA **/
                 // Finished assignment, update last
                 if(d_res.type == ResultType.VAR) {
@@ -580,9 +576,6 @@ public class Parser {
                     error("Missing close paren in func call");
                 }
             }
-//            else {
-//                error("Missing open paren in func call");
-//            }
             res.line = this.getCurrentFunction().ir.addInstruction(in);
             res.setRange(null, null, res.line);
             // add last parameter to tell function where to return to
@@ -605,11 +598,6 @@ public class Parser {
             next();
             IR current_ir =  this.getCurrentFunction().ir;
             Result r_res = relation();
-//            for(int i = r_res.start_line, len = r_res.end_line; i <= len; i++){
-//                b.addInstruction(current_ir.ins.get(i));
-//            }
-            //b.start_line = r_res.start_line;
-
             // add first instruction
             Instruction first = Instruction.createInstructionByConditionType(r_res.con);
             first.addOperandByResultType(r_res);
@@ -633,7 +621,6 @@ public class Parser {
                 next();
                 b.left = statSequence();
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
-                //first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.start_line));
                 /** SSA **/
                 // save left
                 for(PhiFunction phi : current_phi_map.values()){
@@ -648,12 +635,9 @@ public class Parser {
                     //
                     current_ir.addInstruction(left_exit);
                     b.left.exit.addInstruction(left_exit);
-                    //b.left.exit.setRange(Integer.MIN_VALUE, current_ir.addInstruction(left_exit));
                     b.right = statSequence();
                     second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.getStart()));
                     left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.getEnd() + 1));
-                    //second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.start_line));
-                    //left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.end_line + 1));
                 // if no else
                 }else{
                     second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.getEnd() + 1));
@@ -683,21 +667,16 @@ public class Parser {
                         }
                         phis.add(phi.toInstruction());
                     }
-                    // ?????????????????????????????????????????
                     if(phis.size() == 0){
                         // nothing in join node, then as least mark size of the whole if statement
                         if(b.right == join) {
-                            join.end_line = b.left.exit.end_line;
+                            join.end_line = b.left.exit.getEnd();
                         }else{
-                            join.end_line = b.right.exit.end_line;
+                            join.end_line = b.right.exit.getEnd();
                         }
                     }else{
-                        // set range for join
                         current_func.ir.addInstructions(phis);
                         join.addInstructions(phis);
-
-//                        join.end_line = current_func.ir.addInstructions(phis);
-//                        join.start_line = join.end_line - phis.size() + 1;
                     }
                     b.left.exit.left= join;
                     b.right.exit.left = join;
@@ -727,19 +706,14 @@ public class Parser {
             next();
             IR current_ir = this.getCurrentFunction().ir;
             Result r_res = relation();
-            //b.start_line = r_res.start_line;
-//            for(int i = r_res.start_line, len = r_res.end_line; i <= len; i++){
-//                b.addInstruction(current_ir.ins.get(i));
-//            }
             // add first instruction
             Instruction first = Instruction.createInstructionByConditionType(r_res.con);
             first.addOperandByResultType(r_res);
-            int first_line = current_ir.addInstruction(first);
+            current_ir.addInstruction(first);
             // add second instruction
             Instruction second = Instruction.createInstructionByConditionType(r_res.con.opposite());
             second.addOperandByResultType(r_res);
             current_ir.addInstruction(second);
-            //b.end_line = current_ir.addInstruction(second);
             // Set Instructions in Block
             // relation has already add instructions
             for(int i = r_res.start_line, len = r_res.end_line + 2; i <= len; i++){
@@ -749,16 +723,12 @@ public class Parser {
                 next();
                 b.left = statSequence();
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
-//                first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.start_line));
                 Instruction left_exit = new Instruction(InstructionType.BRA);
                 left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.getStart()));
-//                left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.start_line));
                 // set range for last join
                 current_ir.addInstruction(left_exit);
                 b.left.exit.addInstruction(left_exit);
-//                b.left.exit.setRange(Integer.MIN_VALUE, current_ir.addInstruction(left_exit));//!!!!!!!!!!!!!
                 second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.getEnd() + 1));
-//               second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.end_line + 1));
                 if(accept(Token.odToken)) {
                     next();
                     /** SSA **/
@@ -784,16 +754,13 @@ public class Parser {
                     if(phis.size() != 0) {
                         current_func.ir.insertPhiInstructions(phis, r_res.start_line);
                         b.insertInstructions(phis, 0);
+                        // fix the last jump line
                         Instruction last_jump = current_func.ir.getLastInstruction();
                         last_jump.operands.get(0).line -= phis.size();
-
-                        // fix the last jump line
-                        // reassign start and end line for all blocks in while body
                     }
-                    // Temp: could be removed after SSA
                     if(join.end_line == Integer.MIN_VALUE){
-                        // temporary to tell how deep this whole while is
-                        join.end_line = b.left.exit.end_line;
+                        // to tell how deep this whole while is
+                        join.end_line = b.left.exit.getEnd();
                     }
                     b.left.exit.left = b;
                     b.exit = join;
@@ -815,28 +782,22 @@ public class Parser {
             this.current_func.has_return = true;
             next();
             Result e_res = expression();
-            //b.start_line = e_res.start_line;
             IR current_ir = this.getCurrentFunction().ir;
             Instruction in = new Instruction(InstructionType.LOADPARAM);
             // Parameter starts from zero
             in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameter_size));
             int start_line = current_ir.addInstruction(in);
-            //int last_line = current_ir.addInstruction(in);
-            //b.setRange(e_res.start_line, last_line);
             in = new Instruction(InstructionType.RETURN);
             // add return value;
             in.addOperandByResultType(e_res);
             in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(start_line));
             int last_line = current_ir.addInstruction(in);
-            //int start = e_res.start_line == Integer.MIN_VALUE ? start_line : e_res.start_line;
             for(int i = getStart(e_res.start_line, start_line, 0); i <= last_line; i++){
                 b.addInstruction(current_ir.ins.get(i));
             }
-            //b.setRange(Integer.MIN_VALUE, current_ir.addInstruction(in));
         } else {
             error("Missing return statement");
         }
-        //b.exit = b;
         return b;
     }
 
@@ -852,12 +813,7 @@ public class Parser {
             for(int i = res.start_line, len = res.end_line; i<= len; i++){
                 b.addInstruction(current_ir.ins.get(i));
             }
-            //b.start_line = res.start_line;
-            //b.end_line = res.end_line;
-            // branch to the function basic block
             b.has_branching = false;
-            //b.left = this.symbolTable.functions.get(res.func_name).entry;
-            //b.exit = b.left.exit;
             return b;
         }
         else if(accept(Token.ifToken)) {
@@ -930,7 +886,6 @@ public class Parser {
                 Array arr = new Array(name);
                 arr.addDimensions(t_res.dimensions);
                 this.getCurrentFunction().addArray(arr);
-                //next();
             }while(accept(Token.commaToken));
 
         } else if (t_res.type == ResultType.VAR){
@@ -940,7 +895,6 @@ public class Parser {
                     next();
                 String name = ident();
                 this.getCurrentFunction().addVariable(name);
-                //next();
             }while(accept(Token.commaToken));
         } else {
             error("Wrong type for variable declaration");
@@ -1013,12 +967,10 @@ public class Parser {
         BasicBlock block = null;
         while(!accept(Token.beginToken)) {
             varDecl();
-            //BasicBlock.merge(block, varDecl());
         }
         if (accept(Token.beginToken)) {
             next();
             block = statSequence();
-            //BasicBlock.merge(block, statSequence());
             if(!this.current_func.has_return){
                 // add BRA
                 IR current_ir = this.getCurrentFunction().ir;
@@ -1026,11 +978,11 @@ public class Parser {
                 in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameter_size + 1));
                 int last_line = current_ir.addInstruction(in);
                 block.exit.addInstruction(in);
-                //block.exit.setRange(Integer.MIN_VALUE, last_line);
                 in = new Instruction(InstructionType.RETURN);
                 in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
+                in.id = last_line + 1;
+                current_ir.addInstruction(in);
                 block.exit.addInstruction(in);
-                //block.exit.setRange(Integer.MIN_VALUE, current_ir.addInstruction(in));
             }
             if (accept(Token.endToken)) {
                 next();
@@ -1049,7 +1001,6 @@ public class Parser {
         this.getCurrentFunction().ir.addInstruction(in);
         BasicBlock b = new BasicBlock();
         b.addInstruction(in);
-        //b.setRange(last_line, last_line);
         return b;
     }
 

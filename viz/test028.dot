@@ -12,21 +12,24 @@ node [shape=box]
 4 -> 6
 6[label="4: ADD a_0 4 
 5: MOVE [4] b_1 
-6: MOVE b_0 d_1 
+6: MOVE b_1 d_1 
 7: BRA JUMP[10] 
 "]
 6 -> 5
-5[label="10: ADD b_0 e_0 
-11: MOVE [10] a_1 
-12: ADD c_0 d_0 
-13: MOVE [12] d_2 
+5[label="10: PHI d_2 d_1 d_0 
+11: PHI b_2 b_1 b_0 
+12: PHI c_1 c_0 c_2 
+13: ADD b_2 e_1 
+14: MOVE [13] a_1 
+15: ADD c_1 d_2 
+16: MOVE [15] d_3 
 "]
 5 -> 11
-11[label="14: END 
+11[label="17: END 
 "]
 4 -> 8
 8[label="8: ADD a_0 4 
-9: MOVE [8] c_1 
+9: MOVE [8] c_2 
 "]
 8 -> 5
 }

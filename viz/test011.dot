@@ -2,30 +2,34 @@ digraph test011 {
 node [shape=box]
 1[label="main"]
 1 -> 3
-3[label="0: CMP b_0 d_0 
-1: BLT JUMP[3] 
-2: BGE JUMP[10] 
+3[label="0: PHI b_3 b_0 b_2 
+1: PHI c_3 c_0 c_1 
+2: CMP b_3 d_0 
+3: BLT JUMP[5] 
+4: BGE JUMP[14] 
 "]
 3 -> 5
-5[label="3: CMP a_0 d_0 
-4: BGT JUMP[6] 
-5: BLE JUMP[8] 
+5[label="5: CMP a_0 d_0 
+6: BGT JUMP[8] 
+7: BLE JUMP[10] 
 "]
 5 -> 7
-7[label="6: MOVE c_0 b_1 
-7: BRA JUMP[9] 
+7[label="8: MOVE c_3 b_1 
+9: BRA JUMP[11] 
 "]
 7 -> 6
-6[label="9: BRA JUMP[0] 
+6[label="11: PHI b_2 b_1 b_0 
+12: PHI c_1 c_0 c_2 
+13: BRA JUMP[0] 
 "]
 6 -> 3
 5 -> 8
-8[label="8: MOVE b_0 c_1 
+8[label="10: MOVE b_3 c_2 
 "]
 8 -> 6
 3 -> 4
-4[label="Join"]
+4[label="join"]
 4 -> 9
-9[label="10: END 
+9[label="14: END 
 "]
 }

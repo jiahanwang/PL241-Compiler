@@ -21,7 +21,9 @@ node [shape=box]
 8[label="0: MOVE 0 i_1 
 "]
 8 -> 9
-9[label="1: CMP i_1 10 
+9[label="1: PHI d_2 d_0 d_1 
+2: PHI i_3 i_1 i_2 
+3: CMP i_3 10 
 4: BLT JUMP[6] 
 5: BGE JUMP[15] 
 "]
@@ -32,14 +34,14 @@ node [shape=box]
 9: MOVE [8] z 
 10: ADD y z 
 11: MOVE [10] d_1 
-12: ADD i_1 1 
+12: ADD i_3 1 
 13: MOVE [12] i_2 
-14: BRA JUMP[3] 
+14: BRA JUMP[1] 
 "]
 11 -> 9
 9 -> 10
-10[label="13: MOVE [12] i_2 
-14: BRA JUMP[3] 
+10[label="15: LOADPARAM 0 
+16: RETURN d_2 JUMP[15] 
 "]
 16[label="bar"]
 16 -> 18
@@ -47,36 +49,41 @@ node [shape=box]
 1: MOVE 0 j_1 
 "]
 18 -> 20
-20[label="2: CMP i_1 4 
+20[label="2: PHI j_4 j_1 j_3 
+3: PHI i_3 i_1 i_2 
+4: CMP i_3 4 
 5: BLT JUMP[7] 
-6: BGE JUMP[23] 
+6: BGE JUMP[26] 
 "]
 20 -> 22
-22[label="7: CMP j_1 4 
-10: BLT JUMP[12] 
-11: BGE JUMP[20] 
+22[label="7: PHI j_3 j_1 j_2 
+8: CMP j_4 4 
+9: BLT JUMP[11] 
+10: BGE JUMP[20] 
 "]
 22 -> 24
-24[label="12: MUL 3 i_2 
-13: MUL 3 j_2 
-14: ADD [13] [12] 
-15: ADDA b_base_address [14] 
-16: STORE j_1 ARR[1122] 
-17: ADD j_1 1 
-18: MOVE [17] j_3 
-19: BRA JUMP[9] 
+24[label="11: MUL 3 i_3 
+12: MUL 3 j_4 
+13: ADD [12] [11] 
+14: ADDA b_base_address [13] 
+15: LOAD ARR[14] 
+16: STORE j_4 ARR[15] 
+17: ADD j_4 1 
+18: MOVE [17] j_2 
+19: BRA JUMP[7] 
 "]
 24 -> 22
 22 -> 23
-23[label="18: MOVE [17] j_3 
-19: BRA JUMP[9] 
-18: ADDA a_base_address i_4 
-19: STORE i_3 ARR[162] 
-22: BRA JUMP[4] 
+23[label="20: ADDA a_base_address i_3 
+21: LOAD ARR[20] 
+22: STORE i_3 ARR[21] 
+23: ADD i_3 1 
+24: MOVE [23] i_2 
+25: BRA JUMP[2] 
 "]
 23 -> 20
 20 -> 21
-21[label="21: LOADPARAM 3 
-0: RETURN JUMP[21] 
+21[label="26: LOADPARAM 3 
+27: RETURN JUMP[26] 
 "]
 }

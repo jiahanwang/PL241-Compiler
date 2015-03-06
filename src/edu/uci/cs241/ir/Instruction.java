@@ -13,8 +13,6 @@ import java.util.List;
  */
 public class Instruction {
 
-    // static property to assign id
-
     // declaration
     public int id;
     public InstructionType operator;
@@ -80,7 +78,7 @@ public class Instruction {
         // declaration
         public OperandType type = null;
         public String name = null;
-        public String address = null;
+        public int address = 0;
         public int value = 0;
         public int which_param = 0;
         public int line  = 0;
@@ -97,7 +95,7 @@ public class Instruction {
                     break;
                 case ARR_ADDRESS:
                 case MEM_ADDRESS:
-                    this.address = input;
+                    this.address = Integer.valueOf(input);
                     break;
                 case FP:
                     this.name = input;

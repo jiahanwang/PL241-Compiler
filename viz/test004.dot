@@ -12,25 +12,15 @@ node [shape=box]
 7: STORE 34 ARR[6] 
 8: ADDA input_base_address 5 
 9: STORE 11 ARR[8] 
-0: ADDA input_base_address 1 
-1: STORE 22 ARR[0] 
-2: ADDA input_base_address 2 
-3: STORE 61 ARR[2] 
-4: ADDA input_base_address 3 
-5: STORE 17 ARR[4] 
-6: ADDA input_base_address 4 
-7: STORE 34 ARR[6] 
-8: ADDA input_base_address 5 
-9: STORE 11 ARR[8] 
 10: ADDA input_base_address 1 
-11: LOAD [10] 
+11: LOAD ARR[10] 
 12: ADDA input_base_address 2 
-13: LOAD [12] 
+13: LOAD ARR[12] 
 14: ADDA input_base_address 3 
-15: LOAD [14] 
+15: LOAD ARR[14] 
 16: ADDA input_base_address 4 
-17: LOAD [16] 
-18: FUNC max [11] [13] [15] [17] PARAM[18] 
+17: LOAD ARR[16] 
+18: FUNC max ARR[11] ARR[13] ARR[15] ARR[17] PARAM[18] 
 19: MOVE [18] maxnumber_1 
 "]
 22 -> 28
@@ -50,90 +40,39 @@ node [shape=box]
 9: STORE a5_0 ARR[8] 
 10: MOVE 5 size_1 
 11: MOVE 2 i_1 
-0: ADDA arg_base_address 1 
-1: STORE a1_0 ARR[0] 
-2: ADDA arg_base_address 2 
-3: STORE a2_0 ARR[2] 
-4: ADDA arg_base_address 3 
-5: STORE a3_0 ARR[4] 
-6: ADDA arg_base_address 4 
-7: STORE a4_0 ARR[6] 
-8: ADDA arg_base_address 5 
-9: STORE a5_0 ARR[8] 
-10: MOVE 5 size_1 
-11: MOVE 2 i_1 
 12: ADDA arg_base_address 1 
-13: LOAD [12] 
-14: MOVE [13] temp_1 
+13: LOAD ARR[12] 
+14: MOVE ARR[13] temp_1 
 "]
 7 -> 15
-15[label="15: CMP i_1 size_1 
-18: BLE JUMP[2] 
+15[label="15: PHI temp_4 temp_1 temp_3 
+16: PHI i_3 i_1 i_2 
+17: CMP i_3 size_1 
+18: BLE JUMP[20] 
 19: BGT JUMP[32] 
 "]
 15 -> 17
-17[label="0: ADDA arg_base_address 1 
-1: STORE a1_0 ARR[0] 
-2: ADDA arg_base_address 2 
-3: STORE a2_0 ARR[2] 
-4: ADDA arg_base_address 3 
-5: STORE a3_0 ARR[4] 
-6: ADDA arg_base_address 4 
-7: STORE a4_0 ARR[6] 
-8: ADDA arg_base_address 5 
-9: STORE a5_0 ARR[8] 
-10: MOVE 5 size_1 
-11: MOVE 2 i_1 
-12: ADDA arg_base_address 1 
-13: LOAD [12] 
-14: MOVE [13] temp_1 
-15: CMP i_1 size_1 
-18: BLE JUMP[2] 
-19: BGT JUMP[32] 
-20: ADDA arg_base_address i_1 
-21: LOAD [20] 
-22: CMP [21] temp_1 
-23: BGT JUMP[2] 
+17[label="20: ADDA arg_base_address i_3 
+21: LOAD ARR[20] 
+22: CMP ARR[21] temp_4 
+23: BGT JUMP[25] 
 24: BLE JUMP[28] 
 "]
 17 -> 19
-19[label="0: ADDA arg_base_address 1 
-1: STORE a1_0 ARR[0] 
-2: ADDA arg_base_address 2 
-3: STORE a2_0 ARR[2] 
-4: ADDA arg_base_address 3 
-5: STORE a3_0 ARR[4] 
-6: ADDA arg_base_address 4 
-7: STORE a4_0 ARR[6] 
-8: ADDA arg_base_address 5 
-9: STORE a5_0 ARR[8] 
-10: MOVE 5 size_1 
-11: MOVE 2 i_1 
-12: ADDA arg_base_address 1 
-13: LOAD [12] 
-14: MOVE [13] temp_1 
-15: CMP i_1 size_1 
-18: BLE JUMP[2] 
-19: BGT JUMP[32] 
-20: ADDA arg_base_address i_1 
-21: LOAD [20] 
-22: CMP [21] temp_1 
-23: BGT JUMP[2] 
-24: BLE JUMP[28] 
-25: ADDA arg_base_address i_1 
-26: LOAD [25] 
-27: MOVE [26] temp_2 
+19[label="25: ADDA arg_base_address i_3 
+26: LOAD ARR[25] 
+27: MOVE ARR[26] temp_2 
 "]
 19 -> 18
 18[label="28: PHI temp_3 temp_2 temp_1 
-29: ADD i_1 1 
+29: ADD i_3 1 
 30: MOVE [29] i_2 
-31: BRA JUMP[17] 
+31: BRA JUMP[15] 
 "]
 18 -> 15
 17 -> 18
 15 -> 16
-16[label="30: MOVE [29] i_2 
-31: BRA JUMP[17] 
+16[label="32: LOADPARAM 5 
+33: RETURN temp_4 JUMP[32] 
 "]
 }

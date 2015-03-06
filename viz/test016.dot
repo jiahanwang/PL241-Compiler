@@ -11,9 +11,28 @@ node [shape=box]
 6: MUL [5] 2 
 7: DIV [6] 2 
 8: MOVE [7] y_1 
-9: FUNC baz x_0 y_0 PARAM[9] 
+0: FUNC foo PARAM[0] 
+1: FUNC bar 1 PARAM[1] 
+2: ADD 3 7 
+3: SUB [2] 2 
+4: MOVE [3] x_1 
+5: MUL 895 2 
+6: MUL [5] 2 
+7: DIV [6] 2 
+8: MOVE [7] y_1 
+9: FUNC baz x_1 y_1 PARAM[9] 
+0: FUNC foo PARAM[0] 
+1: FUNC bar 1 PARAM[1] 
+2: ADD 3 7 
+3: SUB [2] 2 
+4: MOVE [3] x_1 
+5: MUL 895 2 
+6: MUL [5] 2 
+7: DIV [6] 2 
+8: MOVE [7] y_1 
+9: FUNC baz x_1 y_1 PARAM[9] 
 10: FUNC boo 2 4 PARAM[10] 
-11: ADD y_0 [10] 
+11: ADD y_1 [10] 
 12: MOVE [11] y_2 
 "]
 24 -> 30
@@ -24,7 +43,7 @@ node [shape=box]
 19[label="0: MOVE 0 i_1 
 "]
 19 -> 20
-20[label="1: CMP i_0 y 
+20[label="1: CMP i_1 y 
 2: BLT JUMP[4] 
 3: BGE JUMP[7] 
 "]
@@ -49,8 +68,8 @@ node [shape=box]
 3 -> 5
 5[label="0: MOVE 1 a_1 
 1: MOVE 2 b_1 
-2: MOVE a_0 x 
-3: MOVE b_0 y 
+2: MOVE a_1 x 
+3: MOVE b_1 y 
 4: LOADPARAM 1 
 5: RETURN JUMP[4] 
 "]
@@ -58,7 +77,7 @@ node [shape=box]
 9 -> 11
 11[label="0: MOVE 1 b_1 
 1: MOVE 1 c_1 
-2: MOVE b_0 y 
+2: MOVE b_1 y 
 3: LOADPARAM 2 
 4: RETURN JUMP[3] 
 "]

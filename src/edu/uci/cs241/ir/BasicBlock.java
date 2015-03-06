@@ -26,7 +26,6 @@ public class BasicBlock {
     public boolean has_branching;
 
     // For IR
-    //public int start_line;
     public int end_line;
 
     public List<Instruction> ins;
@@ -38,7 +37,6 @@ public class BasicBlock {
         this.right = null;
         this.exit = this;
         this.has_branching = false;
-        //this.start_line = Integer.MIN_VALUE;
         this.end_line = Integer.MIN_VALUE;
         this.ins = new ArrayList<Instruction>();
     }
@@ -70,7 +68,7 @@ public class BasicBlock {
 
     public int getEnd(){
         if(ins.size() == 0){
-            return Integer.MIN_VALUE;
+            return this.end_line;
         }else{
             return ins.get(ins.size() - 1).id;
         }
@@ -85,24 +83,4 @@ public class BasicBlock {
         return IR.toStringOfRange(ins, 0, ins.size() - 1);
     }
 
-//    public void setRange(int start, int end){
-//        if(this.start_line != Integer.MIN_VALUE){
-//            if(end != Integer.MIN_VALUE){
-//                this.end_line = end;
-//            }
-//            return;
-//        }
-//        if(start == Integer.MIN_VALUE) {
-//            this.start_line = end;
-//            this.end_line = end;
-//            return;
-//        }
-//        if(end == Integer.MIN_VALUE) {
-//            this.start_line = start;
-//            this.end_line = start;
-//            return;
-//        }
-//        this.start_line = start;
-//        this.end_line = end;
-//    }
 }

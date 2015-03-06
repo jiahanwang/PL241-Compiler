@@ -11,28 +11,29 @@ node [shape=box]
 6: ADD 1 [5] 
 7: MUL 14 [6] 
 8: ADD [7] [4] 
-9: MUL b_2 c_2 
+9: MUL b_1 c_1 
 10: MUL 19 [9] 
 11: ADD [10] [8] 
 12: ADDA a_base_address [11] 
-13: STORE 45 ARR[12] 
-14: MUL 4 4 
-15: MUL 9 9 
-16: ADD [15] [14] 
-17: FUNC foo PARAM[17] 
-18: ADD [17] 1 
-19: MUL 14 [18] 
-20: ADD [19] [16] 
-21: MUL c_0 b_0 
-22: MUL 19 [21] 
-23: ADD [22] [20] 
-24: ADDA a_base_address [23] 
-25: LOAD ARR[24] 
-26: ADD [25] 2 
-27: MOVE [26] d_1 
+13: LOAD ARR[12] 
+14: STORE 45 ARR[13] 
+15: MUL 4 4 
+16: MUL 9 9 
+17: ADD [16] [15] 
+18: FUNC foo PARAM[18] 
+19: ADD [18] 1 
+20: MUL 14 [19] 
+21: ADD [20] [17] 
+22: MUL c_1 b_1 
+23: MUL 19 [22] 
+24: ADD [23] [21] 
+25: ADDA a_base_address [24] 
+26: LOAD ARR[25] 
+27: ADD ARR[26] 2 
+28: MOVE [27] d_1 
 "]
 6 -> 10
-10[label="28: END 
+10[label="29: END 
 "]
 4[label="foo"]
 4 -> 5

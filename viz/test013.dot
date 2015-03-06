@@ -19,94 +19,110 @@ node [shape=box]
 7: MOVE 8 h_1 
 "]
 4 -> 12
-12[label="8: CMP a_0 b_0 
+12[label="8: CMP a_1 b_1 
 9: BLT JUMP[11] 
-10: BGE JUMP[28] 
+10: BGE JUMP[31] 
 "]
 12 -> 14
-14[label="11: ADD a_0 1 
+14[label="11: ADD a_1 1 
 12: MOVE [11] a_2 
-13: ADD e_0 1 
+13: ADD e_1 1 
 14: MOVE [13] e_2 
 "]
 14 -> 16
-16[label="15: CMP b_0 c_0 
+16[label="15: CMP b_1 c_1 
 16: BLT JUMP[18] 
-17: BGE JUMP[26] 
+17: BGE JUMP[27] 
 "]
 16 -> 18
-18[label="18: MUL c_0 3 
+18[label="18: MUL c_1 3 
 19: MOVE [18] c_2 
 "]
 18 -> 19
-19[label="20: CMP a_0 c_0 
-21: BLT JUMP[23] 
-22: BGE JUMP[26] 
+19[label="20: PHI a_4 a_2 a_3 
+21: CMP a_4 c_2 
+22: BLT JUMP[24] 
+23: BGE JUMP[27] 
 "]
 19 -> 21
-21[label="23: ADD a_0 1 
-24: MOVE [23] a_3 
-25: BRA JUMP[20] 
+21[label="24: ADD a_4 1 
+25: MOVE [24] a_3 
+26: BRA JUMP[20] 
 "]
 21 -> 19
 19 -> 20
-20[label="Join"]
+20[label="join"]
 20 -> 17
-17[label="26: MOVE 9 g_2 
-27: BRA JUMP[51] 
+17[label="27: PHI c_3 c_2 c_1 
+28: PHI a_5 a_4 a_2 
+29: MOVE 9 g_2 
+30: BRA JUMP[59] 
 "]
 17 -> 13
-13[label="51: WRITE a_0 
-52: WRITE b_0 
-53: WRITE c_0 
-54: WRITE d_0 
-55: WRITE e_0 
-56: WRITE f_0 
-57: WRITE h_0 
-58: LOADPARAM 1 
-59: RETURN JUMP[58] 
+13[label="59: PHI f_2 f_1 f_3 
+60: PHI g_3 g_2 g_1 
+61: PHI d_2 d_1 d_3 
+62: PHI e_3 e_2 e_1 
+63: PHI b_2 b_1 b_6 
+64: PHI c_4 c_3 c_8 
+65: PHI a_6 a_5 a_1 
+66: PHI h_2 h_1 h_3 
+67: WRITE a_6 
+68: WRITE b_2 
+69: WRITE c_4 
+70: WRITE d_2 
+71: WRITE e_3 
+72: WRITE f_2 
+73: WRITE h_2 
+74: LOADPARAM 1 
+75: RETURN JUMP[74] 
 "]
 16 -> 17
 12 -> 23
-23[label="28: SUB b_0 1 
-29: MOVE [28] b_2 
-30: ADD f_0 1 
-31: MOVE [30] f_2 
+23[label="31: SUB b_1 1 
+32: MOVE [31] b_3 
+33: ADD f_1 1 
+34: MOVE [33] f_3 
 "]
 23 -> 25
-25[label="32: CMP b_0 c_0 
-33: BLT JUMP[35] 
-34: BGE JUMP[46] 
+25[label="35: CMP b_3 c_1 
+36: BLT JUMP[38] 
+37: BGE JUMP[51] 
 "]
 25 -> 27
-27[label="35: MUL c_0 3 
-36: MOVE [35] c_3 
+27[label="38: MUL c_4 3 
+39: MOVE [38] c_5 
 "]
 27 -> 28
-28[label="37: CMP b_0 c_0 
-38: BLT JUMP[40] 
-39: BGE JUMP[45] 
+28[label="40: PHI b_5 b_3 b_4 
+41: PHI c_7 c_5 c_6 
+42: CMP b_5 c_7 
+43: BLT JUMP[45] 
+44: BGE JUMP[50] 
 "]
 28 -> 30
-30[label="40: ADD b_0 1 
-41: MOVE [40] b_3 
-42: SUB c_0 1 
-43: MOVE [42] c_4 
-44: BRA JUMP[37] 
+30[label="45: ADD b_5 1 
+46: MOVE [45] b_4 
+47: SUB c_7 1 
+48: MOVE [47] c_6 
+49: BRA JUMP[40] 
 "]
 30 -> 28
 28 -> 29
-29[label="45: BRA JUMP[50] 
+29[label="50: BRA JUMP[55] 
 "]
 29 -> 26
-26[label="50: MOVE 425 h_2 
+26[label="55: PHI d_3 d_2 d_4 
+56: PHI b_6 b_5 b_3 
+57: PHI c_8 c_7 c_9 
+58: MOVE 425 h_3 
 "]
 26 -> 13
 25 -> 32
-32[label="46: MUL c_0 4 
-47: MOVE [46] c_5 
-48: ADD d_0 1 
-49: MOVE [48] d_2 
+32[label="51: MUL c_4 4 
+52: MOVE [51] c_9 
+53: ADD d_2 1 
+54: MOVE [53] d_4 
 "]
 32 -> 26
 }

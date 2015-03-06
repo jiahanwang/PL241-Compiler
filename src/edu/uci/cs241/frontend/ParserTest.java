@@ -14,7 +14,7 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser parser;
-            for(int i = 0; i <= 0; i++) {
+            for(int i = 0; i <= 31; i++) {
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
