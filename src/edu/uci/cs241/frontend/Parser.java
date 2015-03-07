@@ -4,7 +4,6 @@ import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.*;
 import edu.uci.cs241.ir.Result;
 
-import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -626,6 +625,7 @@ public class Parser {
         b.has_branching = true;
         b.type = BasicBlockType.IF;
         BasicBlock join = new BasicBlock("join");
+        join.dom = b;
         b.right = join;
         b.exit = join;
         if(accept(Token.ifToken)) {
@@ -654,6 +654,7 @@ public class Parser {
             if(accept(Token.thenToken)) {
                 next();
                 b.left = statSequence();
+                (b.left).dom = b;
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
                 /** SSA **/
                 // save left
@@ -670,6 +671,7 @@ public class Parser {
                     current_ir.addInstruction(left_exit);
                     b.left.exit.addInstruction(left_exit);
                     b.right = statSequence();
+                    (b.right).dom = b;
                     second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.getStart()));
                     left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.getEnd() + 1));
                 // if no else
@@ -732,6 +734,7 @@ public class Parser {
         b.has_branching = true;
         b.type = BasicBlockType.WHILE;
         BasicBlock join = new BasicBlock("join"); // if actually has nothing from while in it
+        join.dom = b;
         b.right = join;
         /** SSA **/
         // Copy and push into stack
@@ -757,6 +760,7 @@ public class Parser {
             if(accept(Token.doToken)) {
                 next();
                 b.left = statSequence();
+                (b.left).dom = b;
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
                 Instruction left_exit = new Instruction(InstructionType.BRA);
                 left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.getStart()));
@@ -875,11 +879,13 @@ public class Parser {
                 // if next one is if , then we can merge
                 if(next.type == BasicBlockType.IF){
                     cursor.left = next.left;
+                    (cursor.left).dom = cursor;
                     cursor.right = next.right;
                     BasicBlock.merge(cursor, next);
                 }else {
                     //connect top and bottom
                     cursor.left = next;
+                    (cursor.left).dom = cursor;
                 }
                 cursor = next.exit;
             } else {

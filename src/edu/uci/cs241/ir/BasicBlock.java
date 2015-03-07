@@ -31,6 +31,9 @@ public class BasicBlock {
     public BasicBlock exit;
     public boolean has_branching;
 
+    // For Dominator Tree
+    public BasicBlock dom;
+
     // For IR
     public int end_line;
 

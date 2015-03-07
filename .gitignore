@@ -3,3 +3,4 @@ out
 .idea
 #Ignore these files
 PL241-Compiler.iml
+viz/
