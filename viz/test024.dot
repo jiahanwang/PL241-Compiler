@@ -28,13 +28,11 @@ node [shape=box]
 13[label="19: MUL a_3 7 
 20: ADD [19] 9 
 21: MOVE [20] a_2 
-"]
-13 -> 14
-14[label="22: CMP c_1 d_8 
+22: CMP c_1 d_8 
 23: BLT JUMP[25] 
 24: BGE JUMP[38] 
 "]
-14 -> 16
+13 -> 16
 16[label="25: SUB g_8 5 
 26: MUL [25] h_5 
 27: MOVE [26] g_2 
@@ -65,7 +63,7 @@ node [shape=box]
 85: BRA JUMP[8] 
 "]
 15 -> 11
-14 -> 21
+13 -> 21
 21[label="38: CMP c_1 d_8 
 39: BGE JUMP[41] 
 40: BLT JUMP[59] 

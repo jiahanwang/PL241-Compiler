@@ -27,9 +27,7 @@ node [shape=box]
 8[label="10: MOVE b_3 c_2 
 "]
 8 -> 6
-3 -> 4
-4[label="join"]
-4 -> 9
+3 -> 9
 9[label="14: END 
 "]
 }

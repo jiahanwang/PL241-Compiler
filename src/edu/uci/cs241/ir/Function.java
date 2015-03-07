@@ -93,7 +93,13 @@ public class Function {
     public Function getFunction(String indent){ return this.symbolTable.functions.get(indent); }
 
     public List<Function> getFunctions(){
-        return new ArrayList<Function>(this.symbolTable.functions.values());
+        // filter predefined functions
+        ArrayList<Function> res = new ArrayList<Function>();
+        for(Function func : this.symbolTable.functions.values()){
+            if(func.predefined) continue;
+            res.add(func);
+        }
+        return res;
     }
 
     public PhiFunction getPhiFunction(String name){

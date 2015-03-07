@@ -6,13 +6,11 @@ node [shape=box]
 1: MOVE a_1 b_1 
 2: MUL 4 b_1 
 3: MOVE [2] c_1 
-"]
-3 -> 6
-6[label="4: CMP c_1 b_1 
+4: CMP c_1 b_1 
 5: BGT JUMP[7] 
 6: BLE JUMP[9] 
 "]
-6 -> 8
+3 -> 8
 8[label="7: ADD b_1 2 
 8: MOVE [7] d_1 
 "]
@@ -24,5 +22,5 @@ node [shape=box]
 7 -> 10
 10[label="12: END 
 "]
-6 -> 7
+3 -> 7
 }

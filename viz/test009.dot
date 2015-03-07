@@ -5,31 +5,25 @@ node [shape=box]
 3[label="0: MOVE 1 a_1 
 1: MOVE 2 b_1 
 2: MOVE 3 c_1 
-"]
-3 -> 6
-6[label="3: CMP a_1 b_1 
+3: CMP a_1 b_1 
 4: BGT JUMP[6] 
 5: BLE JUMP[21] 
 "]
-6 -> 8
+3 -> 8
 8[label="6: ADD a_1 1 
 7: MOVE [6] a_2 
-"]
-8 -> 9
-9[label="8: CMP a_2 b_1 
+8: CMP a_2 b_1 
 9: BLT JUMP[11] 
 10: BGE JUMP[18] 
 "]
-9 -> 11
+8 -> 11
 11[label="11: MUL a_2 4 
 12: MOVE [11] a_3 
-"]
-11 -> 12
-12[label="13: CMP c_1 a_3 
+13: CMP c_1 a_3 
 14: BNE JUMP[16] 
 15: BEQ JUMP[17] 
 "]
-12 -> 14
+11 -> 14
 14[label="16: MOVE a_3 c_2 
 "]
 14 -> 13
@@ -51,18 +45,16 @@ node [shape=box]
 7 -> 22
 22[label="38: END 
 "]
-12 -> 13
-9 -> 10
-6 -> 15
+11 -> 13
+8 -> 10
+3 -> 15
 15[label="21: ADD b_1 5 
 22: MOVE [21] b_3 
-"]
-15 -> 16
-16[label="23: CMP a_1 b_3 
+23: CMP a_1 b_3 
 24: BLT JUMP[26] 
 25: BGE JUMP[29] 
 "]
-16 -> 18
+15 -> 18
 18[label="26: SUB a_5 2 
 27: MOVE [26] a_6 
 28: BRA JUMP[31] 
@@ -71,7 +63,7 @@ node [shape=box]
 17[label="31: PHI a_7 a_6 a_8 
 "]
 17 -> 7
-16 -> 19
+15 -> 19
 19[label="29: ADD a_5 3 
 30: MOVE [29] a_8 
 "]

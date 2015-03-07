@@ -13,11 +13,17 @@ import java.util.ListIterator;
 public class BasicBlock {
 
     public int id;
+
     public static int count;
     static {
         count = 0;
     }
+
     public String name;
+
+    // For more concise CFG (especially for if after normal block)
+    public BasicBlockType type;
+
 
     // For CFG
     public BasicBlock left;
@@ -33,6 +39,7 @@ public class BasicBlock {
     // Constructor
     public BasicBlock() {
         this.id = ++count;
+        this.type = BasicBlockType.NORAML;
         this.left = null;
         this.right = null;
         this.exit = this;

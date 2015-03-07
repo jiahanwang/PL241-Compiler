@@ -5,13 +5,11 @@ node [shape=box]
 3[label="0: MOVE 1 a_1 
 1: MOVE 2 b_1 
 2: MOVE 3 c_1 
-"]
-3 -> 6
-6[label="3: CMP b_1 c_1 
+3: CMP b_1 c_1 
 4: BLT JUMP[6] 
 5: BGE JUMP[23] 
 "]
-6 -> 8
+3 -> 8
 8[label="6: PHI b_4 b_1 b_3 
 7: PHI a_3 a_1 a_2 
 8: ADD b_4 1 
@@ -40,9 +38,7 @@ node [shape=box]
 12[label="22: BRA JUMP[6] 
 "]
 12 -> 8
-8 -> 9
-9[label="join"]
-9 -> 7
+8 -> 7
 7[label="23: PHI b_5 b_4 b_1 
 24: PHI a_4 a_3 a_1 
 25: ADD c_1 1 
@@ -51,5 +47,5 @@ node [shape=box]
 7 -> 15
 15[label="27: END 
 "]
-6 -> 7
+3 -> 7
 }

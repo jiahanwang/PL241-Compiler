@@ -4,6 +4,7 @@ import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.*;
 import edu.uci.cs241.ir.Result;
 
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -73,21 +74,6 @@ public class Parser {
         next();
     }
 
-    // Helper
-    private Function getCurrentFunction(){
-        return this.parsing_function ? this.current_func : this.main;
-    }
-
-    private void staticReset() {
-        BasicBlock.count = 0;
-    }
-
-    public int getStart(int a, int b, int c){
-        if(a != Integer.MIN_VALUE) return a;
-        if(b != Integer.MIN_VALUE) return b;
-        return c;
-    }
-
     /**
      * "Main" method of parser
      *
@@ -134,11 +120,58 @@ public class Parser {
         } else {
             error("Missing main");
         }
-        // add end
+        // add end node
         current.left = end();
         main.entry = b;
+        // kill the empty join node of while in some cases
+        List<Function> funcs = new ArrayList<Function>();
+        funcs.add(main);
+        funcs.addAll(main.getFunctions());
+        boolean[] explored = new boolean[1000000];
+        for(Function func : funcs){
+            killWhileJoin(func.entry, null, explored);
+        }
+        // Reset static counters for next file
         staticReset();
         return main;
+    }
+
+    /**
+     *
+     * Helper methods
+     *
+     * **/
+    private Function getCurrentFunction(){
+        return this.parsing_function ? this.current_func : this.main;
+    }
+
+    private void staticReset() {
+        BasicBlock.count = 0;
+    }
+
+    public int getStart(int a, int b, int c){
+        if(a != Integer.MIN_VALUE) return a;
+        if(b != Integer.MIN_VALUE) return b;
+        return c;
+    }
+
+    private void killWhileJoin(BasicBlock b, BasicBlock parent, boolean[] explored) {
+        if(explored[b.id]) {
+            return;
+        }
+        if (b != null) {
+            if(b.getStart() == Integer.MIN_VALUE && b.name.toLowerCase().equals("join")){
+                // empty while join can only be the right of while and it only has left pointer
+                parent.right = b.left;
+            }
+            explored[b.id] = true;
+        }
+        if (b.left != null) {
+            killWhileJoin(b.left, b, explored);
+        }
+        if (b.right != null) {
+            killWhileJoin(b.right, b, explored);
+        }
     }
 
     /**
@@ -591,6 +624,7 @@ public class Parser {
     public BasicBlock ifStatement() throws Exception {
         BasicBlock b = new BasicBlock();
         b.has_branching = true;
+        b.type = BasicBlockType.IF;
         BasicBlock join = new BasicBlock("join");
         b.right = join;
         b.exit = join;
@@ -696,6 +730,7 @@ public class Parser {
     public BasicBlock whileStatement() throws Exception {
         BasicBlock b = new BasicBlock();
         b.has_branching = true;
+        b.type = BasicBlockType.WHILE;
         BasicBlock join = new BasicBlock("join"); // if actually has nothing from while in it
         b.right = join;
         /** SSA **/
@@ -837,8 +872,15 @@ public class Parser {
             next();
             BasicBlock next = statement();
             if(next.has_branching) {
-                //connect top and bottom
-                cursor.left = next;
+                // if next one is if , then we can merge
+                if(next.type == BasicBlockType.IF){
+                    cursor.left = next.left;
+                    cursor.right = next.right;
+                    BasicBlock.merge(cursor, next);
+                }else {
+                    //connect top and bottom
+                    cursor.left = next;
+                }
                 cursor = next.exit;
             } else {
                 // just append instead
