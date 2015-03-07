@@ -628,6 +628,7 @@ public class Parser {
         join.dom = b;
         b.right = join;
         b.exit = join;
+        b.join = join;
         if(accept(Token.ifToken)) {
             next();
             IR current_ir =  this.getCurrentFunction().ir;
@@ -736,6 +737,7 @@ public class Parser {
         BasicBlock join = new BasicBlock("join"); // if actually has nothing from while in it
         join.dom = b;
         b.right = join;
+        b.join = join;
         /** SSA **/
         // Copy and push into stack
         Function current_func = this.getCurrentFunction();
@@ -879,10 +881,13 @@ public class Parser {
                 // if next one is if , then we can merge
                 if(next.type == BasicBlockType.IF){
                     cursor.left = next.left;
-                    (cursor.left).dom = cursor;
                     cursor.right = next.right;
+                    // since we merge the if header into, we need to reset all the parents
+                    (cursor.left).dom = cursor;
+                    (cursor.right).dom = cursor;
+                    (next.join).dom = cursor;
                     BasicBlock.merge(cursor, next);
-                }else {
+                } else {
                     //connect top and bottom
                     cursor.left = next;
                     (cursor.left).dom = cursor;
