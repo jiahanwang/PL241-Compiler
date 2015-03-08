@@ -16,24 +16,24 @@ public class Parser {
     private Scanner s;
     private int tokenCount;
 
-    // Def-Use Chain
-    //private DefUseChain du;
-
     private Function main;
 
     private Function current_func;
+
+    //private Instruction current_in;
 
     // Global flags
     private boolean parsing_function;
     private boolean parsing_variable;
     private boolean parsing_rest;
-    private boolean parsing;
+    private boolean parsing_finished;
 
     // Settings
     public boolean arrayOverflowCheck;
 
     // SSA
     private boolean left_side;
+    private boolean left_side_array; // to avoid variable in array bracket to get assigned
 
     // Constructor
     public Parser(String path) throws Exception {
@@ -58,16 +58,18 @@ public class Parser {
         func = new Function("OutputNewLine");
         func.predefined = true;
         this.main.addFunction(func);
-        this.current_func = null;
 
+        this.current_func = null;
+        //this.current_in = null;
         this.parsing_function = false;
         this.parsing_variable = false;
         this.parsing_rest = false;
-        this.parsing= false;
+        this.parsing_finished = false;
 
         this.arrayOverflowCheck = false;
 
         this.left_side = false;
+        this.left_side_array = false;
 
         //initialize the first token
         next();
@@ -82,7 +84,7 @@ public class Parser {
         BasicBlock current = b;
         if (accept(Token.mainToken)) {
             next();
-            this.parsing = true;
+            this.parsing_finished = false;
             // Parsing variables
             this.parsing_variable = true;
             while (accept(Token.varToken) || accept(Token.arrToken)) {
@@ -116,7 +118,7 @@ public class Parser {
             } else {
                 error("Missing open bracket for main");
             }
-            this.parsing = false;
+            this.parsing_finished = true;
         } else {
             error("Missing main");
         }
@@ -141,6 +143,13 @@ public class Parser {
      * Helper methods
      *
      * **/
+
+    // getters
+    public Function getMain() {
+        return this.parsing_finished ? this.main : null;
+    }
+
+    // internal helpers
     private Function getCurrentFunction(){
         return this.parsing_function ? this.current_func : this.main;
     }
@@ -149,7 +158,7 @@ public class Parser {
         BasicBlock.count = 0;
     }
 
-    public int getStart(int a, int b, int c){
+    private int getStart(int a, int b, int c){
         if(a != Integer.MIN_VALUE) return a;
         if(b != Integer.MIN_VALUE) return b;
         return c;
@@ -273,7 +282,10 @@ public class Parser {
                 Result x = null;
                 while (accept(Token.openbracketToken)) {
                     next();
+                    // to deal with variable in array brackets
+                    this.left_side_array = true;
                     x = expression();
+                    this.left_side_array = false;
                     if(accept(Token.closebracketToken)) {
                         next();
                     } else {
@@ -320,8 +332,8 @@ public class Parser {
                     Instruction load = new Instruction(InstructionType.LOAD);
                     int start_Line = current_ir.addInstruction(retrieve_arr);
                     load.addOperand(OperandType.ARR_ADDRESS, String.valueOf(start_Line));
-                    res.type = ResultType.ARR;
-                    res.address = current_ir.addInstruction(load);
+                    res.type = ResultType.INST;
+                    res.line = current_ir.addInstruction(load);
                     if(arr.dimensions.size() == 1){
                         res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : start_Line;
                         res.end_line = res.address;
@@ -359,7 +371,7 @@ public class Parser {
                     // non-local reference
                     res.name = name;
                 }else {
-                    if (left_side) {
+                    if (left_side && !left_side_array) {
                         which = ++current_phi.current;
                     } else {
                         which = current_phi.last;
@@ -383,8 +395,6 @@ public class Parser {
     public Result factor() throws Exception {
         Result res = null;
         if(accept(Token.ident)) {
-            // to deal with variable in array's brackets
-            this.left_side = false;
             res = designator();
         }
         else if(accept(Token.number)) {
@@ -541,6 +551,10 @@ public class Parser {
                         phi.last = phi.current;
                     }// otherwise, non-local reference
                 }// otherwise, array
+                /** Def Use Chain **/
+                if(d_res.type == ResultType.VAR){
+                    this.getCurrentFunction().getDu(true).addDef(assi.operands.get(1), assi);
+                }
 
             } else {
                 error("Missing becomes token during assignment");
@@ -961,7 +975,12 @@ public class Parser {
                 if(accept(Token.commaToken))
                     next();
                 String name = ident();
-                this.getCurrentFunction().addVariable(name);
+                Function func = this.getCurrentFunction();
+                func.addVariable(name);
+                /** Def Use Chain **/
+                // add def from declaration
+                // variable declaration does not generate instructions, so cannot be done in IR
+                func.getDu(true).addInitalDef(name);
             }while(accept(Token.commaToken));
         } else {
             error("Wrong type for variable declaration");

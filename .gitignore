@@ -2,5 +2,6 @@
 out
 .idea
 viz
+tests
 #Ignore these files
 PL241-Compiler.iml
