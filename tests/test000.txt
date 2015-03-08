@@ -1,9 +1,11 @@
 main
 var x, y, z;
 {
-	let x <- 0;
-	let y <- 1 + 1;
-	let z <- 1 + 1;
-
-	let x <- z + 1
+	let x <- 2 + 1;
+	if x < 1 then
+        let y <- (1 + 2) + (2 + 1)
+    fi;
+    let z <- y + 1 + 1;
+    let y <- y + 1;
+	let x <- x + 1
 }.

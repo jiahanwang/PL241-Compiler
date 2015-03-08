@@ -30,32 +30,34 @@ public class Instruction {
     }
 
     public boolean equals(Instruction inst) {
-        if(this.operator == inst.operator) {
-
-            // Special case: for ADD / MUL (communative)
-            if(this.operator == InstructionType.ADD || this.operator == InstructionType.MUL) {
-                //TODO: later
-            }
-
-            // Default: check operand for operand.
-            if(operands.size() == inst.operands.size()) {
-                boolean e = true;
-                for(int i = 0; i < operands.size(); i++) {
-                    if(operands.get(i).global || inst.operands.get(i).global) {
-                        return false;
-                        // short circuit global vars, they cannot be equal to be safe.
-                    }
-                    if(!operands.get(i).equals(inst.operands.get(i))){
-                        e = false;
-                        break;
-                    }
+        if (this.operator == inst.operator) {
+            // Special case: for ADD / MUL (commutative)
+            if (this.operator == InstructionType.ADD || this.operator == InstructionType.MUL) {
+                // only for ADD x y == ADD y x or MUL
+                if (operands.get(0).equals(inst.operands.get(1)) && operands.get(1).equals(inst.operands.get(0))) {
+                    return true;
                 }
-                return e;
+                // Default: check operand for operand.
+                if (operands.size() == inst.operands.size()) {
+                    boolean e = true;
+                    for (int i = 0; i < operands.size(); i++) {
+                        if (operands.get(i).global || inst.operands.get(i).global) {
+                            return false;
+                            // short circuit global vars, they cannot be equal to be safe.
+                        }
+                        if (!operands.get(i).equals(inst.operands.get(i))) {
+                            e = false;
+                            break;
+                        }
+                    }
+                    return e;
+                }
+                return false;
             }
-            return false;
         }
         return false;
     }
+
 
     public void clearOperands() {
         this.operands = new LinkedList<Operand>();
@@ -113,17 +115,12 @@ public class Instruction {
     public class Operand {
         // declaration
         public OperandType type = null;
-        public String name = null;
-        public int address = 0;
-        public int value = 0;
-        public int which_param = 0;
-        public int line  = 0;
-        public boolean global = false;
         public String name = null; // VARIABLE, BASE_ADDRESS, FP
         public int address = 0; // ARR_ADDRESS, MEM_ADDRESS
         public int value = 0; // CONST
         public int which_param = 0; // FUNC_PARAM
         public int line  = 0; // INST, JUMP_ADDRESS, FUNC_RETURN_PARAM
+        public boolean global = false;  // Used to determine global var
         // constructor
         Operand(OperandType type, String input) {
             this.type = type;

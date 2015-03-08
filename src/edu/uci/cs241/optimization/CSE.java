@@ -1,12 +1,14 @@
 package edu.uci.cs241.optimization;
 
 import edu.uci.cs241.ir.BasicBlock;
+import edu.uci.cs241.ir.Function;
 import edu.uci.cs241.ir.Instruction;
 import edu.uci.cs241.ir.types.InstructionType;
 import edu.uci.cs241.ir.types.OperandType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Ivan on 3/7/2015.
@@ -16,9 +18,12 @@ public class CSE {
     // Keep track of visited blocks to avoid endless loops
     public static boolean[] explored = new boolean[1000];
 
+    public static List<Integer> remove = new ArrayList<Integer>();
+
     public static void reset() {
         explored = new boolean[1000];
         eliminated = new HashMap<Integer, Integer>();
+        remove = new ArrayList<Integer>();
     }
 
     public static HashMap<Integer, Integer> eliminated = new HashMap<Integer, Integer>();
@@ -71,6 +76,7 @@ public class CSE {
                         i.addOperand(OperandType.INST, Integer.toString(j.id));
                         found = true;
                         eliminated.put(i.id, j.id);
+                        remove.add(i.id-remove.size());
                     }
                 }
                 if(!found) {
