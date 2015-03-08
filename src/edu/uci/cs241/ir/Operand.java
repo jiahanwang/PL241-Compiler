@@ -52,6 +52,34 @@ public class Operand {
         }
     }
 
+    public boolean equals(Operand op) {
+        if(this.type != op.type) {
+            return false;
+        }
+        //TODO: need Han to confirm
+        switch (this.type) {
+            case CONST:
+                return this.value == op.value;
+            case VARIABLE:
+            case BASE_ADDRESS:
+            case FP:
+                return this.name.equals(op.name);
+            case ARR_ADDRESS:
+            case MEM_ADDRESS:
+                return this.address == op.address;
+            case FUNC_PARAM:
+                return this.which_param == op.which_param;
+            case INST:
+                return this.line == op.line;
+            case FUNC_RETURN_PARAM:
+                return this.address == op.address;
+            case JUMP_ADDRESS:
+                return false;
+            default:
+                return false;
+        }
+    }
+
     public String toString(){
         switch (this.type) {
             case CONST:

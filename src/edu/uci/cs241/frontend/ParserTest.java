@@ -54,6 +54,8 @@ public class ParserTest {
                     // print out CFG
                     DFS_buildCFG(func.entry, func.ir, pw, explored);
                     DFS_buildDom(func.entry, func.ir, pw_dom, explored_dom);
+
+                    System.out.println(func.getDu(false).toString());
                 }
                 System.out.print("======================\n\n\n");
                 pw.println("}");

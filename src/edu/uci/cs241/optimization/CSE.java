@@ -53,7 +53,8 @@ public class CSE {
         for(Instruction i : b.ins) {
             // Grab instruction information to compare
             InstructionType t = i.operator;
-            if (t == InstructionType.PHI || t == InstructionType.FUNC) {
+            if (t == InstructionType.PHI || t == InstructionType.FUNC
+                    || t == InstructionType.RETURN || t == InstructionType.LOADPARAM) {
                 // blacklisting instructions that we shouldn't bother checking
                 continue;
             }
