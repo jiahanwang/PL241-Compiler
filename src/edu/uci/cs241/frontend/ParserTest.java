@@ -15,9 +15,14 @@ public class ParserTest {
         try {
             Parser parser;
             for(int i = 0; i <= 31; i++) {
-                PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".dot");
+                PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cfg.dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
+
+                PrintWriter pw_dom = new PrintWriter("viz/test0"+String.format("%02d", i)+".dom.dot");
+                pw_dom.println("digraph test0"+String.format("%02d", i)+" {");
+                pw_dom.println("node [shape=box] rankdir=BT");
+
                 parser = new Parser("tests/test0"+String.format("%02d", i)+".txt");
                 /** Get all functions **/
                 Function main = parser.computation();
@@ -25,6 +30,7 @@ public class ParserTest {
                 funcs.add(main);
                 funcs.addAll(main.getFunctions());
                 boolean[] explored = new boolean[1000000];
+                boolean[] explored_dom = new boolean[1000000];
                 /** Print out all functions **/
                 System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 for(Function func : funcs){
@@ -35,10 +41,13 @@ public class ParserTest {
                     System.out.print("-----------------------\n");
                     // print out CFG
                     DFS_buildCFG(func.entry, func.ir, pw, explored);
+                    DFS_buildDom(func.entry, func.ir, pw_dom, explored_dom);
                 }
                 System.out.print("======================\n\n\n");
                 pw.println("}");
                 pw.close();
+                pw_dom.println("}");
+                pw_dom.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,6 +71,26 @@ public class ParserTest {
         if (b.right != null) {
             pw.println(b.id + " -> " + b.right.id);
             DFS_buildCFG(b.right, ir, pw, explored);
+        }
+    }
+
+    public static void DFS_buildDom(BasicBlock b, IR ir, PrintWriter pw, boolean[] explored) {
+        if(explored[b.id]) {
+            return;
+        }
+        if (b != null) {
+            String output = b.getStart() == Integer.MIN_VALUE ? b.name : b.toStringOfInstructions();
+            pw.println(b.id + "[label=\"" + output + "\"]");
+            explored[b.id] = true;
+        }
+        if (b.dom != null) {
+            pw.println(b.id + " -> " + b.dom.id);
+        }
+        if(b.left != null) {
+            DFS_buildDom(b.left, ir, pw, explored);
+        }
+        if(b.right !=null) {
+            DFS_buildDom(b.right, ir, pw, explored);
         }
     }
 }

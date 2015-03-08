@@ -31,6 +31,12 @@ public class BasicBlock {
     public BasicBlock exit;
     public boolean has_branching;
 
+    // For Dominator Tree
+    public BasicBlock dom;
+    public BasicBlock join;
+    // this is for special case of merging if header into another statement sequence
+    // dangling join block
+
     // For IR
     public int end_line;
 
