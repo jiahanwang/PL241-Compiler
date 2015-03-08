@@ -1,6 +1,8 @@
 import edu.uci.cs241.frontend.Parser;
 import edu.uci.cs241.ir.BasicBlock;
 import edu.uci.cs241.ir.Function;
+import edu.uci.cs241.ir.Instruction;
+import edu.uci.cs241.ir.types.InstructionType;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ public class PLCompiler {
 
     public static void main(String[] args) {
         try {
-            for(int i = 1; i <= 31; i++) {
+            for(int i = 0; i <= 0; i++) {
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
@@ -32,10 +34,19 @@ public class PLCompiler {
                 /** Print out all functions **/
                 System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 for(Function func : funcs){
+
+
+                    Instruction in = new Instruction(InstructionType.ADD);
+                    in.parent = func.entry.left.left.right;
+                    func.ir.insertInstruction(in, 13);
+
+                    //func.ir.deleteInstruction(14);
+
                     // print out ir
                     System.out.print(func.name + ":\n");
                     System.out.print(func.ir);
                     System.out.print("-----------------------\n");
+
                     // print out CFG
                     DFS_buildCFG(func.entry, pw, explored);
                 }

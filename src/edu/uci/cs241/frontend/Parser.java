@@ -526,8 +526,11 @@ public class Parser {
                 assi.addOperandByResultType(e_res);
                 assi.addOperandByResultType(d_res);
                 int last_line = current_ir.addInstruction(assi);
+                // Set Instructions in Basic Block
                 for(int i = this.getStart(d_res.start_line, e_res.start_line, last_line); i <= last_line; i++){
-                    block.addInstruction(current_ir.ins.get(i));
+                    Instruction in = current_ir.ins.get(i);
+                    in.parent = block;
+                    block.addInstruction(in);
                 }
                 /** SSA **/
                 // Finished assignment, update last
@@ -644,7 +647,9 @@ public class Parser {
             // Set Instructions in Block
             // relation has already added instructions
             for(int i = r_res.start_line, len = r_res.end_line + 2; i <= len; i++){
-                b.addInstruction(current_ir.ins.get(i));
+                Instruction in = current_ir.ins.get(i);
+                in.parent = b;
+                b.addInstruction(in);
             }
 
             Function current_func = this.getCurrentFunction();
@@ -668,6 +673,7 @@ public class Parser {
                     Instruction left_exit = new Instruction(InstructionType.BRA);
                     //
                     current_ir.addInstruction(left_exit);
+                    left_exit.parent = b.left.exit;
                     b.left.exit.addInstruction(left_exit);
                     b.right = statSequence();
                     second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.getStart()));
@@ -752,7 +758,9 @@ public class Parser {
             // Set Instructions in Block
             // relation has already add instructions
             for(int i = r_res.start_line, len = r_res.end_line + 2; i <= len; i++){
-                b.addInstruction(current_ir.ins.get(i));
+                Instruction in = current_ir.ins.get(i);
+                in.parent = b;
+                b.addInstruction(in);
             }
             if(accept(Token.doToken)) {
                 next();
@@ -762,6 +770,7 @@ public class Parser {
                 left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.getStart()));
                 // set range for last join
                 current_ir.addInstruction(left_exit);
+                left_exit.parent = b.left.exit;
                 b.left.exit.addInstruction(left_exit);
                 second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.exit.getEnd() + 1));
                 if(accept(Token.odToken)) {
@@ -828,7 +837,9 @@ public class Parser {
             in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(start_line));
             int last_line = current_ir.addInstruction(in);
             for(int i = getStart(e_res.start_line, start_line, 0); i <= last_line; i++){
-                b.addInstruction(current_ir.ins.get(i));
+                Instruction instruction = current_ir.ins.get(i);
+                instruction.parent = b;
+                b.addInstruction(instruction);
             }
         } else {
             error("Missing return statement");
@@ -846,7 +857,9 @@ public class Parser {
             Result res = funcCall();
             //funcCall has alreay added instructions
             for(int i = res.start_line, len = res.end_line; i<= len; i++){
-                b.addInstruction(current_ir.ins.get(i));
+                Instruction in = current_ir.ins.get(i);
+                in.parent = b;
+                b.addInstruction(in);
             }
             b.has_branching = false;
             return b;
@@ -1019,11 +1032,13 @@ public class Parser {
                 Instruction in = new Instruction(InstructionType.LOADPARAM);
                 in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameter_size + 1));
                 int last_line = current_ir.addInstruction(in);
+                in.parent = block.exit;
                 block.exit.addInstruction(in);
                 in = new Instruction(InstructionType.RETURN);
                 in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
                 in.id = last_line + 1;
                 current_ir.addInstruction(in);
+                in.parent = block.exit;
                 block.exit.addInstruction(in);
             }
             if (accept(Token.endToken)) {
@@ -1042,6 +1057,7 @@ public class Parser {
         Instruction in = new Instruction(InstructionType.END);
         this.getCurrentFunction().ir.addInstruction(in);
         BasicBlock b = new BasicBlock();
+        in.parent = b;
         b.addInstruction(in);
         return b;
     }
