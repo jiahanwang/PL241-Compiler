@@ -14,7 +14,14 @@ import java.util.HashMap;
 public class CSE {
 
     // Keep track of visited blocks to avoid endless loops
-    public static boolean[] explored = new boolean[1000000];
+    public static boolean[] explored = new boolean[1000];
+
+    public static void reset() {
+        explored = new boolean[1000];
+        eliminated = new HashMap<Integer, Integer>();
+    }
+
+    public static HashMap<Integer, Integer> eliminated = new HashMap<Integer, Integer>();
 
     public static void recursiveCSE(BasicBlock b, HashMap<InstructionType, ArrayList<Instruction>> parent) throws Exception {
 
@@ -40,9 +47,19 @@ public class CSE {
         for(Instruction i : b.ins) {
             // Grab instruction information to compare
             InstructionType t = i.operator;
-            if (t == InstructionType.PHI) {
+            if (t == InstructionType.PHI || t == InstructionType.FUNC) {
+                // blacklisting instructions that we shouldn't bother checking
                 continue;
             }
+            // See if instruction is referring to an eliminated instruction
+            for(Instruction.Operand o : i.operands) {
+                if(o.type == OperandType.INST) {
+                    if(eliminated.containsKey(o.line)) {
+                        o.line = eliminated.get(o.line);
+                    }
+                }
+            }
+
             boolean found = false;
             // check current block inst against anchor's
             if(anchor.containsKey(t)){
@@ -50,10 +67,10 @@ public class CSE {
                     if(i.equals(j)) {
                         // found an existing inst that matches ours
                         i.operator = InstructionType.REF;
-                        i.instRef = i.id;
                         i.clearOperands();
                         i.addOperand(OperandType.INST, Integer.toString(j.id));
                         found = true;
+                        eliminated.put(i.id, j.id);
                     }
                 }
                 if(!found) {

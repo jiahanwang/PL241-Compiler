@@ -19,15 +19,11 @@ public class Instruction {
     public List<Operand> operands;
     public int op_count;
 
-    // Used for CSE
-    public int instRef;
-
     // constructor
     public Instruction(InstructionType type){
         this.operator = type;
         this.operands = new LinkedList<Operand>();
         this.op_count = 0;
-        this.instRef = -1;
     }
 
     public boolean equals(Instruction inst) {
@@ -42,6 +38,10 @@ public class Instruction {
             if(operands.size() == inst.operands.size()) {
                 boolean e = true;
                 for(int i = 0; i < operands.size(); i++) {
+                    if(operands.get(i).global || inst.operands.get(i).global) {
+                        return false;
+                        // short circuit global vars, they cannot be equal to be safe.
+                    }
                     if(!operands.get(i).equals(inst.operands.get(i))){
                         e = false;
                         break;
@@ -115,6 +115,7 @@ public class Instruction {
         public int value = 0;
         public int which_param = 0;
         public int line  = 0;
+        public boolean global = false;
         // constructor
         Operand(OperandType type, String input) {
             this.type = type;
@@ -123,6 +124,7 @@ public class Instruction {
                     this.value = Integer.valueOf(input);
                     break;
                 case VARIABLE:
+                    global = (!input.contains("_"));
                 case BASE_ADDRESS:
                     this.name = input;
                     break;

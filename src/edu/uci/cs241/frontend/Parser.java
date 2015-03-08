@@ -979,6 +979,7 @@ public class Parser {
                     block.left = funcBody();
                     block.name = func.name;
                     func.entry = block;
+                    (block.dom).add(block.left);
                     if(accept(Token.semiToken)) {
                         next();
                     } else {

@@ -17,12 +17,12 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser parser;
-            for(int i = 0; i <= 31; i++) {
-                PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cfg.dot");
+            for(int i = 0; i <= 0; i++) {
+                PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.cfg.dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
 
-                PrintWriter pw_dom = new PrintWriter("viz/test0"+String.format("%02d", i)+".dom.dot");
+                PrintWriter pw_dom = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.dom.dot");
                 pw_dom.println("digraph test0"+String.format("%02d", i)+" {");
                 pw_dom.println("node [shape=box]");
 
@@ -40,6 +40,7 @@ public class ParserTest {
                     // Apply CSE
                     HashMap<InstructionType, ArrayList<Instruction>> anchor = new HashMap<InstructionType, ArrayList<Instruction>>();
                     CSE.recursiveCSE(func.entry, anchor);
+                    CSE.reset();
 
                     //if(func.predefined) continue;
                     // print out ir
