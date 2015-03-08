@@ -3,6 +3,7 @@ package edu.uci.cs241.optimization;
 import edu.uci.cs241.ir.BasicBlock;
 import edu.uci.cs241.ir.Function;
 import edu.uci.cs241.ir.Instruction;
+import edu.uci.cs241.ir.Operand;
 import edu.uci.cs241.ir.types.InstructionType;
 import edu.uci.cs241.ir.types.OperandType;
 
@@ -57,7 +58,7 @@ public class CSE {
                 continue;
             }
             // See if instruction is referring to an eliminated instruction
-            for(Instruction.Operand o : i.operands) {
+            for(Operand o : i.operands) {
                 if(o.type == OperandType.INST) {
                     if(eliminated.containsKey(o.line)) {
                         o.line = eliminated.get(o.line);
