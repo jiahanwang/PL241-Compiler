@@ -84,10 +84,12 @@ public class IR implements Cloneable{
     public boolean insertInstruction(Instruction insert, int start){
         if(start < 0 || start >= this.ins.size()) return false;
         // change id of incoming ins
+        BasicBlock parent = this.ins.get(start).parent;
         insert.id = start;
+        insert.parent = parent;
         // insert into BB block
-        int offset = start - insert.parent.ins.get(0).id;
-        insert.parent.ins.add(offset, insert);
+        int offset = start - parent.ins.get(0).id;
+        parent.ins.add(offset, insert);
         // Update following lines in IR
         ListIterator<Instruction> iterator = this.ins.listIterator(0);
         while(iterator.hasNext()){
