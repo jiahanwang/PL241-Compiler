@@ -35,12 +35,10 @@ public class PLCompiler {
                 System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 for(Function func : funcs){
 
-
-                    Instruction in = new Instruction(InstructionType.ADD);
-                    in.parent = func.entry.left.left.right;
-                    func.ir.insertInstruction(in, 13);
-
-                    //func.ir.deleteInstruction(14);
+//                    Instruction in = new Instruction(InstructionType.ADD);
+//                    in.parent = func.entry.left.left.right;
+//                    func.ir.insertInstruction(in, 13);
+//                    func.ir.deleteInstruction(14);
 
                     // print out ir
                     System.out.print(func.name + ":\n");
