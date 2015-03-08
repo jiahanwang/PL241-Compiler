@@ -19,9 +19,42 @@ public class Instruction {
     public List<Operand> operands;
     public int op_count;
 
+    // Used for CSE
+    public int instRef;
+
     // constructor
     public Instruction(InstructionType type){
         this.operator = type;
+        this.operands = new LinkedList<Operand>();
+        this.op_count = 0;
+        this.instRef = -1;
+    }
+
+    public boolean equals(Instruction inst) {
+        if(this.operator == inst.operator) {
+
+            // Special case: for ADD / MUL (communative)
+            if(this.operator == InstructionType.ADD || this.operator == InstructionType.MUL) {
+                //TODO: later
+            }
+
+            // Default: check operand for operand.
+            if(operands.size() == inst.operands.size()) {
+                boolean e = true;
+                for(int i = 0; i < operands.size(); i++) {
+                    if(!operands.get(i).equals(inst.operands.get(i))){
+                        e = false;
+                        break;
+                    }
+                }
+                return e;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public void clearOperands() {
         this.operands = new LinkedList<Operand>();
         this.op_count = 0;
     }
@@ -115,6 +148,34 @@ public class Instruction {
                         this.name = input;
                     }
                     break;
+            }
+        }
+
+        public boolean equals(Operand op) {
+            if(this.type != op.type) {
+                return false;
+            }
+            //TODO: need Han to confirm
+            switch (this.type) {
+                case CONST:
+                    return this.value == op.value;
+                case VARIABLE:
+                case BASE_ADDRESS:
+                case FP:
+                    return this.name.equals(op.name);
+                case ARR_ADDRESS:
+                case MEM_ADDRESS:
+                    return this.address == op.address;
+                case FUNC_PARAM:
+                    return this.which_param == op.which_param;
+                case INST:
+                    return this.line == op.line;
+                case FUNC_RETURN_PARAM:
+                    return this.address == op.address;
+                case JUMP_ADDRESS:
+                    return false;
+                default:
+                    return false;
             }
         }
 

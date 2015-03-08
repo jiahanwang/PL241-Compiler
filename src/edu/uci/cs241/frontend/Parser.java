@@ -106,6 +106,7 @@ public class Parser {
                     BasicBlock body = statSequence();
                     current.left = body;
                     current = current.left.exit;
+                    b.dom.add(body);
                 }
                 if (accept(Token.endToken)) {
                     next();
@@ -625,7 +626,7 @@ public class Parser {
         b.has_branching = true;
         b.type = BasicBlockType.IF;
         BasicBlock join = new BasicBlock("join");
-        join.dom = b;
+        (b.dom).add(join);
         b.right = join;
         b.exit = join;
         b.join = join;
@@ -655,7 +656,7 @@ public class Parser {
             if(accept(Token.thenToken)) {
                 next();
                 b.left = statSequence();
-                (b.left).dom = b;
+                (b.dom).add(b.left);
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
                 /** SSA **/
                 // save left
@@ -672,7 +673,7 @@ public class Parser {
                     current_ir.addInstruction(left_exit);
                     b.left.exit.addInstruction(left_exit);
                     b.right = statSequence();
-                    (b.right).dom = b;
+                    (b.dom).add(b.right);
                     second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.getStart()));
                     left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.getEnd() + 1));
                 // if no else
@@ -735,7 +736,7 @@ public class Parser {
         b.has_branching = true;
         b.type = BasicBlockType.WHILE;
         BasicBlock join = new BasicBlock("join"); // if actually has nothing from while in it
-        join.dom = b;
+        (b.dom).add(join);
         b.right = join;
         b.join = join;
         /** SSA **/
@@ -762,7 +763,7 @@ public class Parser {
             if(accept(Token.doToken)) {
                 next();
                 b.left = statSequence();
-                (b.left).dom = b;
+                (b.dom).add(b.left);
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
                 Instruction left_exit = new Instruction(InstructionType.BRA);
                 left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.getStart()));
@@ -883,14 +884,14 @@ public class Parser {
                     cursor.left = next.left;
                     cursor.right = next.right;
                     // since we merge the if header into, we need to reset all the parents
-                    (cursor.left).dom = cursor;
-                    (cursor.right).dom = cursor;
-                    (next.join).dom = cursor;
+                    (cursor.dom).add(cursor.left);
+                    (cursor.dom).add(cursor.right);
+                    (cursor.dom).add(next.join);
                     BasicBlock.merge(cursor, next);
                 } else {
                     //connect top and bottom
                     cursor.left = next;
-                    (cursor.left).dom = cursor;
+                    (cursor.dom).add(cursor.left);
                 }
                 cursor = next.exit;
             } else {

@@ -2,10 +2,7 @@ package edu.uci.cs241.ir;
 
 import edu.uci.cs241.ir.types.BasicBlockType;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Created by hanplusplus on 2/23/15.
@@ -32,7 +29,7 @@ public class BasicBlock {
     public boolean has_branching;
 
     // For Dominator Tree
-    public BasicBlock dom;
+    public Set<BasicBlock> dom;
     public BasicBlock join;
     // this is for special case of merging if header into another statement sequence
     // dangling join block
@@ -52,6 +49,7 @@ public class BasicBlock {
         this.has_branching = false;
         this.end_line = Integer.MIN_VALUE;
         this.ins = new ArrayList<Instruction>();
+        this.dom = new HashSet<BasicBlock>();
     }
 
     public BasicBlock(String name){
@@ -94,6 +92,10 @@ public class BasicBlock {
 
     public String toStringOfInstructions(){
         return IR.toStringOfRange(ins, 0, ins.size() - 1);
+    }
+
+    public String toString() {
+        return toStringOfInstructions();
     }
 
 }
