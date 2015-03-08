@@ -81,6 +81,71 @@ public class IR implements Cloneable{
         count += ins.size();
     }
 
+    public boolean insertInstruction(Instruction insert, int start){
+        if(start < 0 || start >= this.ins.size()) return false;
+        // change id of incoming ins
+        insert.id = start;
+        // insert into BB block
+        int offset = start - insert.parent.ins.get(0).id;
+        insert.parent.ins.add(offset, insert);
+        // Update following lines in IR
+        ListIterator<Instruction> iterator = this.ins.listIterator(0);
+        while(iterator.hasNext()){
+            Instruction in = iterator.next();
+            if(in.id >= start)
+                in.id += 1;
+            for(Instruction.Operand operand : in.operands){
+                switch(operand.type){
+                    case ARR_ADDRESS:
+                        if(operand.address >= start)
+                            operand.address += 1;
+                        break;
+                    case INST:
+                    case JUMP_ADDRESS:
+                    case FUNC_RETURN_PARAM:
+                        if(operand.line >= start)
+                        operand.line += 1;
+                        break;
+                }
+            }
+        }
+        // insert into IR
+        this.ins.add(start, insert);
+        count += 1;
+        return true;
+    }
+
+    public boolean deleteInstruction(int start){
+        Instruction delete = this.ins.get(start);
+        int offset = start - delete.parent.ins.get(0).id;
+        // Remove from BB
+        delete.parent.ins.remove(offset);
+        // Update lines in IR
+        ListIterator<Instruction> iterator = this.ins.listIterator(0);
+        while(iterator.hasNext()){
+            Instruction in = iterator.next();
+            if(in.id > start) in.id -= 1;
+            for(Instruction.Operand operand : in.operands){
+                switch(operand.type){
+                    case ARR_ADDRESS:
+                        if(operand.address > start)
+                            operand.address -= 1;
+                        break;
+                    case INST:
+                    case JUMP_ADDRESS:
+                    case FUNC_RETURN_PARAM:
+                        if(operand.line > start)
+                            operand.line -= 1;
+                        break;
+                }
+            }
+        }
+        // delete from IR
+        this.ins.remove(start);
+        count -= 1;
+        return true;
+    }
+
     public Instruction getLastInstruction(){
         if(this.ins.size() == 0){
             return null;

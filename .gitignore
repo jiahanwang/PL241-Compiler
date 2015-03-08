@@ -1,6 +1,6 @@
 #Ignore these directories
 out
 .idea
+viz
 #Ignore these files
 PL241-Compiler.iml
-viz/

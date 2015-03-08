@@ -18,12 +18,15 @@ public class Instruction {
     public InstructionType operator;
     public List<Operand> operands;
     public int op_count;
+    // Pointing to the BB owing this instruction (easier for insertion and deletion)
+    public BasicBlock parent;
 
     // constructor
     public Instruction(InstructionType type){
         this.operator = type;
         this.operands = new LinkedList<Operand>();
         this.op_count = 0;
+        this.parent = null;
     }
 
     public boolean equals(Instruction inst) {
@@ -116,6 +119,11 @@ public class Instruction {
         public int which_param = 0;
         public int line  = 0;
         public boolean global = false;
+        public String name = null; // VARIABLE, BASE_ADDRESS, FP
+        public int address = 0; // ARR_ADDRESS, MEM_ADDRESS
+        public int value = 0; // CONST
+        public int which_param = 0; // FUNC_PARAM
+        public int line  = 0; // INST, JUMP_ADDRESS, FUNC_RETURN_PARAM
         // constructor
         Operand(OperandType type, String input) {
             this.type = type;

@@ -86,7 +86,11 @@ public class BasicBlock {
     }
 
     public static boolean merge(BasicBlock one, BasicBlock another){
-        one.ins.addAll(another.ins);
+        for(Instruction in : another.ins){
+            in.parent = one;
+            one.ins.add(in);
+        }
+        //one.ins.addAll(another.ins);
         return true;
     }
 
