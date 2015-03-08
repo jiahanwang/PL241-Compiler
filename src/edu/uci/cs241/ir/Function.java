@@ -12,8 +12,6 @@ public class Function {
 
     public String name;
 
-    //public Map<String, Integer> parameters;
-
     public int parameter_size;
 
     public SymbolTable symbolTable;
@@ -26,6 +24,8 @@ public class Function {
 
     public boolean predefined;
 
+    private DefUseChain du;
+
     public LinkedList<Map<String, PhiFunction>> ssa_stack;
 
     public Function(String name){
@@ -36,9 +36,87 @@ public class Function {
         this.ir = new IR();
         this.has_return = false;
         this.predefined = false;
+        // Def Use Chain
+        this.du = new DefUseChain();
+        //this.du.parent_func = this;
         //SSA
         this.ssa_stack = new LinkedList<Map<String, PhiFunction>>();
         this.ssa_stack.add(new HashMap<String, PhiFunction>());
+    }
+
+    public DefUseChain getDu(boolean during_parsing) {
+        // during parsing, we need to add defs, just return du
+        if(during_parsing) return this.du;
+        // after parsing, need to go through IR to generate the chain and then return du
+        // def has been added in assignment() and varDecl() during parsing
+        /** Def Use Chain **/
+        for (Instruction in : ir.ins) {
+            switch (in.operator) {
+                case ADD:
+                case SUB:
+                case MUL:
+                case DIV:
+                case CMP:
+                    this.du.addUse(in.operands.get(0), in);
+                    this.du.addUse(in.operands.get(1), in);
+                    this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
+                    break;
+                case ADDA:
+                    // do not track the base address of array
+                    this.du.addUse(in.operands.get(1), in);
+                    break;
+                case LOAD:
+                    // do not track address
+                    //this.du.addUse(in.operands.get(0), in);
+                    this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
+                    break;
+                case STORE:
+                    this.du.addUse(in.operands.get(0), in);
+                    // do not track address
+                    //this.du.addUse(in.operands.get(1), in);
+                    break;
+                case MOVE:
+                    this.du.addUse(in.operands.get(0), in);
+                    this.du.addDef(in.operands.get(1), in);
+                    break;
+                case BNE:
+                case BEQ:
+                case BLE:
+                case BLT:
+                case BGE:
+                case BGT:
+                case WRITE:
+                    this.du.addUse(in.operands.get(0), in);
+                    // do not track JUMP_ADDRESS
+                    break;
+                case READ:
+                //case LOADPARAM:
+                    this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
+                    // do not track JUMP_ADDRESS
+                    break;
+                case PHI:
+                    this.du.addDef(in.operands.get(0), in);
+                    for(int i = 1, len = in.operands.size(); i < len; i++){
+                        this.du.addUse(in.operands.get(i), in);
+                    }
+                    break;
+                case FUNC:
+                    // track parameters excluding the hidden one
+                    for(int i = 1, len = in.operands.size() - 1; i < len; i++){
+                        this.du.addUse(in.operands.get(i), in);
+                    }
+                    this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
+                    break;
+                case RETURN:
+                    if(in.operands.size() > 1){
+                        // if has a return value
+                        this.du.addUse(in.operands.get(0), in);
+                    }
+                    // do not track JUMP_ADDRESS
+                    break;
+            }
+        }
+        return this.du;
     }
 
     // can be only added once

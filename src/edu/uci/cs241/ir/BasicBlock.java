@@ -92,7 +92,6 @@ public class BasicBlock {
             in.parent = one;
             one.ins.add(in);
         }
-        //one.ins.addAll(another.ins);
         return true;
     }
 
