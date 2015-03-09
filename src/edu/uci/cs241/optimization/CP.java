@@ -7,6 +7,7 @@ import edu.uci.cs241.ir.Operand;
 import edu.uci.cs241.ir.types.InstructionType;
 import edu.uci.cs241.ir.types.OperandType;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -45,6 +46,8 @@ public class CP {
             to_delete.add(in.id);
             // no need to update def-use, cuz getDu() computes a new one every time it's called
         }
+        // sort the list, just in case
+        Collections.sort(to_delete);
         for(int i = 0, len = to_delete.size(); i < len; i++){
             func.ir.deleteInstruction(to_delete.get(i) - i);
         }

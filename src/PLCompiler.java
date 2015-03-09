@@ -15,9 +15,17 @@ public class PLCompiler {
     public static void main(String[] args) {
         try {
             for(int i = 1; i <= 31; i++) {
-                PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".dot");
-                pw.println("digraph test0"+String.format("%02d", i)+" {");
-                pw.println("node [shape=box]");
+
+                // CFG Visualization for unoptimized IR
+                PrintWriter unoptimized_pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".unoptimized.dot");
+                unoptimized_pw.println("digraph test0" + String.format("%02d", i) + " {");
+                unoptimized_pw.println("node [shape=box]");
+
+                // CFG Visualization for optimized IR
+                PrintWriter optimized_pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".optimized.dot");
+                optimized_pw.println("digraph test0" + String.format("%02d", i) + " {");
+                optimized_pw.println("node [shape=box]");
+
                 /**
                  *
                  * STEP 1 : Parsing
@@ -29,7 +37,6 @@ public class PLCompiler {
                 List<Function> funcs = new ArrayList<Function>();
                 funcs.add(main);
                 funcs.addAll(main.getFunctions());
-                boolean[] explored = new boolean[1000000];
                 /** Print out all functions **/
                 System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 for(Function func : funcs){
@@ -38,7 +45,8 @@ public class PLCompiler {
                     System.out.print(func.ir);
                     System.out.print("-----------------------\n");
                     /* print out CFG */
-                    //DFS_buildCFG(func.entry, pw, explored);
+                    boolean[] explored = new boolean[100000];
+                    DFS_buildCFG(func.entry, unoptimized_pw, explored);
                     /* print out Def-Use Chain */
                     System.out.print(func.getDu());
                     System.out.print("***********************\n");
@@ -54,15 +62,17 @@ public class PLCompiler {
                     System.out.print(func.ir);
                     System.out.print("-----------------------\n");
                    /* print out CFG */
-                    DFS_buildCFG(func.entry, pw, explored);
+                    explored = new boolean[100000];
+                    DFS_buildCFG(func.entry, optimized_pw, explored);
                     /* print out Def-Use Chain */
                     System.out.print(func.getDu());
                     System.out.print("***********************\n");
                 }
                 System.out.print("======================\n\n\n");
-                pw.println("}");
-                pw.close();
-
+                optimized_pw.println("}");
+                optimized_pw.close();
+                unoptimized_pw.println("}");
+                unoptimized_pw.close();
             }
         } catch (Exception e) {
             e.printStackTrace();

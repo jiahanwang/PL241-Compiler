@@ -536,9 +536,6 @@ public class Parser {
                 assi.addOperandByResultType(d_res);
                 int last_line = current_ir.addInstruction(assi);
                 // Set Instructions in Basic Block
-                if(this.getCurrentFunction().name.equals("main")){
-                    int a =  1;
-                }
                 for(int i = this.getStart(d_res.start_line, e_res.start_line, last_line); i <= last_line; i++){
                     Instruction in = current_ir.ins.get(i);
                     in.parent = block;
