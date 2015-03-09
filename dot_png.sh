@@ -1,10 +1,6 @@
 #!/bin/bash
 
 # Compile Vars
-path='/home/hanplusplus/Coding/Java/PL241-Compiler/viz/test0'
+path='/home/hanplusplus/Coding/Java/PL241-Compiler/viz/'
 
-#opt level
-for i in `seq -w 0 31`;
-do 
-	dot -Tpng $path$i.dot -o $path$i.dot.png
-done
+dot -Tpng $path*.dot -O
