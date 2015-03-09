@@ -1,9 +1,13 @@
 package edu.uci.cs241.frontend;
 
 import edu.uci.cs241.ir.*;
+import edu.uci.cs241.ir.types.InstructionType;
+import edu.uci.cs241.optimization.CP;
+import edu.uci.cs241.optimization.CSE;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,14 +18,14 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser parser;
-            for(int i = 0; i <= 31; i++) {
-                PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cfg.dot");
+            for(int i = 0; i <= 0; i++) {
+                PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.cfg.dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
 
-                PrintWriter pw_dom = new PrintWriter("viz/test0"+String.format("%02d", i)+".dom.dot");
+                PrintWriter pw_dom = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.dom.dot");
                 pw_dom.println("digraph test0"+String.format("%02d", i)+" {");
-                pw_dom.println("node [shape=box] rankdir=BT");
+                pw_dom.println("node [shape=box]");
 
                 parser = new Parser("tests/test0"+String.format("%02d", i)+".txt");
                 /** Get all functions **/
@@ -34,14 +38,37 @@ public class ParserTest {
                 /** Print out all functions **/
                 System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 for(Function func : funcs){
+                    // No optimizations
+                    System.out.print(func.name + ":\n");
+                    System.out.print(func.ir);
+                    System.out.print("-----------------------\n");
+                    /* Copy Propagation */
+                    CP.performCP(func);
+                    /* print out ir*/
+                    System.out.print(func.name + ":\n");
+                    System.out.print(func.ir);
+                    System.out.print("-----------------------\n");
+                    // Apply CSE
+                    HashMap<InstructionType, ArrayList<Instruction>> anchor = new HashMap<InstructionType, ArrayList<Instruction>>();
+                    CSE.recursiveCSE(func.entry, anchor);
+                    for(Integer num : CSE.remove) {
+                        func.ir.deleteInstruction(num);
+                    }
+                    CSE.reset();
+
                     //if(func.predefined) continue;
                     // print out ir
                     System.out.print(func.name + ":\n");
                     System.out.print(func.ir);
                     System.out.print("-----------------------\n");
+
                     // print out CFG
                     DFS_buildCFG(func.entry, func.ir, pw, explored);
                     DFS_buildDom(func.entry, func.ir, pw_dom, explored_dom);
+
+                    DefUseChain du = func.getDu();
+
+                    System.out.println(du.toString());
                 }
                 System.out.print("======================\n\n\n");
                 pw.println("}");
@@ -82,15 +109,12 @@ public class ParserTest {
             String output = b.getStart() == Integer.MIN_VALUE ? b.name : b.toStringOfInstructions();
             pw.println(b.id + "[label=\"" + output + "\"]");
             explored[b.id] = true;
+
+            for(BasicBlock d : b.dom) {
+                pw.println(b.id + " -> " + d.id);
+                DFS_buildDom(d, ir, pw, explored);
+            }
         }
-        if (b.dom != null) {
-            pw.println(b.id + " -> " + b.dom.id);
-        }
-        if(b.left != null) {
-            DFS_buildDom(b.left, ir, pw, explored);
-        }
-        if(b.right !=null) {
-            DFS_buildDom(b.right, ir, pw, explored);
-        }
+
     }
 }

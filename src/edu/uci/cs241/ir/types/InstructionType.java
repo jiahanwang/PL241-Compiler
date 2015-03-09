@@ -35,7 +35,10 @@ public enum InstructionType {
     // added instructions
     FUNC("func", Integer.MAX_VALUE),
     LOADPARAM("loadparam", 1),
-    RETURN("return", 2);
+    RETURN("return", 2),
+
+    // For CSE
+    REF("ref", 1);
 
     public final String representation;
 

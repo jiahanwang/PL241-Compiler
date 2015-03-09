@@ -16,24 +16,24 @@ public class Parser {
     private Scanner s;
     private int tokenCount;
 
-    // Def-Use Chain
-    //private DefUseChain du;
-
     private Function main;
 
     private Function current_func;
+
+    //private Instruction current_in;
 
     // Global flags
     private boolean parsing_function;
     private boolean parsing_variable;
     private boolean parsing_rest;
-    private boolean parsing;
+    private boolean parsing_finished;
 
     // Settings
     public boolean arrayOverflowCheck;
 
     // SSA
     private boolean left_side;
+    private boolean left_side_array; // to avoid variable in array bracket to get assigned
 
     // Constructor
     public Parser(String path) throws Exception {
@@ -58,16 +58,18 @@ public class Parser {
         func = new Function("OutputNewLine");
         func.predefined = true;
         this.main.addFunction(func);
-        this.current_func = null;
 
+        this.current_func = null;
+        //this.current_in = null;
         this.parsing_function = false;
         this.parsing_variable = false;
         this.parsing_rest = false;
-        this.parsing= false;
+        this.parsing_finished = false;
 
         this.arrayOverflowCheck = false;
 
         this.left_side = false;
+        this.left_side_array = false;
 
         //initialize the first token
         next();
@@ -82,7 +84,7 @@ public class Parser {
         BasicBlock current = b;
         if (accept(Token.mainToken)) {
             next();
-            this.parsing = true;
+            this.parsing_finished = false;
             // Parsing variables
             this.parsing_variable = true;
             while (accept(Token.varToken) || accept(Token.arrToken)) {
@@ -106,6 +108,7 @@ public class Parser {
                     BasicBlock body = statSequence();
                     current.left = body;
                     current = current.left.exit;
+                    b.dom.add(body);
                 }
                 if (accept(Token.endToken)) {
                     next();
@@ -115,7 +118,7 @@ public class Parser {
             } else {
                 error("Missing open bracket for main");
             }
-            this.parsing = false;
+            this.parsing_finished = true;
         } else {
             error("Missing main");
         }
@@ -140,6 +143,13 @@ public class Parser {
      * Helper methods
      *
      * **/
+
+    // getters
+    public Function getMain() {
+        return this.parsing_finished ? this.main : null;
+    }
+
+    // internal helpers
     private Function getCurrentFunction(){
         return this.parsing_function ? this.current_func : this.main;
     }
@@ -148,7 +158,7 @@ public class Parser {
         BasicBlock.count = 0;
     }
 
-    public int getStart(int a, int b, int c){
+    private int getStart(int a, int b, int c){
         if(a != Integer.MIN_VALUE) return a;
         if(b != Integer.MIN_VALUE) return b;
         return c;
@@ -272,7 +282,10 @@ public class Parser {
                 Result x = null;
                 while (accept(Token.openbracketToken)) {
                     next();
+                    // to deal with variable in array brackets
+                    this.left_side_array = true;
                     x = expression();
+                    this.left_side_array = false;
                     if(accept(Token.closebracketToken)) {
                         next();
                     } else {
@@ -319,8 +332,8 @@ public class Parser {
                     Instruction load = new Instruction(InstructionType.LOAD);
                     int start_Line = current_ir.addInstruction(retrieve_arr);
                     load.addOperand(OperandType.ARR_ADDRESS, String.valueOf(start_Line));
-                    res.type = ResultType.ARR;
-                    res.address = current_ir.addInstruction(load);
+                    res.type = ResultType.INST;
+                    res.line = current_ir.addInstruction(load);
                     if(arr.dimensions.size() == 1){
                         res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : start_Line;
                         res.end_line = res.address;
@@ -358,7 +371,7 @@ public class Parser {
                     // non-local reference
                     res.name = name;
                 }else {
-                    if (left_side) {
+                    if (left_side && !left_side_array) {
                         which = ++current_phi.current;
                     } else {
                         which = current_phi.last;
@@ -382,8 +395,6 @@ public class Parser {
     public Result factor() throws Exception {
         Result res = null;
         if(accept(Token.ident)) {
-            // to deal with variable in array's brackets
-            this.left_side = false;
             res = designator();
         }
         else if(accept(Token.number)) {
@@ -526,6 +537,9 @@ public class Parser {
                 assi.addOperandByResultType(d_res);
                 int last_line = current_ir.addInstruction(assi);
                 // Set Instructions in Basic Block
+                if(this.getCurrentFunction().name.equals("main")){
+                    int a =  1;
+                }
                 for(int i = this.getStart(d_res.start_line, e_res.start_line, last_line); i <= last_line; i++){
                     Instruction in = current_ir.ins.get(i);
                     in.parent = block;
@@ -540,6 +554,10 @@ public class Parser {
                         phi.last = phi.current;
                     }// otherwise, non-local reference
                 }// otherwise, array
+//                /** Def Use Chain **/
+//                if(d_res.type == ResultType.VAR){
+//                    this.getCurrentFunction().getDu(true).addDef(assi.operands.get(1), assi);
+//                }
 
             } else {
                 error("Missing becomes token during assignment");
@@ -601,7 +619,7 @@ public class Parser {
                         if(--i < 0)
                             error("Function " + name + " only take " + func.parameter_size + " parameters");
                         in.addOperandByResultType(y);
-                        res.setRange(x, y, res.line);
+                        res.setRange(x, y, Integer.MIN_VALUE);
                         x = y;
                     }
                 }
@@ -628,7 +646,6 @@ public class Parser {
         b.has_branching = true;
         b.type = BasicBlockType.IF;
         BasicBlock join = new BasicBlock("join");
-        join.dom = b;
         b.right = join;
         b.exit = join;
         b.join = join;
@@ -660,7 +677,7 @@ public class Parser {
             if(accept(Token.thenToken)) {
                 next();
                 b.left = statSequence();
-                (b.left).dom = b;
+                (b.dom).add(b.left);
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
                 /** SSA **/
                 // save left
@@ -678,7 +695,7 @@ public class Parser {
                     left_exit.parent = b.left.exit;
                     b.left.exit.addInstruction(left_exit);
                     b.right = statSequence();
-                    (b.right).dom = b;
+                    (b.dom).add(b.right);
                     second.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.getStart()));
                     left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.right.exit.getEnd() + 1));
                 // if no else
@@ -724,6 +741,7 @@ public class Parser {
                     b.left.exit.left= join;
                     b.right.exit.left = join;
                     b.exit = join;
+                    (b.dom).add(join);
                 } else {
                     error("Missing fi token");
                 }
@@ -741,7 +759,6 @@ public class Parser {
         b.has_branching = true;
         b.type = BasicBlockType.WHILE;
         BasicBlock join = new BasicBlock("join"); // if actually has nothing from while in it
-        join.dom = b;
         b.right = join;
         b.join = join;
         /** SSA **/
@@ -770,7 +787,7 @@ public class Parser {
             if(accept(Token.doToken)) {
                 next();
                 b.left = statSequence();
-                (b.left).dom = b;
+                (b.dom).add(b.left);
                 first.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.left.getStart()));
                 Instruction left_exit = new Instruction(InstructionType.BRA);
                 left_exit.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(b.getStart()));
@@ -814,6 +831,7 @@ public class Parser {
                     }
                     b.left.exit.left = b;
                     b.exit = join;
+                    (b.dom).add(join);
                 } else {
                     error("Missing od token");
                 }
@@ -896,14 +914,14 @@ public class Parser {
                     cursor.left = next.left;
                     cursor.right = next.right;
                     // since we merge the if header into, we need to reset all the parents
-                    (cursor.left).dom = cursor;
-                    (cursor.right).dom = cursor;
-                    (next.join).dom = cursor;
+                    (cursor.dom).add(cursor.left);
+                    (cursor.dom).add(cursor.right);
+                    (cursor.dom).add(next.join);
                     BasicBlock.merge(cursor, next);
                 } else {
                     //connect top and bottom
                     cursor.left = next;
-                    (cursor.left).dom = cursor;
+                    (cursor.dom).add(cursor.left);
                 }
                 cursor = next.exit;
             } else {
@@ -960,7 +978,12 @@ public class Parser {
                 if(accept(Token.commaToken))
                     next();
                 String name = ident();
-                this.getCurrentFunction().addVariable(name);
+                Function func = this.getCurrentFunction();
+                func.addVariable(name);
+//                /** Def Use Chain **/
+//                // add def from declaration
+//                // variable declaration does not generate instructions, so cannot be done in IR
+//                func.getDu(true).addInitalDef(name);
             }while(accept(Token.commaToken));
         } else {
             error("Wrong type for variable declaration");
@@ -991,6 +1014,7 @@ public class Parser {
                     block.left = funcBody();
                     block.name = func.name;
                     func.entry = block;
+                    (block.dom).add(block.left);
                     if(accept(Token.semiToken)) {
                         next();
                     } else {

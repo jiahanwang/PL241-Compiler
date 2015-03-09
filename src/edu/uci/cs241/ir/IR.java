@@ -14,13 +14,22 @@ public class IR implements Cloneable{
 
     public int count = 0;
 
-    public int pc;
+    // easy to track use cuz IR can monitor the insertion of instructions
+    // tracking of def is done in IR and varDecl() in parser
+    //public DefUseChain du;
+
+    //public int pc;
 
 
     public IR () {
         this.ins = new ArrayList<Instruction>();
-        this.pc = 0;
+        //this.pc = 0;
     }
+
+//    public IR (DefUseChain du){
+//        this();
+//        this.du = du;
+//    }
 
 
     public int addInstruction(Instruction in){
@@ -51,7 +60,7 @@ public class IR implements Cloneable{
             Instruction in = iterator.next();
             in.id += ins.size();
             // Update all the line number
-            for(Instruction.Operand operand : in.operands){
+            for(Operand operand : in.operands){
                 switch(operand.type){
                     case ARR_ADDRESS:
                         operand.address += ins.size();
@@ -96,7 +105,7 @@ public class IR implements Cloneable{
             Instruction in = iterator.next();
             if(in.id >= start)
                 in.id += 1;
-            for(Instruction.Operand operand : in.operands){
+            for(Operand operand : in.operands){
                 switch(operand.type){
                     case ARR_ADDRESS:
                         if(operand.address >= start)
@@ -127,7 +136,7 @@ public class IR implements Cloneable{
         while(iterator.hasNext()){
             Instruction in = iterator.next();
             if(in.id > start) in.id -= 1;
-            for(Instruction.Operand operand : in.operands){
+            for(Operand operand : in.operands){
                 switch(operand.type){
                     case ARR_ADDRESS:
                         if(operand.address > start)
