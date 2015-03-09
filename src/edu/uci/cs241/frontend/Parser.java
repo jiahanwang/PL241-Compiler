@@ -646,7 +646,6 @@ public class Parser {
         b.has_branching = true;
         b.type = BasicBlockType.IF;
         BasicBlock join = new BasicBlock("join");
-        (b.dom).add(join);
         b.right = join;
         b.exit = join;
         b.join = join;
@@ -742,6 +741,7 @@ public class Parser {
                     b.left.exit.left= join;
                     b.right.exit.left = join;
                     b.exit = join;
+                    (b.dom).add(join);
                 } else {
                     error("Missing fi token");
                 }
@@ -759,7 +759,6 @@ public class Parser {
         b.has_branching = true;
         b.type = BasicBlockType.WHILE;
         BasicBlock join = new BasicBlock("join"); // if actually has nothing from while in it
-        (b.dom).add(join);
         b.right = join;
         b.join = join;
         /** SSA **/
@@ -832,6 +831,7 @@ public class Parser {
                     }
                     b.left.exit.left = b;
                     b.exit = join;
+                    (b.dom).add(join);
                 } else {
                     error("Missing od token");
                 }

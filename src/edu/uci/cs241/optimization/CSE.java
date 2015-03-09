@@ -79,6 +79,11 @@ public class CSE {
                         found = true;
                         eliminated.put(i.id, j.id);
                         remove.add(i.id-remove.size());
+                        if(remove.get(remove.size()-1) < i.id-remove.size()) {
+                            throw new Exception("Error in out of order parsing of Dominator Tree");
+                            // Special case to prevent dominated blocks that come AFTER
+                            // to be removed first which will cause the removal to fail.
+                        }
                     }
                 }
                 if(!found) {

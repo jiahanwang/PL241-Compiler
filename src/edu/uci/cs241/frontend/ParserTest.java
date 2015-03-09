@@ -2,6 +2,7 @@ package edu.uci.cs241.frontend;
 
 import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.InstructionType;
+import edu.uci.cs241.optimization.CP;
 import edu.uci.cs241.optimization.CSE;
 
 import java.io.PrintWriter;
@@ -37,6 +38,16 @@ public class ParserTest {
                 /** Print out all functions **/
                 System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 for(Function func : funcs){
+                    // No optimizations
+                    System.out.print(func.name + ":\n");
+                    System.out.print(func.ir);
+                    System.out.print("-----------------------\n");
+                    /* Copy Propagation */
+                    CP.performCP(func);
+                    /* print out ir*/
+                    System.out.print(func.name + ":\n");
+                    System.out.print(func.ir);
+                    System.out.print("-----------------------\n");
                     // Apply CSE
                     HashMap<InstructionType, ArrayList<Instruction>> anchor = new HashMap<InstructionType, ArrayList<Instruction>>();
                     CSE.recursiveCSE(func.entry, anchor);
@@ -55,7 +66,9 @@ public class ParserTest {
                     DFS_buildCFG(func.entry, func.ir, pw, explored);
                     DFS_buildDom(func.entry, func.ir, pw_dom, explored_dom);
 
-                    System.out.println(func.getDu(false).toString());
+                    DefUseChain du = func.getDu();
+
+                    System.out.println(du.toString());
                 }
                 System.out.print("======================\n\n\n");
                 pw.println("}");

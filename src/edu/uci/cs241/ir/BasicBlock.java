@@ -49,7 +49,7 @@ public class BasicBlock {
         this.has_branching = false;
         this.end_line = Integer.MIN_VALUE;
         this.ins = new ArrayList<Instruction>();
-        this.dom = new HashSet<BasicBlock>();
+        this.dom = new LinkedHashSet<BasicBlock>();
     }
 
     public BasicBlock(String name){
