@@ -7,14 +7,20 @@ import java.util.*;
  */
 public class DefUseChain {
 
-    Map<String, Item> variables;
-    Map<Integer, Item> constants;
-    Map<Integer, Item> intermediates;
+    public Map<String, Item> variables;
+    public Map<Integer, Item> constants;
+    public Map<Integer, Item> intermediates;
 
     // pointer to parent function, so we can check non-local reference
     //Function parent_func;
 
     public DefUseChain (){
+        this.variables = new HashMap<String, Item>();
+        this.constants = new HashMap<Integer, Item>();
+        this.intermediates = new HashMap<Integer, Item>();
+    }
+
+    public void reset(){
         this.variables = new HashMap<String, Item>();
         this.constants = new HashMap<Integer, Item>();
         this.intermediates = new HashMap<Integer, Item>();
@@ -124,9 +130,9 @@ public class DefUseChain {
         return builder.toString();
     }
 
-    class Item {
-        Instruction def;
-        List<Instruction> uses;
+    public class Item {
+        public Instruction def;
+        public List<Instruction> uses;
         Item(){
             def = null;
             uses = new LinkedList<Instruction>();

@@ -44,12 +44,19 @@ public class Function {
         this.ssa_stack.add(new HashMap<String, PhiFunction>());
     }
 
-    public DefUseChain getDu(boolean during_parsing) {
+    public DefUseChain getDu() {
         // during parsing, we need to add defs, just return du
-        if(during_parsing) return this.du;
+        //if(during_parsing) return this.du;
+        // after parsing, if du has been built then just return
+        this.du.reset();
         // after parsing, need to go through IR to generate the chain and then return du
         // def has been added in assignment() and varDecl() during parsing
         /** Def Use Chain **/
+        // Add initial defs
+        for(String name : this.symbolTable.variables.keySet()){
+            this.du.addInitalDef(name);
+        }
+        // Add defs ans uses
         for (Instruction in : ir.ins) {
             switch (in.operator) {
                 case ADD:
