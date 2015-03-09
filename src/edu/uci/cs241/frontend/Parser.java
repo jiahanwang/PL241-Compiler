@@ -536,6 +536,9 @@ public class Parser {
                 assi.addOperandByResultType(d_res);
                 int last_line = current_ir.addInstruction(assi);
                 // Set Instructions in Basic Block
+                if(this.getCurrentFunction().name.equals("main")){
+                    int a =  1;
+                }
                 for(int i = this.getStart(d_res.start_line, e_res.start_line, last_line); i <= last_line; i++){
                     Instruction in = current_ir.ins.get(i);
                     in.parent = block;
@@ -550,10 +553,10 @@ public class Parser {
                         phi.last = phi.current;
                     }// otherwise, non-local reference
                 }// otherwise, array
-                /** Def Use Chain **/
-                if(d_res.type == ResultType.VAR){
-                    this.getCurrentFunction().getDu(true).addDef(assi.operands.get(1), assi);
-                }
+//                /** Def Use Chain **/
+//                if(d_res.type == ResultType.VAR){
+//                    this.getCurrentFunction().getDu(true).addDef(assi.operands.get(1), assi);
+//                }
 
             } else {
                 error("Missing becomes token during assignment");
@@ -615,7 +618,7 @@ public class Parser {
                         if(--i < 0)
                             error("Function " + name + " only take " + func.parameter_size + " parameters");
                         in.addOperandByResultType(y);
-                        res.setRange(x, y, res.line);
+                        res.setRange(x, y, Integer.MIN_VALUE);
                         x = y;
                     }
                 }
@@ -976,10 +979,10 @@ public class Parser {
                 String name = ident();
                 Function func = this.getCurrentFunction();
                 func.addVariable(name);
-                /** Def Use Chain **/
-                // add def from declaration
-                // variable declaration does not generate instructions, so cannot be done in IR
-                func.getDu(true).addInitalDef(name);
+//                /** Def Use Chain **/
+//                // add def from declaration
+//                // variable declaration does not generate instructions, so cannot be done in IR
+//                func.getDu(true).addInitalDef(name);
             }while(accept(Token.commaToken));
         } else {
             error("Wrong type for variable declaration");

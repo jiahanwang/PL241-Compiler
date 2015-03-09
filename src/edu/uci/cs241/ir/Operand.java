@@ -2,21 +2,35 @@ package edu.uci.cs241.ir;
 
 import edu.uci.cs241.ir.types.OperandType;
 
+import java.util.Objects;
+
 /**
  * Created by hanplusplus on 3/7/15.
  */
 
-public class Operand {
+public class Operand implements Cloneable{
     // declaration
-    public OperandType type = null;
-    public String name = null;
-    public int address = 0;
-    public int value = 0;
-    public int which_param = 0;
-    public int line  = 0;
-    public boolean global = false;
+    public OperandType type;
+    public String name;
+    public int address;
+    public int value;
+    public int which_param;
+    public int line;
+    public boolean global;
+
     // constructor
+    Operand(){
+        this.type = null;
+        this.name = null;
+        this.address = 0;
+        this.value = 0;
+        this.which_param = 0;
+        this.line  = 0;
+        this.global = false;
+    }
+
     Operand(OperandType type, String input) {
+        this();
         this.type = type;
         switch (this.type) {
             case CONST:
@@ -52,6 +66,7 @@ public class Operand {
         }
     }
 
+
     public String toString(){
         switch (this.type) {
             case CONST:
@@ -77,5 +92,17 @@ public class Operand {
             default:
                 return "" + this.value;
         }
+    }
+
+    public Object clone (){
+        Operand res = new Operand();
+        res.type = this.type;
+        res.name = this.name;
+        res.address = this.address;
+        res.value = this.value;
+        res.which_param = this.which_param;
+        res.line = this.line;
+        res.global = this.global;
+        return res;
     }
 }
