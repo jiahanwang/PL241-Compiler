@@ -5,7 +5,7 @@ public abstract class AbstractVertex {
 	protected final String id;
 	protected boolean visited;
 	
-	AbstractVertex(String id){
+	public AbstractVertex(String id){
 		this.id = id;
 		this.visited = false;
 	}

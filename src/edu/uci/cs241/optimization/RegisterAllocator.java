@@ -1,7 +1,5 @@
 package edu.uci.cs241.optimization;
 
-import org.java.algorithm.graph.basics.AbstractVertex;
-import org.java.algorithm.graph.basics.Node;
 import org.java.algorithm.graph.basics.SimpleGraph;
 
 /**

@@ -5,7 +5,7 @@ public abstract class AbstractEdge {
 	protected final String id;
 	protected boolean visited;
 
-	AbstractEdge(String id){
+	public AbstractEdge(String id){
 		this.id = id;
 		this.setVisited(false);
 	}
