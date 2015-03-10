@@ -17,6 +17,7 @@ public class Operand implements Cloneable{
     public int which_param;
     public int line;
     public boolean global;
+    public int regno;
 
     // constructor
     Operand(){
@@ -27,6 +28,7 @@ public class Operand implements Cloneable{
         this.which_param = 0;
         this.line  = 0;
         this.global = false;
+        this.regno = -1;
     }
 
     Operand(OperandType type, String input) {
@@ -56,6 +58,8 @@ public class Operand implements Cloneable{
             case FUNC_RETURN_PARAM:
                 this.line = Integer.valueOf(input);
                 break;
+            case REG:
+                this.regno = Integer.valueOf(input);
             default:
                 try {
                     this.value = Integer.valueOf(input);
@@ -89,6 +93,8 @@ public class Operand implements Cloneable{
                 return this.address == op.address;
             case JUMP_ADDRESS:
                 return false;
+            case REG:
+                return this.regno == op.regno;
             default:
                 return false;
         }
@@ -116,6 +122,8 @@ public class Operand implements Cloneable{
                 return "[" + this.line + "]";
             case FUNC_RETURN_PARAM:
                 return "PARAM[" + this.line + "]";
+            case REG:
+                return "R"+this.regno;
             default:
                 return "" + this.value;
         }
@@ -130,6 +138,7 @@ public class Operand implements Cloneable{
         res.which_param = this.which_param;
         res.line = this.line;
         res.global = this.global;
+        res.regno = this.regno;
         return res;
     }
 }

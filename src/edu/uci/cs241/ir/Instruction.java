@@ -20,6 +20,8 @@ public class Instruction {
     public int op_count;
     // Pointing to the BB owing this instruction (easier for insertion and deletion)
     public BasicBlock parent;
+    // Regno to store this instruction in
+    public int regno;
 
     // constructor
     public Instruction(InstructionType type){
@@ -27,6 +29,7 @@ public class Instruction {
         this.operands = new LinkedList<Operand>();
         this.op_count = 0;
         this.parent = null;
+        this.regno = -1;
     }
 
     public boolean equals(Instruction inst) {

@@ -2,6 +2,9 @@ package edu.uci.cs241.optimization;
 
 import edu.uci.cs241.ir.DefUseChain;
 import edu.uci.cs241.ir.Function;
+import edu.uci.cs241.ir.Instruction;
+import edu.uci.cs241.ir.Operand;
+import edu.uci.cs241.ir.types.OperandType;
 import org.java.algorithm.graph.basics.Node;
 import org.java.algorithm.graph.basics.SimpleGraph;
 
@@ -15,20 +18,28 @@ public class RegisterAllocator {
     private SimpleGraph<Node, String> ig;
     private List<List<Node>> liveRanges;
     private DefUseChain du;
-    private HashMap<Node, Integer> regMap;
+    private HashMap<Integer, Integer> regMap;   // [Intermediate] = RegNo.
     private Function func;
 
     public RegisterAllocator(Function func) {
         this.ig = new SimpleGraph<Node, String>();
         this.liveRanges = new ArrayList<List<Node>>();
-        this.regMap = new HashMap<Node, Integer>();
+        this.regMap = new HashMap<Integer, Integer>();
         this.func = func;
+    }
+
+    public void applyRA() throws Exception {
+        buildLiveRanges();
+        buildIG();
+        allocateRegisters();
+        replaceInstructions();
+        reset();
     }
 
     public void reset() {
         ig = new SimpleGraph<Node, String>();
         liveRanges = new ArrayList<List<Node>>();
-        regMap = new HashMap<Node, Integer>();
+        regMap = new HashMap<Integer, Integer>();
     }
 
     public void buildLiveRanges() throws Exception {
@@ -54,6 +65,7 @@ public class RegisterAllocator {
             for(int j = start; j <= last; j++) {
                 liveRanges.get(j).add(n);
             }
+            ig.addVertex(n);
         }
         // Parse vars
         for(String s : du.variables.keySet()) {
@@ -138,11 +150,11 @@ public class RegisterAllocator {
         int reg = 1;
         while(true) {
             // if already in use or special reg
-            if(adjRegs.contains(reg) ||  (reg >= 27 && reg <= 30)) {
+            if(adjRegs.contains(reg) || (reg >= 27 && reg <= 30)) {
                 reg++;
             } else {
                 // assign it to this
-                regMap.put(removed, reg);
+                regMap.put(Integer.valueOf(removed.getId()), reg);
                 break;
             }
         }
@@ -163,6 +175,27 @@ public class RegisterAllocator {
             }
         }
         return (maxNode != null) ? maxNode : minNode;
+    }
+
+    public void replaceInstructions() throws Exception {
+        for(Instruction i : func.ir.ins) {
+            // Store regno into the instruction
+            if(regMap.containsKey(i.id)) {
+                i.regno = regMap.get(i.id);
+            }
+            // Change the operand intermediates to regnos
+            for(Operand o : i.operands) {
+                if(o.type == OperandType.INST) {
+                    if(regMap.containsKey(o.line)) {
+                        o.type = OperandType.REG;
+                        o.regno = regMap.get(o.line);
+                    } else {
+                        throw new Exception("Error in register allocation: " +
+                                "trying to replace intermediate ["+o.line+"] with reg but was never allocated.");
+                    }
+                }
+            }
+        }
     }
 
     public SimpleGraph<Node, String> getIG() {
