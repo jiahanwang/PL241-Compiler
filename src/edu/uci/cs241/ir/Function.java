@@ -52,10 +52,6 @@ public class Function {
         // after parsing, need to go through IR to generate the chain and then return du
         // def has been added in assignment() and varDecl() during parsing
         /** Def Use Chain **/
-        // Add initial defs
-        for(String name : this.symbolTable.variables.keySet()){
-            this.du.addInitalDef(name);
-        }
         // Add defs ans uses
         for (Instruction in : ir.ins) {
             switch (in.operator) {
@@ -130,7 +126,7 @@ public class Function {
     public boolean addAllParameters(List<String> params) throws Exception {
         if(this.parameter_size == 0) {
             for (String param : params) {
-                this.symbolTable.addVariable(param);
+                this.symbolTable.addVariable(param, true);
                 // add to the initial phi map
                 this.ssa_stack.get(0).put(param, new PhiFunction(param, 0, 0));
                 this.parameter_size++;
@@ -142,7 +138,7 @@ public class Function {
     }
 
     public void addVariable(String ident) throws Exception {
-        this.symbolTable.addVariable(ident);
+        this.symbolTable.addVariable(ident, false);
         // add to the initial phi map
         this.ssa_stack.get(0).put(ident, new PhiFunction(ident, 0, 0));
     }

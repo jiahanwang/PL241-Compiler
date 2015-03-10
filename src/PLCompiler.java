@@ -57,9 +57,9 @@ public class PLCompiler {
                     /* print out CFG */
                     boolean[] explored = new boolean[10000];
                     DFS_buildCFG(func.entry, unoptimized_pw, explored);
-//                    /* print out Def-Use Chain */
-//                    System.out.print(func.getDu());
-//                    System.out.print("***********************\n");
+                    /* print out Def-Use Chain */
+                    System.out.print(func.getDu());
+                    System.out.print("***********************\n");
 
                     /**
                      *
@@ -75,9 +75,9 @@ public class PLCompiler {
                     /* print out CFG */
                     explored = new boolean[10000];
                     DFS_buildCFG(func.entry, optimized_cp_pw, explored);
-//                    /* print out Def-Use Chain */
-//                    System.out.print(func.getDu());
-//                    System.out.print("***********************\n");
+                    /* print out Def-Use Chain */
+                    System.out.print(func.getDu());
+                    System.out.print("***********************\n");
 
                     /** Common Subexpression Elimination **/
                     HashMap<InstructionType, ArrayList<Instruction>> anchor = new HashMap<InstructionType, ArrayList<Instruction>>();
@@ -93,9 +93,9 @@ public class PLCompiler {
                     /* print out CFG */
                     explored = new boolean[10000];
                     DFS_buildCFG(func.entry, optimized_cse_pw, explored);
-//                    /* print out Def-Use Chain */
-//                    System.out.print(func.getDu());
-//                    System.out.print("***********************\n");
+                    /* print out Def-Use Chain */
+                    System.out.print(func.getDu());
+                    System.out.print("***********************\n");
 
                 }
                 System.out.print("======================\n\n\n");

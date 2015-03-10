@@ -19,7 +19,7 @@ public class Operand implements Cloneable{
     public boolean global;
 
     // constructor
-    Operand(){
+    public Operand(){
         this.type = null;
         this.name = null;
         this.address = 0;
@@ -29,7 +29,7 @@ public class Operand implements Cloneable{
         this.global = false;
     }
 
-    Operand(OperandType type, String input) {
+    public Operand(OperandType type, String input) {
         this();
         this.type = type;
         switch (this.type) {
