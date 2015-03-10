@@ -67,16 +67,15 @@ public class Function {
                 case ADDA:
                     // do not track the base address of array
                     this.du.addUse(in.operands.get(1), in);
+                    this.du.addDef(new Operand(OperandType.ARR_ADDRESS, String.valueOf(in.id)), in);
                     break;
                 case LOAD:
-                    // do not track address
-                    //this.du.addUse(in.operands.get(0), in);
+                    this.du.addUse(in.operands.get(0), in);
                     this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
                     break;
                 case STORE:
                     this.du.addUse(in.operands.get(0), in);
-                    // do not track address
-                    //this.du.addUse(in.operands.get(1), in);
+                    this.du.addUse(in.operands.get(1), in);
                     break;
                 case MOVE:
                     this.du.addUse(in.operands.get(0), in);
@@ -93,9 +92,7 @@ public class Function {
                     // do not track JUMP_ADDRESS
                     break;
                 case READ:
-                //case LOADPARAM:
                     this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
-                    // do not track JUMP_ADDRESS
                     break;
                 case PHI:
                     this.du.addDef(in.operands.get(0), in);
@@ -104,7 +101,7 @@ public class Function {
                     }
                     break;
                 case FUNC:
-                    // track parameters excluding the hidden one
+                    // track parameters excluding the last hidden one
                     for(int i = 1, len = in.operands.size() - 1; i < len; i++){
                         this.du.addUse(in.operands.get(i), in);
                     }

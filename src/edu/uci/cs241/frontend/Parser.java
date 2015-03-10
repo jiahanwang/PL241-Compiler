@@ -652,12 +652,11 @@ public class Parser {
             Result r_res = relation();
             // add first instruction
             Instruction first = Instruction.createInstructionByConditionType(r_res.con);
-            first.addOperandByResultType(r_res);
+            first.addOperand(OperandType.INST, String.valueOf(r_res.end_line));
             current_ir.addInstruction(first);
             // add second instruction
             Instruction second = Instruction.createInstructionByConditionType(r_res.con.opposite());
-            second.addOperandByResultType(r_res);
-            //b.end_line = current_ir.addInstruction(second);
+            second.addOperand(OperandType.INST, String.valueOf(r_res.end_line));
             current_ir.addInstruction(second);
             // Set Instructions in Block
             // relation has already added instructions
@@ -768,11 +767,11 @@ public class Parser {
             Result r_res = relation();
             // add first instruction
             Instruction first = Instruction.createInstructionByConditionType(r_res.con);
-            first.addOperandByResultType(r_res);
+            first.addOperand(OperandType.INST, String.valueOf(r_res.end_line));
             current_ir.addInstruction(first);
             // add second instruction
             Instruction second = Instruction.createInstructionByConditionType(r_res.con.opposite());
-            second.addOperandByResultType(r_res);
+            second.addOperand(OperandType.INST, String.valueOf(r_res.end_line));
             current_ir.addInstruction(second);
             // Set Instructions in Block
             // relation has already add instructions
