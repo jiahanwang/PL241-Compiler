@@ -12,17 +12,26 @@ import java.util.*;
  */
 public class RegisterAllocator {
 
-    public SimpleGraph<Node, String> ig;
+    private SimpleGraph<Node, String> ig;
     private List<List<Node>> liveRanges;
     private DefUseChain du;
-    public HashMap<Node, Integer> regMap;
+    private HashMap<Node, Integer> regMap;
+    private Function func;
 
-    public RegisterAllocator() {
-        ig = new SimpleGraph<Node, String>();
-        liveRanges = new ArrayList<List<Node>>();
+    public RegisterAllocator(Function func) {
+        this.ig = new SimpleGraph<Node, String>();
+        this.liveRanges = new ArrayList<List<Node>>();
+        this.regMap = new HashMap<Node, Integer>();
+        this.func = func;
     }
 
-    public void buildLiveRanges(Function func) throws Exception {
+    public void reset() {
+        ig = new SimpleGraph<Node, String>();
+        liveRanges = new ArrayList<List<Node>>();
+        regMap = new HashMap<Node, Integer>();
+    }
+
+    public void buildLiveRanges() throws Exception {
         // Intialize the list of lists
         for(int i = 0; i < func.ir.ins.size(); i++) {
             liveRanges.add(new ArrayList<Node>());
@@ -106,19 +115,19 @@ public class RegisterAllocator {
     }
 
     int NUM_REG = 8;
-    public void allocateRegisters(SimpleGraph<Node, String> g) {
-
-
-        for(Node n : g.getVertices()) {
-
+    public void allocateRegisters() {
+        if(ig == null || ig.getVertices().size() < 1) {
+            return;
         }
-
-        Node remove = null;
+        Node removed = getVertexToRemove(NUM_REG);
         // Save all the edges
-        List<Node> adj = (List<Node>) g.adjacentVertices(remove);
+        ArrayList<Node> adj = new ArrayList<Node>();
+        for(Node n : ig.adjacentVertices(removed)) {
+            adj.add(n);
+        }
         // Remove this vertex and attempt to recursively color regs
-        ig.removeVertex(remove);    // this takes care of edges
-        allocateRegisters(g);
+        ig.removeVertex(removed);    // this takes care of edges
+        allocateRegisters();
 
         // Grab neighbor colors to make sure we don't use them
         LinkedHashSet<Integer> adjRegs = new LinkedHashSet<Integer>();
@@ -128,17 +137,40 @@ public class RegisterAllocator {
         // Attempt to assign a color / register
         int reg = 1;
         while(true) {
-            if(regMap.containsKey(reg)) {
+            // if already in use or special reg
+            if(adjRegs.contains(reg) ||  (reg >= 27 && reg <= 30)) {
                 reg++;
             } else {
                 // assign it to this
-
+                regMap.put(removed, reg);
+                break;
             }
         }
+    }
 
+    public Node getVertexToRemove(int num) {
+        // Get node with n degrees or less or grab least cost.
+        int min = 9999;
+        int max = -1;
+        Node minNode = null, maxNode = null;
+        for(Node n : ig.getVertices()) {
+            if(ig.incidentEdges(n).size() > max && ig.incidentEdges(n).size() < num) {
+                maxNode = n;
+            }
+            if(n.cost < min) {
+                minNode = n;
+                min = n.cost;
+            }
+        }
+        return (maxNode != null) ? maxNode : minNode;
+    }
 
+    public SimpleGraph<Node, String> getIG() {
+        return ig;
+    }
 
-
+    public void printRegMap() {
+        System.out.println(regMap.toString());
     }
 
 

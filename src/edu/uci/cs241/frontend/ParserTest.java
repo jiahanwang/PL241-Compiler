@@ -76,10 +76,12 @@ public class ParserTest {
                     DefUseChain du = func.getDu();
                     System.out.println(du.toString());
 
-                    RegisterAllocator reg = new RegisterAllocator();
-                    reg.buildLiveRanges(func);
+                    // Register Allocator
+                    RegisterAllocator reg = new RegisterAllocator(func);
+                    reg.buildLiveRanges();
                     reg.printLiveRanges();
-                    SimpleGraph<Node, String> sg = reg.buildIG();
+                    reg.buildIG();
+                    SimpleGraph<Node, String> sg = reg.getIG();
                     for(Node n : sg.getVertices()) {
                         pw_ig.println(n.getId() + "[label=\"[" + n.getId() +
                                 "]\ncost: "+n.cost+
@@ -89,6 +91,9 @@ public class ParserTest {
                     for(String edge : sg.getEdges()) {
                         pw_ig.println(edge);
                     }
+                    reg.allocateRegisters();
+                    reg.printRegMap();
+                    reg.reset();
                     //TODO: reset for reg alloc
 
                 }
