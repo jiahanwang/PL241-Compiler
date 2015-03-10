@@ -39,6 +39,23 @@ public class CP {
         while(i_iterator.hasNext()){
             // only deal with MOVE
             Instruction in = i_iterator.next();
+            // kill variable in PHI
+            if(in.operator == InstructionType.PHI){
+                String name = in.operands.get(0).name;
+                in.operands.remove(0);
+                List<Instruction> uses = du.variables.get(name).uses;
+                Operand replacer = new Operand(OperandType.INST, String.valueOf(in.id));
+                for(Instruction use : uses){
+                    ListIterator<Operand> o_iterator = use.operands.listIterator();
+                    while(o_iterator.hasNext()){
+                        Operand operand = o_iterator.next();
+                        if(operand.type == OperandType.VARIABLE && operand.name.equals(name)) {
+                            o_iterator.set((Operand)replacer.clone());
+                        }
+                    }
+                }
+                continue;
+            }
             if(in.operator != InstructionType.MOVE) continue;
             Operand replacer = in.operands.get(0);
             Operand to_replace = in.operands.get(1);
