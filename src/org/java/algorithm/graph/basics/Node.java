@@ -11,4 +11,8 @@ public class Node extends AbstractVertex {
         super(name);
     }
 
+    public String toString() {
+        return "("+super.getId()+","+cost +")";
+    }
+
 }

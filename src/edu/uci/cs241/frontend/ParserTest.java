@@ -4,6 +4,9 @@ import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.InstructionType;
 import edu.uci.cs241.optimization.CP;
 import edu.uci.cs241.optimization.CSE;
+import edu.uci.cs241.optimization.RegisterAllocator;
+import org.java.algorithm.graph.basics.Node;
+import org.java.algorithm.graph.basics.SimpleGraph;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -18,7 +21,7 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser parser;
-            for(int i = 0; i <= 0; i++) {
+            for(int i = 3; i <= 3; i++) {
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.cfg.dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
@@ -26,6 +29,10 @@ public class ParserTest {
                 PrintWriter pw_dom = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.dom.dot");
                 pw_dom.println("digraph test0"+String.format("%02d", i)+" {");
                 pw_dom.println("node [shape=box]");
+
+                PrintWriter pw_ig = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.ig.dot");
+                pw_ig.println("graph test0"+String.format("%02d", i)+" {");
+                pw_ig.println("node [shape=circle]");
 
                 parser = new Parser("tests/test0"+String.format("%02d", i)+".txt");
                 /** Get all functions **/
@@ -39,15 +46,15 @@ public class ParserTest {
                 System.out.print("test0" + String.format("%02d", i) + ".txt" + "\n======================\n");
                 for(Function func : funcs){
                     // No optimizations
-                    System.out.print(func.name + ":\n");
-                    System.out.print(func.ir);
-                    System.out.print("-----------------------\n");
+//                    System.out.print(func.name + ":\n");
+//                    System.out.print(func.ir);
+//                    System.out.print("-----------------------\n");
                     /* Copy Propagation */
                     CP.performCP(func);
                     /* print out ir*/
-                    System.out.print(func.name + ":\n");
-                    System.out.print(func.ir);
-                    System.out.print("-----------------------\n");
+//                    System.out.print(func.name + ":\n");
+//                    System.out.print(func.ir);
+//                    System.out.print("-----------------------\n");
                     // Apply CSE
                     HashMap<InstructionType, ArrayList<Instruction>> anchor = new HashMap<InstructionType, ArrayList<Instruction>>();
                     CSE.recursiveCSE(func.entry, anchor);
@@ -67,14 +74,31 @@ public class ParserTest {
                     DFS_buildDom(func.entry, func.ir, pw_dom, explored_dom);
 
                     DefUseChain du = func.getDu();
-
                     System.out.println(du.toString());
+
+                    RegisterAllocator reg = new RegisterAllocator();
+                    reg.buildLiveRanges(func);
+                    reg.printLiveRanges();
+                    SimpleGraph<Node, String> sg = reg.buildIG();
+                    for(Node n : sg.getVertices()) {
+                        pw_ig.println(n.getId() + "[label=\"[" + n.getId() +
+                                "]\ncost: "+n.cost+
+                                "\ndegree: "+sg.adjacentVertices(n).size()+
+                                "\"]");
+                    }
+                    for(String edge : sg.getEdges()) {
+                        pw_ig.println(edge);
+                    }
+                    //TODO: reset for reg alloc
+
                 }
                 System.out.print("======================\n\n\n");
                 pw.println("}");
                 pw.close();
                 pw_dom.println("}");
                 pw_dom.close();
+                pw_ig.println("}");
+                pw_ig.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
