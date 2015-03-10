@@ -18,7 +18,7 @@ public class PLCompiler {
 
     public static void main(String[] args) {
         try {
-            for(int i = 1; i <= 32; i++) {
+            for(int i = 0; i <= 32; i++) {
 
                 // CFG Visualization for unoptimized IR
                 PrintWriter unoptimized_pw = new PrintWriter("viz/unoptimized/test0"+String.format("%02d", i)+".dot");

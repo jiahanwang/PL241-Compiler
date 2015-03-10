@@ -2,10 +2,12 @@ main
 var x, y, z;
 {
 	let x <- 2 + 1;
-	if x < 1 then
-        let y <- (1 + 2) + (2 + 1)
-    fi;
-    let z <- y + 1 + 1;
-    let y <- y + 1;
+	while x < 100 do
+		let x <- x + 1;
+        	let y <- y + 1;
+		let y <- y + 2
+    	od;
+    	let z <- y + 1;
+    	let y <- y + 1;
 	let x <- x + 1
 }.
