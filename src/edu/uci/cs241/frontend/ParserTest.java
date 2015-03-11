@@ -21,7 +21,7 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser parser;
-            for(int i = 1; i <= 1; i++) {
+            for(int i = 3; i <= 3; i++) {
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.cfg.dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
@@ -88,11 +88,12 @@ public class ParserTest {
                                 "\ndegree: "+sg.adjacentVertices(n).size()+
                                 "\"]");
                     }
-                    pw_ig.println("}");
-                    pw_ig.close();
                     for(String edge : sg.getEdges()) {
                         pw_ig.println(edge);
                     }
+                    pw_ig.println("}");
+                    pw_ig.close();
+
                     reg.allocateRegisters();
                     reg.printRegMap();
                     reg.replaceInstructions();

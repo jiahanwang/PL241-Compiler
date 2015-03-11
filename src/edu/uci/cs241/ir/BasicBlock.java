@@ -39,6 +39,9 @@ public class BasicBlock {
 
     public List<Instruction> ins;
 
+    // For Live Ranges
+    public HashSet<String> live;
+
     // Constructor
     public BasicBlock() {
         this.id = ++count;
@@ -50,6 +53,7 @@ public class BasicBlock {
         this.end_line = Integer.MIN_VALUE;
         this.ins = new ArrayList<Instruction>();
         this.dom = new LinkedHashSet<BasicBlock>();
+        this.live = new HashSet<String>();
     }
 
     public BasicBlock(String name){

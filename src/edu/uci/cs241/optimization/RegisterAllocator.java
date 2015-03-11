@@ -1,9 +1,7 @@
 package edu.uci.cs241.optimization;
 
-import edu.uci.cs241.ir.DefUseChain;
-import edu.uci.cs241.ir.Function;
-import edu.uci.cs241.ir.Instruction;
-import edu.uci.cs241.ir.Operand;
+import edu.uci.cs241.ir.*;
+import edu.uci.cs241.ir.types.BasicBlockType;
 import edu.uci.cs241.ir.types.OperandType;
 import org.java.algorithm.graph.basics.Node;
 import org.java.algorithm.graph.basics.SimpleGraph;
@@ -19,6 +17,7 @@ public class RegisterAllocator {
     private List<List<Node>> liveRanges;
     private DefUseChain du;
     private HashMap<Integer, Integer> regMap;   // [Intermediate] = RegNo.
+    private HashMap<String, Node> nodeMap;
     private Function func;
 
     public RegisterAllocator(Function func) {
@@ -41,56 +40,95 @@ public class RegisterAllocator {
         liveRanges = new ArrayList<List<Node>>();
         regMap = new HashMap<Integer, Integer>();
     }
-
+    /*
+    Based on Franz's paper: Linear Scan Register Allocation on SSA Form
+     */
     public void buildLiveRanges() throws Exception {
         // Intialize the list of lists
         for(int i = 0; i < func.ir.ins.size(); i++) {
             liveRanges.add(new ArrayList<Node>());
         }
-        // Grab the information from the def-use chain
-        du = func.getDu();
-        for(Integer i : du.intermediates.keySet()) {
-            int start = du.intermediates.get(i).def.id;
-            int length = du.intermediates.get(i).uses.size();
-            if(length < 1) {
-                continue;
-                // could not find last use. just forget about it.
+        // Build the reverse ordering for BuildIntervals
+        ArrayList<BasicBlock> ro = buildOrdering(func.entry);
+        for(BasicBlock b : ro) {
+            // liveSet = union of all live in b's successors
+            HashSet<String> liveSet = new HashSet<String>();
+            for(BasicBlock d : b.dom) {
+                liveSet.addAll(d.live);
             }
-            int last = (du.intermediates.get(i).uses).get(length - 1).id;
-            if(last == -1) {
-                throw new Exception("Error building live ranges from def use chain");
+            //TODO: Phi traversal
+            int blockStartID = b.ins.get(0).id;
+            int blockEndID = b.ins.get(b.ins.size()-1).id;
+
+            // For each opd in live set
+            // These have to be created already otherwise they would not be live now.
+            for(String s : liveSet) {
+                Node n = nodeMap.get(s);
+                int start = Integer.parseInt(n.getId());
+                if(start >= blockStartID && start <= blockEndID) {
+                    n.addRange(start, blockEndID);
+                } else {
+                    n.addRange(blockStartID, blockEndID);
+                }
             }
-            Node n = new Node(i.toString());
-            n.cost = length;
-            for(int j = start; j <= last; j++) {
-                liveRanges.get(j).add(n);
+
+            // traverse instructions in reverse order
+            for(int i = b.ins.size(); i > 0; i--) {
+                // Due to our structure, all of these are inputs.
+                Instruction in = b.ins.get(i);
+                for(Operand o : in.operands) {
+                    //If operand is constant, skip
+                    if(o.type  == OperandType.CONST) {
+                        continue;
+                    }
+                    // Since this var is alive
+                    liveSet.add(o.getValue());
+                    Node var = new Node(o.getValue());
+                    // This is for the case that the var ends within the same block
+                    int temp = 0;
+                    try {
+                        temp = Integer.parseInt(o.getValue());
+                        if(temp > blockStartID && temp < blockEndID) {
+                            // leave temp to be set
+                        } else {
+                            temp = blockStartID;
+                            // else its out of range of this block
+                        }
+                    } catch(Exception e) {
+                        // Its probably a variable.
+                        var.addRange(0, in.id);
+                        liveSet.remove(o.getValue());
+                    }
+                    var.addRange(temp, in.id);
+                }
             }
-            ig.addVertex(n);
+
+            // if b is loop header
+            if(b.type == BasicBlockType.WHILE) {
+//                BasicBlock loopEnd = b.loopEnd;
+            }
+            b.live = liveSet;
         }
-        // Parse vars
-        for(String s : du.variables.keySet()) {
-            if(du.variables.get(s).def == null) {
-                continue;
-            }
-            int start = du.variables.get(s).def.id;
-            if(start < 0) {
-                start = 0;
-            }
-            int length = du.variables.get(s).uses.size();
-            if(length < 1) {
-                continue;
-                // could not find last use. just forget about it.
-            }
-            int last = (du.variables.get(s).uses).get(length - 1).id;
-            if(last == -1) {
-                throw new Exception("Error building live ranges from def use chain");
-            }
-            Node n = new Node(s);
-            n.cost = length;
-            for(int j = start; j <= last; j++) {
-                liveRanges.get(j).add(n);
-            }
+
+
+//        Node n = new Node(i.toString());
+//        n.cost = length;
+//        for(int j = start; j <= last; j++) {
+//            liveRanges.get(j).add(n);
+//        }
+//        ig.addVertex(n);
+    }
+
+    private ArrayList<BasicBlock> buildOrdering (BasicBlock b) {
+        ArrayList<BasicBlock> a = new ArrayList<BasicBlock>();
+        if(b == null) {
+            return a;
         }
+        // Reverse Pre-order notation
+        a.addAll(buildOrdering(b.right));
+        a.addAll(buildOrdering(b.left));
+        a.add(b);
+        return a;
     }
 
     public void printLiveRanges() {
@@ -110,16 +148,21 @@ public class RegisterAllocator {
         for(int i = 0; i < liveRanges.size(); i++) {
             if(liveRanges.get(i).size() < 2) {
                 continue;
-                // no interference on this line.
+                // there is no interference on this line.
             }
             for(Node n : liveRanges.get(i)) {
                 for(Node n2 : liveRanges.get(i)) {
+                    if(n.equals(n2)) {
+                        continue;       // dont link to itself
+                    }
                     if(ig.containsEdge(n.getId()+" -- "+n2.getId()) || ig.containsEdge(n2.getId()+" -- "+n.getId())){
-                        continue;
-                        // already has this edge
+                        continue;       // already has this edge, dont add again.
+                    }
+                    // Special case for def beginning and use endings
+                    if(n.end == n2.start || n2.end == n.start){
+//                        continue;       // there is no overlap for this def use
                     }
                     ig.addEdge(n.getId()+" -- "+n2.getId(), n, n2);
-
                 }
             }
         }
@@ -166,7 +209,7 @@ public class RegisterAllocator {
         int max = -1;
         Node minNode = null, maxNode = null;
         for(Node n : ig.getVertices()) {
-            if(ig.incidentEdges(n).size() > max && ig.incidentEdges(n).size() < num) {
+            if(ig.adjacentVertices(n).size() > max && ig.adjacentVertices(n).size() < num) {
                 maxNode = n;
             }
             if(n.cost < min) {

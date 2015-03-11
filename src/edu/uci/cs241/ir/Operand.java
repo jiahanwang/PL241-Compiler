@@ -103,7 +103,7 @@ public class Operand implements Cloneable{
     public String toString(){
         switch (this.type) {
             case CONST:
-                return "" + this.value;
+                return "#" + this.value;
             case VARIABLE:
                 return this.name;
             case ARR_ADDRESS:
@@ -120,6 +120,35 @@ public class Operand implements Cloneable{
                 return "JUMP[" + this.line + "]";
             case INST:
                 return "[" + this.line + "]";
+            case FUNC_RETURN_PARAM:
+                return "PARAM[" + this.line + "]";
+            case REG:
+                return "R"+this.regno;
+            default:
+                return "" + this.value;
+        }
+    }
+
+    public String getValue(){
+        switch (this.type) {
+            case CONST:
+                return "#" + this.value;
+            case VARIABLE:
+                return this.name;
+            case ARR_ADDRESS:
+                return "ARR[" + this.address + "]";
+            case BASE_ADDRESS:
+                return this.name + "_base_address";
+            case MEM_ADDRESS:
+                return "MEM[" + this.address + "]";
+            case FP:
+                return this.name;
+            case FUNC_PARAM:
+                return "" + this.which_param;
+            case JUMP_ADDRESS:
+                return "JUMP[" + this.line + "]";
+            case INST:
+                return String.valueOf(this.line);
             case FUNC_RETURN_PARAM:
                 return "PARAM[" + this.line + "]";
             case REG:
