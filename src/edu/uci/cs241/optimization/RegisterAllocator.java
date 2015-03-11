@@ -58,31 +58,23 @@ public class RegisterAllocator {
             }
             // liveSet = union of all live in b's successors
             HashSet<String> liveSet = new HashSet<String>();
-            for(BasicBlock d : b.dom) {
+            for(BasicBlock d : b.getSuccessors()) {
+                // Add all vars that were alive in the successors
+                // (they were used so must be defined in a successor block)
                 liveSet.addAll(d.live);
-
-                //TODO: Phi traversal
-                for(Instruction i : d.phis) {
-                    for(Operand o : i.operands) {
-                        //If operand is constant, skip
-                        if(o.type  == OperandType.CONST) {
-                            continue;
-                        }
+                //This is to add all the corresponding input phis from successor blocks.
+                for (Instruction i : d.phis) {
+                    // Get left or right phi depending on the block it came from.
+                    Operand o = (d == b.left) ? i.operands.get(0) : i.operands.get(1);
+                    if (o.type != OperandType.CONST) {
                         liveSet.add(o.getValue());
                     }
                 }
             }
-
-            // For each opd in live set
-            // These have to be created already otherwise they would not be live now.
-            List<String> remove = new ArrayList<String>();
-//
-
             // traverse instructions in reverse order
             for(int i = b.ins.size() - 1; i >= 0; i--) {
                 // Due to our structure, all of these are inputs.
                 Instruction in = b.ins.get(i);
-
 
                 if(in.operator == InstructionType.BRA || in.operator == InstructionType.RETURN
 //                        || in.operator == InstructionType.BNE || in.operator == InstructionType.BEQ
@@ -91,6 +83,16 @@ public class RegisterAllocator {
                         || in.operator ==  InstructionType.WLN || in.operator == InstructionType.LOADPARAM) {
                     continue;
                 }
+
+                if(in.operator == InstructionType.PHI) {
+                    // Special case; create nodes and skip
+                    for(Operand o : in.operands) {
+                        Node n = new Node(o.getValue());
+                        nodeMap.put(o.getValue(), n);
+                    }
+                    continue;
+                }
+
                 // If output, this def check has to come first to avoid over
                 // lapping with the end use vars
                 // If it is contained in nodeMap, then it must hvave been used already.
@@ -132,32 +134,13 @@ public class RegisterAllocator {
             }
 
             // if b is loop header
-//            if(b.type == BasicBlockType.WHILE) {
-//                BasicBlock loopEnd = b.loop_end;
-//                int loopEndID = loopEnd.ins.get(loopEnd.ins.size()-1).id;
-//                remove = new ArrayList<String>();
-//                for(String s : liveSet) {
-//                    nodeMap.get(s).addRange(blockStartID, loopEndID);
-//                }
-//            }
+            if(b.type == BasicBlockType.WHILE) {
+                BasicBlock loopEnd = b.loop_end;
+                //traverse the WHILE BODY
+
+            }
             b.live = liveSet;
         }
-
-        // Intialize the list of sets for live range
-//        for(int i = 0; i < func.ir.ins.size(); i++) {
-//            liveRanges.add(new HashSet<Node>());
-//        }
-//        // liveRanges(i) = vars that are alive at instruction / line i;
-//        for(String s : nodeMap.keySet()) {
-//            Node n = nodeMap.get(s);
-//            // create node n in IG
-//            ig.addVertex(n);
-//            for(Node.Interval i : n.live) {
-//                for(int start = i.start; start <= i.end; start++) {
-//                    liveRanges.get(start).add(n);
-//                }
-//            }
-//        }
     }
 
     private ArrayList<BasicBlock> buildOrdering (BasicBlock b, boolean[] explored) {
@@ -191,28 +174,6 @@ public class RegisterAllocator {
     }
 
     public SimpleGraph<Node, String> buildIG() {
-        for(int i = 0; i < liveRanges.size(); i++) {
-
-            if(liveRanges.get(i).size() < 2) {
-                continue;
-                // there is no interference on this line.
-            }
-            for(Node n : liveRanges.get(i)) {
-                for(Node n2 : liveRanges.get(i)) {
-                    if(n.equals(n2)) {
-                        continue;       // dont link to itself
-                    }
-                    if(ig.containsEdge(n.getId()+" -- "+n2.getId()) || ig.containsEdge(n2.getId()+" -- "+n.getId())){
-                        continue;       // already has this edge, dont add again.
-                    }
-                    // Special case for def beginning and use endings
-//                    if(n.end == n2.start || n2.end == n.start){
-////                        continue;       // there is no overlap for this def use
-//                    }
-//                    ig.addEdge(n.getId()+" -- "+n2.getId(), n, n2);
-                }
-            }
-        }
         return ig;
     }
 
