@@ -34,7 +34,7 @@ public enum InstructionType {
 
     // added instructions
     FUNC("func", Integer.MAX_VALUE),
-    LOADPARAM("loadparam", 1),
+    LOADPARAM("loadparam", 2),
     RETURN("return", 2),
 
     // For CSE

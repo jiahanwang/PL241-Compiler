@@ -331,7 +331,7 @@ public class Parser {
                     // just load from this address
                     Instruction load = new Instruction(InstructionType.LOAD);
                     int start_Line = current_ir.addInstruction(retrieve_arr);
-                    load.addOperand(OperandType.ARR_ADDRESS, String.valueOf(start_Line));
+                    load.addOperand(OperandType.INST, String.valueOf(start_Line));
                     res.type = ResultType.INST;
                     res.line = current_ir.addInstruction(load);
                     if(arr.dimensions.size() == 1){
@@ -344,6 +344,8 @@ public class Parser {
                     // left side of assignment, return address for assignment to use in STORE
                     res.type = ResultType.ARR;
                     res.address = current_ir.addInstruction(retrieve_arr);
+                    // cuz type will be changed to INST
+                    res.line = res.address;
                     if(arr.dimensions.size() == 1){
                         res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : res.address;
                         res.end_line = res.address;
@@ -534,6 +536,9 @@ public class Parser {
                 // if left side is array, use STORE instead of MOVE
                 Instruction assi = d_res.type == ResultType.ARR ? new Instruction(InstructionType.STORE) : new Instruction(InstructionType.MOVE);
                 assi.addOperandByResultType(e_res);
+                // change type of array to inst
+                if(d_res.type == ResultType.ARR)
+                    d_res.type = ResultType.INST;
                 assi.addOperandByResultType(d_res);
                 int last_line = current_ir.addInstruction(assi);
                 // Set Instructions in Basic Block
@@ -629,9 +634,9 @@ public class Parser {
             res.line = this.getCurrentFunction().ir.addInstruction(in);
             res.setRange(null, null, res.line);
             // add last parameter to tell function where to return to
-            if(!func.predefined) {
-                in.addOperand(OperandType.FUNC_RETURN_PARAM, String.valueOf(res.line));
-            }
+//            if(!func.predefined) {
+//                in.addOperand(OperandType.FUNC_RETURN_PARAM, String.valueOf(res.line));
+//            }
 
         }
         return res;
@@ -860,7 +865,7 @@ public class Parser {
             in = new Instruction(InstructionType.RETURN);
             // add return value;
             in.addOperandByResultType(e_res);
-            in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(start_line));
+            in.addOperand(OperandType.INST, String.valueOf(start_line));
             int last_line = current_ir.addInstruction(in);
             for(int i = getStart(e_res.start_line, start_line, 0); i <= last_line; i++){
                 Instruction instruction = current_ir.ins.get(i);
@@ -1056,28 +1061,63 @@ public class Parser {
     }
 
     public BasicBlock funcBody() throws Exception {
-        BasicBlock block = null;
+        BasicBlock block = new BasicBlock();
+        IR current_ir = this.getCurrentFunction().ir;
+        //Add LOADPARAM
+        int i = 0;
+        for(String param : this.getCurrentFunction().symbolTable.variables.keySet()){
+            Instruction in = new Instruction(InstructionType.LOADPARAM);
+            in.addOperand(OperandType.FUNC_PARAM, String.valueOf(i++));
+            in.addOperand(OperandType.VARIABLE, param + "_0");
+            current_ir.addInstruction(in);
+            block.addInstruction(in);
+        }
         while(!accept(Token.beginToken)) {
             varDecl();
         }
         if (accept(Token.beginToken)) {
             next();
-            block = statSequence();
+            BasicBlock body = statSequence();
             if(!this.current_func.has_return){
                 // add BRA
-                IR current_ir = this.getCurrentFunction().ir;
                 Instruction in = new Instruction(InstructionType.LOADPARAM);
-                in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameter_size + 1));
+                in.addOperand(OperandType.FUNC_PARAM, String.valueOf(this.current_func.parameter_size));
                 int last_line = current_ir.addInstruction(in);
-                in.parent = block.exit;
-                block.exit.addInstruction(in);
+                in.parent = body.exit;
+                body.exit.addInstruction(in);
                 in = new Instruction(InstructionType.RETURN);
-                in.addOperand(OperandType.JUMP_ADDRESS, String.valueOf(last_line));
+                in.addOperand(OperandType.INST, String.valueOf(last_line));
                 in.id = last_line + 1;
                 current_ir.addInstruction(in);
-                in.parent = block.exit;
-                block.exit.addInstruction(in);
+                in.parent = body.exit;
+                body.exit.addInstruction(in);
             }
+            if(i != 0){
+                // if next one is if or normal , then we can merge
+                if(body.type == BasicBlockType.IF){
+                    block.left = body.left;
+                    block.right = body.right;
+                    // since we merge the if header into, we need to reset all the parents
+                    (block.dom).add(body.left);
+                    (block.dom).add(body.right);
+                    (block.dom).add(body.join);
+                    BasicBlock.merge(block, body);
+                }else if (body.type == BasicBlockType.NORAML){
+                    // normal
+                    block.left = body.left;
+                    if(body.left != null)
+                        (block.dom).add(body.left);
+                    BasicBlock.merge(block, body);
+                }else {
+                    // while
+                    (block.dom).add(body);
+                    block.left = body;
+                }
+            }else{
+                block = body;
+            }
+            block.exit = body.exit;
+
             if (accept(Token.endToken)) {
                 next();
             } else {

@@ -95,9 +95,16 @@ public class Function {
                     this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
                     break;
                 case PHI:
-                    this.du.addDef(in.operands.get(0), in);
-                    for(int i = 1, len = in.operands.size(); i < len; i++){
+                    this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
+                    for (int i = 0, len = in.operands.size(); i < len; i++) {
                         this.du.addUse(in.operands.get(i), in);
+                    }
+                    break;
+                case LOADPARAM:
+                    if(in.operands.size() == 2) {
+                        this.du.addDef(in.operands.get(1), in);
+                    }else{
+                        this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
                     }
                     break;
                 case FUNC:
@@ -108,11 +115,9 @@ public class Function {
                     this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
                     break;
                 case RETURN:
-                    if(in.operands.size() > 1){
-                        // if has a return value
-                        this.du.addUse(in.operands.get(0), in);
+                    for(int i = 0, len = in.operands.size(); i < len; i++){
+                        this.du.addUse(in.operands.get(i), in);
                     }
-                    // do not track JUMP_ADDRESS
                     break;
             }
         }

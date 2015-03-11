@@ -19,7 +19,7 @@ public class PLCompiler {
 
     public static void main(String[] args) {
         try {
-            for(int i = 0; i <= 32; i++) {
+            for(int i = 1; i <= 32; i++) {
 
                 // CFG Visualization for unoptimized IR
                 PrintWriter unoptimized_pw = new PrintWriter("viz/unoptimized/test0"+String.format("%02d", i)+".dot");
@@ -43,6 +43,7 @@ public class PLCompiler {
 
                 /**
                  *
+                 *
                  * STEP 1 : Parsing
                  *
                  * **/
@@ -64,7 +65,7 @@ public class PLCompiler {
                     DFS_buildCFG(func.entry, unoptimized_pw, explored);
                     /* print out Def-Use Chain */
                     //System.out.print(func.getDu());
-                    //System.out.print("***********************\n");
+                    System.out.print("***********************\n");
 
                     /**
                      *
@@ -81,7 +82,7 @@ public class PLCompiler {
                     explored = new boolean[10000];
                     DFS_buildCFG(func.entry, optimized_cp_pw, explored);
                     /* print out Def-Use Chain */
-                    //System.out.print(func.getDu());
+                    System.out.print(func.getDu());
                     //System.out.print("***********************\n");
 
                     /** Common Subexpression Elimination **/
@@ -122,7 +123,7 @@ public class PLCompiler {
     }
 
     public static void DFS_buildCFG(BasicBlock b, PrintWriter pw, boolean[] explored) {
-        if(explored[b.id]) {
+        if(b == null || explored[b.id]) {
             return;
         }
         if (b != null) {
@@ -141,7 +142,7 @@ public class PLCompiler {
     }
 
     public static void DFS_buildDom(BasicBlock b, PrintWriter pw, boolean[] explored) {
-        if(explored[b.id]) {
+        if(b == null || explored[b.id]) {
             return;
         }
         if (b != null) {
