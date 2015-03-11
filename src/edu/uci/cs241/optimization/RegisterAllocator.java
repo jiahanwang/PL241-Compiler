@@ -73,65 +73,49 @@ public class RegisterAllocator {
                 }
             }
 
-//            int blockStartID = b.ins.get(0).id;
-//            int blockEndID = b.ins.get(b.ins.size()-1).id;
-
             // For each opd in live set
             // These have to be created already otherwise they would not be live now.
             List<String> remove = new ArrayList<String>();
-//            for(String s : liveSet) {
-//                Node n = nodeMap.get(s);
-//                int start = Integer.parseInt(n.getId());
-//                if(start >= blockStartID && start <= blockEndID) {
-//                    // if the def is within this block, set the ranges
-//                    n.addRange(start, blockEndID);
-//                    remove.add(s);
-//                } else {
-//                    // the def is not in this block,
-//                    // it just lives through this entire block
-//                    n.addRange(blockStartID, blockEndID);
-//                }
-//            }
-            // Clear the liveSet of vars that end in this block
-//            for(String s : remove) {
-//                liveSet.remove(s);
-//            }
+//
 
             // traverse instructions in reverse order
             for(int i = b.ins.size() - 1; i >= 0; i--) {
                 // Due to our structure, all of these are inputs.
                 Instruction in = b.ins.get(i);
 
+
                 if(in.operator == InstructionType.BRA || in.operator == InstructionType.RETURN
-                        || in.operator == InstructionType.BNE || in.operator == InstructionType.BEQ
-                        || in.operator == InstructionType.BLE || in.operator == InstructionType.BLT
-                        || in.operator == InstructionType.BGE || in.operator == InstructionType.BGT
+//                        || in.operator == InstructionType.BNE || in.operator == InstructionType.BEQ
+//                        || in.operator == InstructionType.BLE || in.operator == InstructionType.BLT
+//                        || in.operator == InstructionType.BGE || in.operator == InstructionType.BGT
                         || in.operator ==  InstructionType.WLN || in.operator == InstructionType.LOADPARAM) {
                     continue;
                 }
-
                 // If output, this def check has to come first to avoid over
                 // lapping with the end use vars
-                if(du.intermediates.containsKey(in.id)) {
-                    if(!nodeMap.containsKey(new Integer(in.id))) {
-                        break;
-                        // This shouldn't happen because then it means it was never used.
-                    }
+                // If it is contained in nodeMap, then it must hvave been used already.
+                if(nodeMap.containsKey(String.valueOf(in.id))) {
                     // add interference with liveset
-                    Node n = nodeMap.get(in.id);
-                    for(String s : liveSet) {
+                    Node n = nodeMap.get(String.valueOf(in.id));
+                    for (String s : liveSet) {
                         Node n2 = nodeMap.get(s);
-                        if(n.equals(n2)) { continue; }
-                        ig.addEdge(n2.getId() +"--"+ n.getId(),n, n2);
+                        if (n.equals(n2)) {
+                            continue;
+                        }
+                        ig.addEdge(n2.getId() + "--" + n.getId(), n, n2);
                     }
-                    liveSet.remove(n);
+                    liveSet.remove(n.getId());
                 }
 
                 // For Inputs / USE
                 // create the node, insert into live range
                 for(Operand o : in.operands) {
                     //If operand is constant, skip
-                    if(o.type  == OperandType.CONST) {
+                    if(o.type  == OperandType.CONST
+                            || o.type == OperandType.ARR_ADDRESS
+                            || o.type == OperandType.BASE_ADDRESS
+                            || o.type == OperandType.MEM_ADDRESS
+                            || o.type == OperandType.JUMP_ADDRESS) {
                         continue;
                     }
                     // Since this var is alive, add to set
@@ -139,34 +123,12 @@ public class RegisterAllocator {
                     nodeMap.put(o.getValue(), var);
                     liveSet.add(o.getValue());
                     ig.addVertex(var);
-                    // This is for the case that the var ends within the same block
-//                    int temp = 0;
-//                    try {
-//                        temp = Integer.parseInt(o.getValue());
-//                        if(temp >= blockStartID && temp <= blockEndID) {
-//                            //if within block, set range and remove from liveset
-//                            var.addRange(temp, in.id);
-//                            liveSet.remove(o.getValue());
-//                            continue;
-//                        } else {
-//                            // else its out of range of this block
-//                            temp = blockStartID;
-//                        }
-//                    } catch(Exception e) {
-//                        // Its probably a global variable.
-//                        var.addRange(0, in.id);
-//                        //TODO: Remove this after debug
-//                        nodeMap.remove(o.getValue()); // DEBUGGING
-//                        liveSet.remove(o.getValue());
-//                        continue;
-//                    }
-//                    var.addRange(temp, in.id);
                 }
             }
 
             // removal of phis
             for(Instruction i : b.phis) {
-                    liveSet.remove(i.id);
+                    liveSet.remove(String.valueOf(i.id));
             }
 
             // if b is loop header
@@ -176,10 +138,6 @@ public class RegisterAllocator {
 //                remove = new ArrayList<String>();
 //                for(String s : liveSet) {
 //                    nodeMap.get(s).addRange(blockStartID, loopEndID);
-//
-//                }
-//                for(String s : remove) {
-//                    liveSet.remove(s);
 //                }
 //            }
             b.live = liveSet;
@@ -226,6 +184,10 @@ public class RegisterAllocator {
             }
             System.out.println("");
         }
+    }
+
+    public void printNodeMap() {
+        System.out.println(nodeMap.toString());
     }
 
     public SimpleGraph<Node, String> buildIG() {
