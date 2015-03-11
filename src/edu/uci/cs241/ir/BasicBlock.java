@@ -36,6 +36,11 @@ public class BasicBlock {
 
     // For IR
     public int end_line;
+    public BasicBlock loop_end;
+
+
+    // For RA
+    public List<Instruction> phis;
 
     public List<Instruction> ins;
 
@@ -54,6 +59,7 @@ public class BasicBlock {
         this.ins = new ArrayList<Instruction>();
         this.dom = new LinkedHashSet<BasicBlock>();
         this.live = new HashSet<String>();
+        this.phis = new ArrayList<Instruction>();
     }
 
     public BasicBlock(String name){

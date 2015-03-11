@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public class   SymbolTable {
 
+    // if variable is parameter then set to 1, otherwise set to 0
     public Map<String, Integer> variables;
 
     public Map<String, Function> functions;
@@ -32,11 +33,14 @@ public class   SymbolTable {
         }
     }
 
-    public void addVariable (String val) throws Exception {
+    public void addVariable (String val, boolean if_param) throws Exception {
         if(this.variables.containsKey(val)){
             throw new Exception("Syntax Error: variable " + val + " declaration already existed");
         }else{
-            this.variables.put(val, 0);
+            if(if_param)
+                this.variables.put(val, 1);
+            else
+                this.variables.put(val, 0);
         }
     }
 

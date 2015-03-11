@@ -52,10 +52,6 @@ public class Function {
         // after parsing, need to go through IR to generate the chain and then return du
         // def has been added in assignment() and varDecl() during parsing
         /** Def Use Chain **/
-        // Add initial defs
-        for(String name : this.symbolTable.variables.keySet()){
-            this.du.addInitalDef(name);
-        }
         // Add defs ans uses
         for (Instruction in : ir.ins) {
             switch (in.operator) {
@@ -71,16 +67,15 @@ public class Function {
                 case ADDA:
                     // do not track the base address of array
                     this.du.addUse(in.operands.get(1), in);
+                    this.du.addDef(new Operand(OperandType.ARR_ADDRESS, String.valueOf(in.id)), in);
                     break;
                 case LOAD:
-                    // do not track address
-                    //this.du.addUse(in.operands.get(0), in);
+                    this.du.addUse(in.operands.get(0), in);
                     this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
                     break;
                 case STORE:
                     this.du.addUse(in.operands.get(0), in);
-                    // do not track address
-                    //this.du.addUse(in.operands.get(1), in);
+                    this.du.addUse(in.operands.get(1), in);
                     break;
                 case MOVE:
                     this.du.addUse(in.operands.get(0), in);
@@ -97,9 +92,7 @@ public class Function {
                     // do not track JUMP_ADDRESS
                     break;
                 case READ:
-                //case LOADPARAM:
                     this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
-                    // do not track JUMP_ADDRESS
                     break;
                 case PHI:
                     this.du.addDef(in.operands.get(0), in);
@@ -108,7 +101,7 @@ public class Function {
                     }
                     break;
                 case FUNC:
-                    // track parameters excluding the hidden one
+                    // track parameters excluding the last hidden one
                     for(int i = 1, len = in.operands.size() - 1; i < len; i++){
                         this.du.addUse(in.operands.get(i), in);
                     }
@@ -130,7 +123,7 @@ public class Function {
     public boolean addAllParameters(List<String> params) throws Exception {
         if(this.parameter_size == 0) {
             for (String param : params) {
-                this.symbolTable.addVariable(param);
+                this.symbolTable.addVariable(param, true);
                 // add to the initial phi map
                 this.ssa_stack.get(0).put(param, new PhiFunction(param, 0, 0));
                 this.parameter_size++;
@@ -142,7 +135,7 @@ public class Function {
     }
 
     public void addVariable(String ident) throws Exception {
-        this.symbolTable.addVariable(ident);
+        this.symbolTable.addVariable(ident, false);
         // add to the initial phi map
         this.ssa_stack.get(0).put(ident, new PhiFunction(ident, 0, 0));
     }

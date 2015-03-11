@@ -62,11 +62,27 @@ public class DefUseChain {
                 return true;
             }
             case INST: {
-                if (this.intermediates.containsKey(operand.line))
-                    return false;
-                Item item = new Item();
+                Item item;
+                if (this.intermediates.containsKey(operand.line)){
+                    // if empty def has been added by while PHI
+                    item = this.intermediates.get(operand.line);
+                } else{
+                    item = new Item();
+                }
                 item.def = in;
                 this.intermediates.put(operand.line, item);
+                return true;
+            }
+            case ARR_ADDRESS: {
+                Item item;
+                if (this.intermediates.containsKey(operand.address)){
+                    // if empty def has been added by while PHI
+                    item = this.intermediates.get(operand.address);
+                } else{
+                    item = new Item();
+                }
+                item.def = in;
+                this.intermediates.put(operand.address, item);
                 return true;
             }
         }
@@ -102,10 +118,30 @@ public class DefUseChain {
                 item.addUse(in);
                 return true;
             }
+            case ARR_ADDRESS: {
+                Item item;
+                if (!this.intermediates.containsKey(operand.address)){
+                    // this is to deal with while PHI
+                    // add an empty def first
+                    item = new Item();
+                    this.intermediates.put(operand.address, item);
+                }else {
+                    item = this.intermediates.get(operand.address);
+                }
+                item.addUse(in);
+                return true;
+            }
+
             case INST: {
-                if (!this.intermediates.containsKey(operand.line))
-                    return false;
-                Item item = this.intermediates.get(operand.line);
+                Item item;
+                if (!this.intermediates.containsKey(operand.line)){
+                    // this is to deal with while PHI
+                    // add an empty def first
+                    item = new Item();
+                    this.intermediates.put(operand.line, item);
+                }else {
+                    item = this.intermediates.get(operand.line);
+                }
                 item.addUse(in);
                 return true;
             }

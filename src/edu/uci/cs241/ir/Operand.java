@@ -20,7 +20,7 @@ public class Operand implements Cloneable{
     public int regno;
 
     // constructor
-    Operand(){
+    public Operand(){
         this.type = null;
         this.name = null;
         this.address = 0;
@@ -31,7 +31,7 @@ public class Operand implements Cloneable{
         this.regno = -1;
     }
 
-    Operand(OperandType type, String input) {
+    public Operand(OperandType type, String input) {
         this();
         this.type = type;
         switch (this.type) {

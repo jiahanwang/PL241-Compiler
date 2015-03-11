@@ -49,10 +49,13 @@ public class IR implements Cloneable{
     public void insertPhiInstructions(List<Instruction> ins, int start){
         Map<String, String> replace_map = new HashMap<String, String>();
         for(Instruction in : ins){
-            String current = in.operands.get(0).name;
-            String base = current.split("_")[0];
-            if(!replace_map.containsKey(base)){
-                replace_map.put(base, current);
+            Iterator<Operand> it = in.operands.iterator();
+            String replacer = it.next().name;
+            while(it.hasNext()) {
+                String to_replace = it.next().name;
+                if (!replace_map.containsKey(to_replace)) {
+                    replace_map.put(to_replace, replacer);
+                }
             }
         }
         ListIterator<Instruction> iterator = this.ins.listIterator(start);
@@ -74,9 +77,9 @@ public class IR implements Cloneable{
                     case VARIABLE:
                         // do not replace the left side of assignment
                         if(in.operator == InstructionType.PHI || in.operator == InstructionType.MOVE && in.operands.indexOf(operand) == 1) break;
-                        String base = operand.name.split("_")[0];
-                        if(replace_map.containsKey(base)){
-                            operand.name = replace_map.get(base);
+                        String name = operand.name;
+                        if(replace_map.containsKey(name)){
+                            operand.name = replace_map.get(name);
                         }
                 }
             }

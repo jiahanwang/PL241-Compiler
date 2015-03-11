@@ -537,9 +537,6 @@ public class Parser {
                 assi.addOperandByResultType(d_res);
                 int last_line = current_ir.addInstruction(assi);
                 // Set Instructions in Basic Block
-                if(this.getCurrentFunction().name.equals("main")){
-                    int a =  1;
-                }
                 for(int i = this.getStart(d_res.start_line, e_res.start_line, last_line); i <= last_line; i++){
                     Instruction in = current_ir.ins.get(i);
                     in.parent = block;
@@ -655,12 +652,11 @@ public class Parser {
             Result r_res = relation();
             // add first instruction
             Instruction first = Instruction.createInstructionByConditionType(r_res.con);
-            first.addOperandByResultType(r_res);
+            first.addOperand(OperandType.INST, String.valueOf(r_res.end_line));
             current_ir.addInstruction(first);
             // add second instruction
             Instruction second = Instruction.createInstructionByConditionType(r_res.con.opposite());
-            second.addOperandByResultType(r_res);
-            //b.end_line = current_ir.addInstruction(second);
+            second.addOperand(OperandType.INST, String.valueOf(r_res.end_line));
             current_ir.addInstruction(second);
             // Set Instructions in Block
             // relation has already added instructions
@@ -736,6 +732,8 @@ public class Parser {
                         }
                     }else{
                         current_func.ir.addInstructions(phis);
+                        // For RA
+                        b.phis.addAll(phis);
                         join.addInstructions(phis);
                     }
                     b.left.exit.left= join;
@@ -771,11 +769,11 @@ public class Parser {
             Result r_res = relation();
             // add first instruction
             Instruction first = Instruction.createInstructionByConditionType(r_res.con);
-            first.addOperandByResultType(r_res);
+            first.addOperand(OperandType.INST, String.valueOf(r_res.end_line));
             current_ir.addInstruction(first);
             // add second instruction
             Instruction second = Instruction.createInstructionByConditionType(r_res.con.opposite());
-            second.addOperandByResultType(r_res);
+            second.addOperand(OperandType.INST, String.valueOf(r_res.end_line));
             current_ir.addInstruction(second);
             // Set Instructions in Block
             // relation has already add instructions
@@ -821,6 +819,8 @@ public class Parser {
                     if(phis.size() != 0) {
                         current_func.ir.insertPhiInstructions(phis, r_res.start_line);
                         b.insertInstructions(phis, 0);
+                        // For RA
+                        b.phis.addAll(phis);
                         // fix the last jump line
                         Instruction last_jump = current_func.ir.getLastInstruction();
                         last_jump.operands.get(0).line -= phis.size();
@@ -832,6 +832,8 @@ public class Parser {
                     b.left.exit.left = b;
                     b.exit = join;
                     (b.dom).add(join);
+                    // For RA
+                    b.loop_end = b.left.exit;
                 } else {
                     error("Missing od token");
                 }

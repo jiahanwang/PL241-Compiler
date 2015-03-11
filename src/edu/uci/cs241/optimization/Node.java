@@ -1,4 +1,6 @@
-package org.java.algorithm.graph.basics;
+package edu.uci.cs241.optimization;
+
+import org.java.algorithm.graph.basics.AbstractVertex;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -115,6 +115,16 @@ public class Instruction {
         return true;
     }
 
+    // For RA
+    public List<Operand> getInputs(){
+        return this.operands;
+    }
+
+    // For RA
+    public Operand getOutput(){
+        return new Operand(OperandType.INST, String.valueOf(this.id));
+    }
+
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.operator.toString());
