@@ -38,9 +38,10 @@ public class BasicBlock {
     public int end_line;
     public BasicBlock loop_end;
 
-
     // For RA
     public List<Instruction> phis;
+    public LinkedHashSet<BasicBlock> successor;
+    public Set<String> live_for_while;
 
     public List<Instruction> ins;
 
@@ -60,11 +61,26 @@ public class BasicBlock {
         this.dom = new LinkedHashSet<BasicBlock>();
         this.live = new HashSet<String>();
         this.phis = new ArrayList<Instruction>();
+        this.live_for_while = new LinkedHashSet<String>();
     }
 
     public BasicBlock(String name){
         this();
         this.name = name;
+    }
+
+    public Set<BasicBlock> getSuccessors() {
+        if(successor == null) {
+            // fill if has not been init
+            successor = new LinkedHashSet<BasicBlock>();
+            if(this.left != null) {
+                successor.add(this.left);
+            }
+            if(this.right !=null ) {
+                successor.add(this.right);
+            }
+        }
+        return successor;
     }
 
     public void addInstruction(Instruction in){
