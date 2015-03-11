@@ -47,7 +47,6 @@ public class RegisterAllocator {
     Based on Franz's paper: Linear Scan Register Allocation on SSA Form
      */
     public void buildLiveRanges() throws Exception {
-
         // Build the reverse ordering for BuildIntervals
         boolean explored[] = new boolean[100];
         ArrayList<BasicBlock> ro = buildOrdering(func.entry, explored);
@@ -84,18 +83,11 @@ public class RegisterAllocator {
                     continue;
                 }
 
-                if(in.operator == InstructionType.PHI) {
-                    // Special case; create nodes and skip
-                    for(Operand o : in.operands) {
-                        Node n = new Node(o.getValue());
-                        nodeMap.put(o.getValue(), n);
-                    }
-                    continue;
-                }
+
 
                 // If output, this def check has to come first to avoid over
                 // lapping with the end use vars
-                // If it is contained in nodeMap, then it must hvave been used already.
+                // If it is contained in nodeMap, then it must have been used already.
                 if(nodeMap.containsKey(String.valueOf(in.id))) {
                     // add interference with liveset
                     Node n = nodeMap.get(String.valueOf(in.id));
@@ -109,6 +101,17 @@ public class RegisterAllocator {
                     liveSet.remove(n.getId());
                 }
 
+                // Special case for input PHI; create nodes and skip
+                if(in.operator == InstructionType.PHI) {
+
+                    for(Operand o : in.operands) {
+                        if(!nodeMap.containsKey(o.getValue())){
+                            Node n = new Node(o.getValue());
+                            nodeMap.put(o.getValue(), n);
+                        }
+                    }
+                    continue;
+                }
                 // For Inputs / USE
                 // create the node, insert into live range
                 for(Operand o : in.operands) {
