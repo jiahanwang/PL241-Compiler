@@ -32,7 +32,7 @@ public class CSE {
     public static void recursiveCSE(BasicBlock b, HashMap<InstructionType, ArrayList<Instruction>> parent) throws Exception {
 
         // avoid recursing on a visited bb
-        if(explored[b.id]) {
+        if(b == null || explored[b.id]) {
             return;
         }
         explored[b.id] = true;

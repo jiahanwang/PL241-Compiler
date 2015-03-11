@@ -37,12 +37,31 @@ public class CP {
         }
         // propagate copy
         while(i_iterator.hasNext()){
-            // only deal with MOVE
+            // deal with MOVE
             Instruction in = i_iterator.next();
-            // kill variable in PHI
+            // kill variables in PHI
             if(in.operator == InstructionType.PHI){
                 String name = in.operands.get(0).name;
                 in.operands.remove(0);
+                List<Instruction> uses = du.variables.get(name).uses;
+                Operand replacer = new Operand(OperandType.INST, String.valueOf(in.id));
+                for(Instruction use : uses){
+                    ListIterator<Operand> o_iterator = use.operands.listIterator();
+                    while(o_iterator.hasNext()){
+                        Operand operand = o_iterator.next();
+                        if(operand.type == OperandType.VARIABLE && operand.name.equals(name)) {
+                            o_iterator.set((Operand)replacer.clone());
+                        }
+                    }
+                }
+                continue;
+            }
+            // kill parameters
+            if(in.operator == InstructionType.LOADPARAM){
+                // the loadparam for the hidden parameter
+                if(in.operands.size() == 1) continue;
+                String name = in.operands.get(1).name;
+                in.operands.remove(1);
                 List<Instruction> uses = du.variables.get(name).uses;
                 Operand replacer = new Operand(OperandType.INST, String.valueOf(in.id));
                 for(Instruction use : uses){
