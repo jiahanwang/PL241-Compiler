@@ -15,11 +15,11 @@ public class Node extends AbstractVertex {
 
     public Node(String name) {
         super(name);
+        live = new ArrayList<Interval>();
     }
 
     public String toString() {
-        live = new ArrayList<Interval>();
-        return "("+super.getId()+","+cost +")";
+        return super.getId()+":"+live.toString();
     }
 
     // Functions added from Franz's Paper "Linear Scan Register Allocation"
@@ -34,6 +34,10 @@ public class Node extends AbstractVertex {
         public Interval(int start, int end) {
             this.start = start;
             this.end = end;
+        }
+
+        public String toString() {
+            return "("+start+","+end+")";
         }
 
     }

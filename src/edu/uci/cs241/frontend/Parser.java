@@ -733,7 +733,7 @@ public class Parser {
                     }else{
                         current_func.ir.addInstructions(phis);
                         // For RA
-                        b.phis.addAll(phis);
+                        join.phis.addAll(phis);
                         join.addInstructions(phis);
                     }
                     b.left.exit.left= join;

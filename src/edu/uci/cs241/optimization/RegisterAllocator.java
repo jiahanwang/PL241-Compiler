@@ -2,8 +2,8 @@ package edu.uci.cs241.optimization;
 
 import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.BasicBlockType;
+import edu.uci.cs241.ir.types.InstructionType;
 import edu.uci.cs241.ir.types.OperandType;
-import org.java.algorithm.graph.basics.Node;
 import org.java.algorithm.graph.basics.SimpleGraph;
 
 import java.util.*;
@@ -14,7 +14,7 @@ import java.util.*;
 public class RegisterAllocator {
 
     private SimpleGraph<Node, String> ig;
-    private List<List<Node>> liveRanges;
+    private ArrayList<Set<Node>> liveRanges;
     private DefUseChain du;
     private HashMap<Integer, Integer> regMap;   // [Intermediate] = RegNo.
     private HashMap<String, Node> nodeMap;
@@ -22,9 +22,11 @@ public class RegisterAllocator {
 
     public RegisterAllocator(Function func) {
         this.ig = new SimpleGraph<Node, String>();
-        this.liveRanges = new ArrayList<List<Node>>();
+        this.liveRanges = new ArrayList<Set<Node>>();
         this.regMap = new HashMap<Integer, Integer>();
         this.func = func;
+        this.nodeMap = new HashMap<String, Node>();
+        this.du = func.getDu();
     }
 
     public void applyRA() throws Exception {
@@ -36,97 +38,179 @@ public class RegisterAllocator {
     }
 
     public void reset() {
-        ig = new SimpleGraph<Node, String>();
-        liveRanges = new ArrayList<List<Node>>();
-        regMap = new HashMap<Integer, Integer>();
+        this.ig = new SimpleGraph<Node, String>();
+        this.liveRanges = new ArrayList<Set<Node>>();
+        this.regMap = new HashMap<Integer, Integer>();
+        this.nodeMap = new HashMap<String, Node>();
     }
     /*
     Based on Franz's paper: Linear Scan Register Allocation on SSA Form
      */
     public void buildLiveRanges() throws Exception {
-        // Intialize the list of lists
-        for(int i = 0; i < func.ir.ins.size(); i++) {
-            liveRanges.add(new ArrayList<Node>());
-        }
+
         // Build the reverse ordering for BuildIntervals
-        ArrayList<BasicBlock> ro = buildOrdering(func.entry);
+        boolean explored[] = new boolean[100];
+        ArrayList<BasicBlock> ro = buildOrdering(func.entry, explored);
         for(BasicBlock b : ro) {
+            // Avoid null / empty blocks
+            if(b.ins == null || b.ins.isEmpty()) {
+                continue;
+            }
             // liveSet = union of all live in b's successors
             HashSet<String> liveSet = new HashSet<String>();
             for(BasicBlock d : b.dom) {
                 liveSet.addAll(d.live);
-            }
-            //TODO: Phi traversal
-            int blockStartID = b.ins.get(0).id;
-            int blockEndID = b.ins.get(b.ins.size()-1).id;
 
-            // For each opd in live set
-            // These have to be created already otherwise they would not be live now.
-            for(String s : liveSet) {
-                Node n = nodeMap.get(s);
-                int start = Integer.parseInt(n.getId());
-                if(start >= blockStartID && start <= blockEndID) {
-                    n.addRange(start, blockEndID);
-                } else {
-                    n.addRange(blockStartID, blockEndID);
+                //TODO: Phi traversal
+                for(Instruction i : d.phis) {
+                    for(Operand o : i.operands) {
+                        //If operand is constant, skip
+                        if(o.type  == OperandType.CONST) {
+                            continue;
+                        }
+                        liveSet.add(o.getValue());
+                    }
                 }
             }
 
+//            int blockStartID = b.ins.get(0).id;
+//            int blockEndID = b.ins.get(b.ins.size()-1).id;
+
+            // For each opd in live set
+            // These have to be created already otherwise they would not be live now.
+            List<String> remove = new ArrayList<String>();
+//            for(String s : liveSet) {
+//                Node n = nodeMap.get(s);
+//                int start = Integer.parseInt(n.getId());
+//                if(start >= blockStartID && start <= blockEndID) {
+//                    // if the def is within this block, set the ranges
+//                    n.addRange(start, blockEndID);
+//                    remove.add(s);
+//                } else {
+//                    // the def is not in this block,
+//                    // it just lives through this entire block
+//                    n.addRange(blockStartID, blockEndID);
+//                }
+//            }
+            // Clear the liveSet of vars that end in this block
+//            for(String s : remove) {
+//                liveSet.remove(s);
+//            }
+
             // traverse instructions in reverse order
-            for(int i = b.ins.size(); i > 0; i--) {
+            for(int i = b.ins.size() - 1; i >= 0; i--) {
                 // Due to our structure, all of these are inputs.
                 Instruction in = b.ins.get(i);
+
+                if(in.operator == InstructionType.BRA || in.operator == InstructionType.RETURN
+                        || in.operator == InstructionType.BNE || in.operator == InstructionType.BEQ
+                        || in.operator == InstructionType.BLE || in.operator == InstructionType.BLT
+                        || in.operator == InstructionType.BGE || in.operator == InstructionType.BGT
+                        || in.operator ==  InstructionType.WLN || in.operator == InstructionType.LOADPARAM) {
+                    continue;
+                }
+
+                // If output, this def check has to come first to avoid over
+                // lapping with the end use vars
+                if(du.intermediates.containsKey(in.id)) {
+                    if(!nodeMap.containsKey(new Integer(in.id))) {
+                        break;
+                        // This shouldn't happen because then it means it was never used.
+                    }
+                    // add interference with liveset
+                    Node n = nodeMap.get(in.id);
+                    for(String s : liveSet) {
+                        Node n2 = nodeMap.get(s);
+                        if(n.equals(n2)) { continue; }
+                        ig.addEdge(n2.getId() +"--"+ n.getId(),n, n2);
+                    }
+                    liveSet.remove(n);
+                }
+
+                // For Inputs / USE
+                // create the node, insert into live range
                 for(Operand o : in.operands) {
                     //If operand is constant, skip
                     if(o.type  == OperandType.CONST) {
                         continue;
                     }
-                    // Since this var is alive
-                    liveSet.add(o.getValue());
+                    // Since this var is alive, add to set
                     Node var = new Node(o.getValue());
+                    nodeMap.put(o.getValue(), var);
+                    liveSet.add(o.getValue());
+                    ig.addVertex(var);
                     // This is for the case that the var ends within the same block
-                    int temp = 0;
-                    try {
-                        temp = Integer.parseInt(o.getValue());
-                        if(temp > blockStartID && temp < blockEndID) {
-                            // leave temp to be set
-                        } else {
-                            temp = blockStartID;
-                            // else its out of range of this block
-                        }
-                    } catch(Exception e) {
-                        // Its probably a variable.
-                        var.addRange(0, in.id);
-                        liveSet.remove(o.getValue());
-                    }
-                    var.addRange(temp, in.id);
+//                    int temp = 0;
+//                    try {
+//                        temp = Integer.parseInt(o.getValue());
+//                        if(temp >= blockStartID && temp <= blockEndID) {
+//                            //if within block, set range and remove from liveset
+//                            var.addRange(temp, in.id);
+//                            liveSet.remove(o.getValue());
+//                            continue;
+//                        } else {
+//                            // else its out of range of this block
+//                            temp = blockStartID;
+//                        }
+//                    } catch(Exception e) {
+//                        // Its probably a global variable.
+//                        var.addRange(0, in.id);
+//                        //TODO: Remove this after debug
+//                        nodeMap.remove(o.getValue()); // DEBUGGING
+//                        liveSet.remove(o.getValue());
+//                        continue;
+//                    }
+//                    var.addRange(temp, in.id);
                 }
             }
 
-            // if b is loop header
-            if(b.type == BasicBlockType.WHILE) {
-//                BasicBlock loopEnd = b.loopEnd;
+            // removal of phis
+            for(Instruction i : b.phis) {
+                    liveSet.remove(i.id);
             }
+
+            // if b is loop header
+//            if(b.type == BasicBlockType.WHILE) {
+//                BasicBlock loopEnd = b.loop_end;
+//                int loopEndID = loopEnd.ins.get(loopEnd.ins.size()-1).id;
+//                remove = new ArrayList<String>();
+//                for(String s : liveSet) {
+//                    nodeMap.get(s).addRange(blockStartID, loopEndID);
+//
+//                }
+//                for(String s : remove) {
+//                    liveSet.remove(s);
+//                }
+//            }
             b.live = liveSet;
         }
 
-
-//        Node n = new Node(i.toString());
-//        n.cost = length;
-//        for(int j = start; j <= last; j++) {
-//            liveRanges.get(j).add(n);
+        // Intialize the list of sets for live range
+//        for(int i = 0; i < func.ir.ins.size(); i++) {
+//            liveRanges.add(new HashSet<Node>());
 //        }
-//        ig.addVertex(n);
+//        // liveRanges(i) = vars that are alive at instruction / line i;
+//        for(String s : nodeMap.keySet()) {
+//            Node n = nodeMap.get(s);
+//            // create node n in IG
+//            ig.addVertex(n);
+//            for(Node.Interval i : n.live) {
+//                for(int start = i.start; start <= i.end; start++) {
+//                    liveRanges.get(start).add(n);
+//                }
+//            }
+//        }
     }
 
-    private ArrayList<BasicBlock> buildOrdering (BasicBlock b) {
+    private ArrayList<BasicBlock> buildOrdering (BasicBlock b, boolean[] explored) {
         ArrayList<BasicBlock> a = new ArrayList<BasicBlock>();
-        if(b == null) {
+        if(b == null || explored[b.id]) {
             return a;
         }
+        explored[b.id] = true;
         // Reverse Pre-order notation
-        a.addAll(buildOrdering(b.right));
-        a.addAll(buildOrdering(b.left));
+        a.addAll(buildOrdering(b.right, explored));
+        a.addAll(buildOrdering(b.left, explored));
         a.add(b);
         return a;
     }
@@ -146,6 +230,7 @@ public class RegisterAllocator {
 
     public SimpleGraph<Node, String> buildIG() {
         for(int i = 0; i < liveRanges.size(); i++) {
+
             if(liveRanges.get(i).size() < 2) {
                 continue;
                 // there is no interference on this line.
@@ -159,10 +244,10 @@ public class RegisterAllocator {
                         continue;       // already has this edge, dont add again.
                     }
                     // Special case for def beginning and use endings
-                    if(n.end == n2.start || n2.end == n.start){
-//                        continue;       // there is no overlap for this def use
-                    }
-                    ig.addEdge(n.getId()+" -- "+n2.getId(), n, n2);
+//                    if(n.end == n2.start || n2.end == n.start){
+////                        continue;       // there is no overlap for this def use
+//                    }
+//                    ig.addEdge(n.getId()+" -- "+n2.getId(), n, n2);
                 }
             }
         }
