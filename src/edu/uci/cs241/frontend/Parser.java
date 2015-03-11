@@ -732,6 +732,8 @@ public class Parser {
                         }
                     }else{
                         current_func.ir.addInstructions(phis);
+                        // For RA
+                        b.phis.addAll(phis);
                         join.addInstructions(phis);
                     }
                     b.left.exit.left= join;
@@ -817,6 +819,8 @@ public class Parser {
                     if(phis.size() != 0) {
                         current_func.ir.insertPhiInstructions(phis, r_res.start_line);
                         b.insertInstructions(phis, 0);
+                        // For RA
+                        b.phis.addAll(phis);
                         // fix the last jump line
                         Instruction last_jump = current_func.ir.getLastInstruction();
                         last_jump.operands.get(0).line -= phis.size();
@@ -828,6 +832,8 @@ public class Parser {
                     b.left.exit.left = b;
                     b.exit = join;
                     (b.dom).add(join);
+                    // For RA
+                    b.loop_end = b.left.exit;
                 } else {
                     error("Missing od token");
                 }
