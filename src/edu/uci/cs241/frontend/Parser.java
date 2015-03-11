@@ -331,7 +331,7 @@ public class Parser {
                     // just load from this address
                     Instruction load = new Instruction(InstructionType.LOAD);
                     int start_Line = current_ir.addInstruction(retrieve_arr);
-                    load.addOperand(OperandType.ARR_ADDRESS, String.valueOf(start_Line));
+                    load.addOperand(OperandType.INST, String.valueOf(start_Line));
                     res.type = ResultType.INST;
                     res.line = current_ir.addInstruction(load);
                     if(arr.dimensions.size() == 1){
@@ -344,6 +344,8 @@ public class Parser {
                     // left side of assignment, return address for assignment to use in STORE
                     res.type = ResultType.ARR;
                     res.address = current_ir.addInstruction(retrieve_arr);
+                    // cuz type will be changed to INST
+                    res.line = res.address;
                     if(arr.dimensions.size() == 1){
                         res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : res.address;
                         res.end_line = res.address;
@@ -534,6 +536,9 @@ public class Parser {
                 // if left side is array, use STORE instead of MOVE
                 Instruction assi = d_res.type == ResultType.ARR ? new Instruction(InstructionType.STORE) : new Instruction(InstructionType.MOVE);
                 assi.addOperandByResultType(e_res);
+                // change type of array to inst
+                if(d_res.type == ResultType.ARR)
+                    d_res.type = ResultType.INST;
                 assi.addOperandByResultType(d_res);
                 int last_line = current_ir.addInstruction(assi);
                 // Set Instructions in Basic Block
