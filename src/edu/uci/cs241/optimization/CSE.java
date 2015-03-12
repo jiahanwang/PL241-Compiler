@@ -66,7 +66,10 @@ public class CSE {
                     }
                 }
             }
-
+            // Special case of LOAD-STORE-LOAD
+            if(i.reload) {
+                continue; // do not replace.
+            }
             boolean found = false;
             // check current block inst against anchor's
             if(anchor.containsKey(t)){
