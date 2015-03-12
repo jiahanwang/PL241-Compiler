@@ -232,7 +232,19 @@ public class RegisterAllocator {
             adj.add(n);
         }
         // Remove this vertex and attempt to recursively color regs
-        ig.removeVertex(removed);    // this takes care of edges
+        ig.removeVertex(removed);
+        // Deal with the 'group' of merged nodes as one.
+        for(Node n : removed.group) {
+            if(!ig.containsVertex(n)) {
+                continue;
+                // may have been removed already.
+            }
+            for(Node a : ig.adjacentVertices(n)) {
+                adj.add(a);
+            }
+            ig.removeVertex(n);    // this takes care of edges
+        }
+
         allocateRegisters();
 
         // Grab neighbor colors to make sure we don't use them
@@ -249,6 +261,9 @@ public class RegisterAllocator {
             } else {
                 // assign it to this
                 regMap.put(removed.getId(), reg);
+                for(Node n : removed.group) {
+                    regMap.put(n.getId(), reg);
+                }
                 break;
             }
         }

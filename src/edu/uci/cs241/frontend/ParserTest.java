@@ -2,6 +2,7 @@ package edu.uci.cs241.frontend;
 
 import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.InstructionType;
+import edu.uci.cs241.ir.types.OperandType;
 import edu.uci.cs241.optimization.CP;
 import edu.uci.cs241.optimization.CSE;
 import edu.uci.cs241.optimization.Node;
@@ -21,7 +22,7 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser parser;
-            for(int i = 28; i <= 28; i++) {
+            for(int i = 0; i <= 0; i++) {
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.cfg.dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
@@ -61,6 +62,14 @@ public class ParserTest {
                     for(Integer num : CSE.remove) {
                         func.ir.deleteInstruction(num);
                     }
+                    // For replacing operands after the deletion.
+                    for(Instruction in : func.ir.ins) {
+                        for(Operand o : in.operands) {
+                            if(o.type == OperandType.INST) {
+                                o.line = o.line - CSE.numRemovesBefore(o.line);
+                            }
+                        }
+                    }
                     CSE.reset();
 
                     //if(func.predefined) continue;
@@ -82,10 +91,11 @@ public class ParserTest {
 //                    reg.printNodeMap();
 
                     reg.printLiveRanges();
+                    reg.mergePhis();
                     reg.buildIG();
                     SimpleGraph<Node, String> sg = reg.getIG();
                     for(Node n : sg.getVertices()) {
-                        pw_ig.println(n.getId() + "[label=\"[" + n.getId() +
+                        pw_ig.println(n.getId() + "[label=\"[" + n.toString() +
                                 "]\ncost: "+n.cost+
                                 "\ndegree: "+sg.adjacentVertices(n).size()+
                                 "\"]");
@@ -103,7 +113,6 @@ public class ParserTest {
 //                    System.out.print(func.ir);
 //                    System.out.print("-----------------------\n");
 //                    reg.reset();
-                    //TODO: reset for reg alloc
 
                 }
                 System.out.print("======================\n\n\n");

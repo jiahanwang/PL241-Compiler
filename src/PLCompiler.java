@@ -2,7 +2,9 @@ import edu.uci.cs241.frontend.Parser;
 import edu.uci.cs241.ir.BasicBlock;
 import edu.uci.cs241.ir.Function;
 import edu.uci.cs241.ir.Instruction;
+import edu.uci.cs241.ir.Operand;
 import edu.uci.cs241.ir.types.InstructionType;
+import edu.uci.cs241.ir.types.OperandType;
 import edu.uci.cs241.optimization.CP;
 import edu.uci.cs241.optimization.CSE;
 import edu.uci.cs241.optimization.Node;
@@ -93,6 +95,13 @@ public class PLCompiler {
                     CSE.recursiveCSE(func.entry, anchor);
                     for(Integer num : CSE.remove) {
                         func.ir.deleteInstruction(num);
+                    }
+                    for(Instruction in : func.ir.ins) {
+                        for(Operand o : in.operands) {
+                            if(o.type == OperandType.INST) {
+                                o.line = o.line - CSE.numRemovesBefore(o.line);
+                            }
+                        }
                     }
                     CSE.reset();
                     /* print out ir*/
