@@ -62,14 +62,6 @@ public class ParserTest {
                     for(Integer num : CSE.remove) {
                         func.ir.deleteInstruction(num);
                     }
-                    // For replacing operands after the deletion.
-                    for(Instruction in : func.ir.ins) {
-                        for(Operand o : in.operands) {
-                            if(o.type == OperandType.INST) {
-                                o.line = o.line - CSE.numRemovesBefore(o.line);
-                            }
-                        }
-                    }
                     CSE.reset();
 
                     //if(func.predefined) continue;

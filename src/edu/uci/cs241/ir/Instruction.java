@@ -40,22 +40,21 @@ public class Instruction {
                 if (operands.get(0).equals(inst.operands.get(1)) && operands.get(1).equals(inst.operands.get(0))) {
                     return true;
                 }
-                // Default: check operand for operand.
-                if (operands.size() == inst.operands.size()) {
-                    boolean e = true;
-                    for (int i = 0; i < operands.size(); i++) {
-                        if (operands.get(i).global || inst.operands.get(i).global) {
-                            return false;
-                            // short circuit global vars, they cannot be equal to be safe.
-                        }
-                        if (!operands.get(i).equals(inst.operands.get(i))) {
-                            e = false;
-                            break;
-                        }
+            }
+            // Default: check operand for operand.
+            if (operands.size() == inst.operands.size()) {
+                boolean e = true;
+                for (int i = 0; i < operands.size(); i++) {
+                    if (operands.get(i).global || inst.operands.get(i).global) {
+                        return false;
+                        // short circuit global vars, they cannot be equal to be safe.
                     }
-                    return e;
+                    if (!operands.get(i).equals(inst.operands.get(i))) {
+                        e = false;
+                        break;
+                    }
                 }
-                return false;
+                return e;
             }
         }
         return false;
