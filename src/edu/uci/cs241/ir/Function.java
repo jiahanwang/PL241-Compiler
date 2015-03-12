@@ -130,7 +130,7 @@ public class Function {
             for (String param : params) {
                 this.symbolTable.addVariable(param, true);
                 // add to the initial phi map
-                this.ssa_stack.get(0).put(param, new PhiFunction(param, 0, 0));
+                this.ssa_stack.get(0).put(param, new PhiFunction(param, 0, 0, 0));
                 this.parameter_size++;
             }
             return true;
@@ -142,7 +142,7 @@ public class Function {
     public void addVariable(String ident) throws Exception {
         this.symbolTable.addVariable(ident, false);
         // add to the initial phi map
-        this.ssa_stack.get(0).put(ident, new PhiFunction(ident, 0, 0));
+        this.ssa_stack.get(0).put(ident, new PhiFunction(ident, 0, 0, 0));
     }
 
     public void addArray(Array arr) throws Exception {

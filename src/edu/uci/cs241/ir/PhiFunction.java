@@ -28,19 +28,19 @@ public class PhiFunction implements Cloneable {
 
     public boolean left_changed;
 
-    public PhiFunction(String id, int original, int current){
+    public PhiFunction(String id, int original, int current, int last){
         this.id = id;
-        this.original = original;
+        this.original = last;
         this.current = current;
         this.lead = Integer.MIN_VALUE;
         this.operands = new ArrayList<Integer>();
-        this.last = current;
+        this.last = last;
         this.first_use = true;
         this.left_changed = false;
     }
 
     public PhiFunction(String id){
-        this(id, 0, 0);
+        this(id, 0, 0, 0);
     }
 
     public Instruction toInstruction(){
@@ -53,7 +53,7 @@ public class PhiFunction implements Cloneable {
     }
 
     public Object clone (){
-        PhiFunction new_phi = new PhiFunction(this.id, current, current);
+        PhiFunction new_phi = new PhiFunction(this.id, this.current, this.current, this.last);
         return new_phi;
     }
 
