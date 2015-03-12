@@ -21,7 +21,7 @@ public class ParserTest {
     public static void main(String[] args) {
         try {
             Parser parser;
-            for(int i = 28; i <= 28; i++) {
+            for(int i = 0; i <= 31; i++) {
                 PrintWriter pw = new PrintWriter("viz/test0"+String.format("%02d", i)+".cse.cfg.dot");
                 pw.println("digraph test0"+String.format("%02d", i)+" {");
                 pw.println("node [shape=box]");
@@ -82,10 +82,11 @@ public class ParserTest {
 //                    reg.printNodeMap();
 
                     reg.printLiveRanges();
+                    reg.mergePhis();
                     reg.buildIG();
                     SimpleGraph<Node, String> sg = reg.getIG();
                     for(Node n : sg.getVertices()) {
-                        pw_ig.println(n.getId() + "[label=\"[" + n.getId() +
+                        pw_ig.println(n.getId() + "[label=\"[" + n.toString() +
                                 "]\ncost: "+n.cost+
                                 "\ndegree: "+sg.adjacentVertices(n).size()+
                                 "\"]");
