@@ -49,6 +49,9 @@ public class BasicBlock {
     // For Live Ranges
     public HashSet<String> live;
 
+    // For kill array reload
+    public HashSet<Instruction> load;
+
     // Constructor
     public BasicBlock() {
         this.id = ++count;
@@ -63,6 +66,7 @@ public class BasicBlock {
         this.live = new HashSet<String>();
         this.phis = new ArrayList<Instruction>();
         this.live_for_while = new LinkedHashSet<String>();
+        this.load = new HashSet<Instruction>();
     }
 
     public BasicBlock(String name){

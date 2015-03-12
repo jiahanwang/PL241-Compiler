@@ -3,6 +3,7 @@ package edu.uci.cs241.frontend;
 import edu.uci.cs241.ir.*;
 import edu.uci.cs241.ir.types.*;
 import edu.uci.cs241.ir.Result;
+import edu.uci.cs241.optimization.Node;
 
 import java.util.*;
 
@@ -129,9 +130,10 @@ public class Parser {
         List<Function> funcs = new ArrayList<Function>();
         funcs.add(main);
         funcs.addAll(main.getFunctions());
-        boolean[] explored = new boolean[1000000];
+        //boolean[] explored = new boolean[1000000];
         for(Function func : funcs){
-            killWhileJoin(func.entry, null, explored);
+            markReload(func);
+            //killWhileJoin(func.entry, null, explored);
         }
         // Reset static counters for next file
         staticReset();
@@ -164,7 +166,7 @@ public class Parser {
         return c;
     }
 
-    private void killWhileJoin(BasicBlock b, BasicBlock parent, boolean[] explored) {
+    private void killWhileJoin(BasicBlock b, BasicBlock parent, boolean[] explored, List<BasicBlock> b_squence) {
         if(explored[b.id]) {
             return;
         }
@@ -174,12 +176,54 @@ public class Parser {
                 parent.right = b.left;
             }
             explored[b.id] = true;
+            // For kill array reload
+            b_squence.add(b);
         }
         if (b.left != null) {
-            killWhileJoin(b.left, b, explored);
+            killWhileJoin(b.left, b, explored, b_squence);
         }
         if (b.right != null) {
-            killWhileJoin(b.right, b, explored);
+            killWhileJoin(b.right, b, explored, b_squence);
+        }
+    }
+
+    private void markReload(Function func) throws Exception {
+        // Build the reverse ordering for BuildIntervals
+        boolean explored[] = new boolean[10000];
+        LinkedList<BasicBlock> ro = new LinkedList<BasicBlock>();
+        killWhileJoin(func.entry, null, explored, ro);
+        // reverse the sequence
+        Collections.reverse(ro);
+        // Build intervals
+        for(BasicBlock b : ro) {
+            // Avoid null / empty blocks
+            if(b.ins == null || b.ins.isEmpty()) {
+                continue;
+            }
+            /** liveSet = union of all loads in b's successors **/
+            HashSet<Instruction> loadSet = new HashSet<Instruction>();
+            for(BasicBlock successor : b.getSuccessors()) {
+                loadSet.addAll(successor.load);
+            }
+            /** traverse instructions in reverse order **/
+            for(int i = b.ins.size() - 1; i >= 0; i--) {
+                Instruction in = b.ins.get(i);
+                // For STORE
+                if(in.operator == InstructionType.STORE){
+                    for(Instruction load : loadSet){
+                        if(load.arr_name.equals(in.arr_name)){
+                            load.reload = true;
+                            loadSet.remove(load);
+                        }
+                    }
+                    continue;
+                }
+                // For LOAD
+                if(in.operator == InstructionType.LOAD){
+                    loadSet.add(in);
+                }
+            }
+            b.load = loadSet;
         }
     }
 
@@ -335,6 +379,7 @@ public class Parser {
                 if(!left_side){
                     // just load from this address
                     Instruction load = new Instruction(InstructionType.LOAD);
+                    load.arr_name = arr.name;
                     last_line = current_ir.addInstruction(retrieve_arr);
                     load.addOperand(OperandType.INST, String.valueOf(last_line));
                     res.type = ResultType.INST;
@@ -351,6 +396,7 @@ public class Parser {
                     res.address = current_ir.addInstruction(retrieve_arr);
                     // cuz type will be changed to INST
                     res.line = res.address;
+                    res.arr_name = arr.name;
                     if(arr.dimensions.size() == 1){
                         res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : start_Line;
                         res.end_line = res.address;
@@ -542,8 +588,10 @@ public class Parser {
                 Instruction assi = d_res.type == ResultType.ARR ? new Instruction(InstructionType.STORE) : new Instruction(InstructionType.MOVE);
                 assi.addOperandByResultType(e_res);
                 // change type of array to inst
-                if(d_res.type == ResultType.ARR)
+                if(d_res.type == ResultType.ARR) {
                     d_res.type = ResultType.INST;
+                    assi.arr_name = d_res.arr_name;
+                }
                 assi.addOperandByResultType(d_res);
                 int last_line = current_ir.addInstruction(assi);
                 // Set Instructions in Basic Block

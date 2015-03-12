@@ -18,6 +18,7 @@ public class Result {
     public int line;       // line number of IR if line
     public List<Integer> dimensions; // dimension if array
     public String func_name; // func_name if function call's result
+    public String arr_name;
 
 
     public int regno;      // register number, if reg
