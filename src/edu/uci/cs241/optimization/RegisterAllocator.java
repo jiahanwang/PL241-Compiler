@@ -48,15 +48,19 @@ public class RegisterAllocator {
     public void initializeGraph(){
         // add all used intermediate in the graph
         for(Map.Entry<Integer, DefUseChain.Item> inter : this.du.intermediates.entrySet()){
-            if(inter.getValue().uses.size() == 0) continue;
+            int frequency = inter.getValue().uses.size();
+            if(frequency == 0) continue;
             Node n = new Node(String.valueOf(inter.getKey()));
+            n.cost = frequency;
             nodeMap.put(n.getId(), n);
             this.ig.addVertex(n);
         }
         // add non-local reference in the graph
         for(Map.Entry<String, DefUseChain.Item> inter : this.du.variables.entrySet()){
-            if(inter.getValue().uses.size() == 0) continue;
+            int frequency = inter.getValue().uses.size();
+            if(frequency == 0) continue;
             Node n = new Node(inter.getKey());
+            n.cost = frequency;
             nodeMap.put(n.getId(), n);
             this.ig.addVertex(n);
         }
@@ -66,7 +70,6 @@ public class RegisterAllocator {
     Based on Franz's paper: Linear Scan Register Allocation on SSA Form
      */
     public void buildLiveRanges() throws Exception {
-
         // Initialize the Graph first
         initializeGraph();
         // Build the reverse ordering for BuildIntervals
