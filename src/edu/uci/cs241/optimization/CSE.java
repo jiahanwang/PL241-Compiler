@@ -53,8 +53,7 @@ public class CSE {
         for(Instruction i : b.ins) {
             // Grab instruction information to compare
             InstructionType t = i.operator;
-            if (t == InstructionType.PHI || t == InstructionType.FUNC
-                    || t == InstructionType.RETURN || t == InstructionType.LOADPARAM) {
+            if (t == InstructionType.FUNC || t == InstructionType.RETURN || t == InstructionType.LOADPARAM) {
                 // blacklisting instructions that we shouldn't bother checking
                 continue;
             }
@@ -77,8 +76,8 @@ public class CSE {
                         i.clearOperands();
                         i.addOperand(OperandType.INST, Integer.toString(j.id));
                         found = true;
-                        eliminated.put(i.id, j.id);
                         remove.add(i.id-remove.size());
+                        eliminated.put(i.id, j.id);
                         if(remove.get(remove.size()-1) < i.id-remove.size()) {
                             throw new Exception("Error in out of order parsing of Dominator Tree");
                             // Special case to prevent dominated blocks that come AFTER
@@ -102,6 +101,18 @@ public class CSE {
             recursiveCSE(d, anchor);
         }
 
+    }
+
+    public static int numRemovesBefore(int instr) {
+        int count = 0;
+        for(int i : remove) {
+            if(instr > i) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
     }
 
 
