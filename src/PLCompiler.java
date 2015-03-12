@@ -21,7 +21,7 @@ public class PLCompiler {
 
     public static void main(String[] args) {
         try {
-            for(int i = 0; i <= 32; i++) {
+            for(int i = 1; i <= 32; i++) {
 
                 // CFG Visualization for unoptimized IR
                 PrintWriter unoptimized_pw = new PrintWriter("viz/unoptimized/test0"+String.format("%02d", i)+".dot");
@@ -43,8 +43,6 @@ public class PLCompiler {
 //                PrintWriter dom_pw = new PrintWriter("viz/cse/test0"+String.format("%02d", i)+".cse.dom.dot");
 //                dom_pw.println("digraph test0" + String.format("%02d", i) + " {");
 //                dom_pw.println("node [shape=box]");
-
-
 
                 /**
                  *
@@ -118,20 +116,19 @@ public class PLCompiler {
                     // Register Allocator
                     RegisterAllocator reg = new RegisterAllocator(func);
                     reg.buildLiveRanges();
+                    reg.mergePhis();
 //                  reg.printNodeMap();
-                    reg.printLiveRanges();
-                    reg.buildIG();
+//                  reg.printLiveRanges();
+//                  reg.buildIG();
 
                     // Draw the IG for every single function
                     PrintWriter ig_pw = new PrintWriter("viz/register/test0"+ String.format("%02d", i) + "." + func.name + ".ig.dot");
                     ig_pw.println("graph test0" + String.format("%02d", i) + " {");
                     ig_pw.println("node [shape=circle]");
                     SimpleGraph<Node, String> sg = reg.getIG();
+                    // print out the graph
                     for(Node n : sg.getVertices()) {
-                        ig_pw.println(n.getId() + "[label=\"[" + n.getId() +
-                                "]\ncost: " + n.cost +
-                                "\ndegree: " + sg.adjacentVertices(n).size() +
-                                "\"]");
+                        ig_pw.println(n.getId() + "[label=\"[" + n.toString() + "degree: " + sg.degree(n) + "\"]");
                     }
                     for(String edge : sg.getEdges()) {
                         ig_pw.println(edge);

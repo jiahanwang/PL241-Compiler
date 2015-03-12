@@ -19,6 +19,7 @@ public class RegisterAllocator {
     private HashMap<String, Integer> regMap;   // [Intermediate] = RegNo.
     private HashMap<String, Node> nodeMap;
     private Function func;
+    private List<Instruction> phis;
 
     public RegisterAllocator(Function func) {
         this.ig = new SimpleGraph<Node, String>();
@@ -27,6 +28,7 @@ public class RegisterAllocator {
         this.func = func;
         this.nodeMap = new HashMap<String, Node>();
         this.du = func.getDu();
+        this.phis = new LinkedList<Instruction>();
     }
 
     public void applyRA() throws Exception {
@@ -152,12 +154,44 @@ public class RegisterAllocator {
         }
     }
 
+    public void mergePhis(){
+        if(this.ig == null || this.ig.numOfVertices() <= 1) return;
+        for(Instruction in : phis){
+            List<Node> groups = new ArrayList<Node>(10);
+            if(nodeMap.containsKey(String.valueOf(in.id)))
+                groups.add(nodeMap.get(String.valueOf(in.id)));
+            // build the group
+            for (int i = 0, len = in.operands.size(); i < len; i++) {
+                Operand operand = in.operands.get(i);
+                if(operand.type != OperandType.INST && !nodeMap.containsKey(operand.getValue())) continue;
+                Node potential = nodeMap.get(operand.getValue());
+                boolean interfere = false;
+                for(int j  = 0, jlen = groups.size(); j < jlen; j++){
+                    Node existing = groups.get(j);
+                    if(this.ig.areAdjacent(potential, existing)) {
+                        interfere = true;
+                        break;
+                    }
+                }
+                if(!interfere) groups.add(potential);
+            }
+            // add the group indicator in node
+            for(Node node : groups){
+                List<Node> g_indicator = new LinkedList<Node>(groups);
+                g_indicator.remove(node);
+                node.group = g_indicator;
+            }
+        }
+    }
+
     private ArrayList<BasicBlock> buildOrdering (BasicBlock b, boolean[] explored) {
         ArrayList<BasicBlock> a = new ArrayList<BasicBlock>();
         if(b == null || explored[b.id]) {
             return a;
         }
         explored[b.id] = true;
+        // Record all the phis
+        this.phis.addAll(b.phis);
         // Reverse Pre-order notation
         a.addAll(buildOrdering(b.right, explored));
         a.addAll(buildOrdering(b.left, explored));

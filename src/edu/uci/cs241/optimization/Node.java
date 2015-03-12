@@ -11,15 +11,29 @@ import java.util.List;
 public class Node extends AbstractVertex {
 
     public int cost;
+
     public List<Interval> live;
+
+    public List<Node> group;
 
     public Node(String name) {
         super(name);
-        live = new ArrayList<Interval>();
+        this.live = new ArrayList<Interval>();
+        this.group = new ArrayList<Node>();
     }
 
     public String toString() {
-        return super.getId()+":"+live.toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append("").append(this.id).append("]\ncost: ").append(this.cost).append("\n");
+        if(this.group.size() != 0) {
+            builder.append("group: [");
+            for (int i = 0, len = this.group.size(); i < len; i++) {
+                builder.append(this.group.get(i).id + ",");
+            }
+            builder.deleteCharAt(builder.length() - 1);
+            builder.append("]\n");
+        }
+        return builder.toString();
     }
 
     // Functions added from Franz's Paper "Linear Scan Register Allocation"
