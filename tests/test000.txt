@@ -1,11 +1,18 @@
 main
-  var i, j;
+  var a, b, i, j;
+  array[6] x;
+
 {
-  let i <- 0;
-  while i < 10 do
-    let j <- call InputNum();
-    let j <- j + 7;
-    call OutputNum(j);
-    let i <- i + 1
-  od
+  let i <- call InputNum();
+  let j <- call InputNum();
+  let x[i] <- call InputNum();
+  let a <- i + 1;
+  let b <- a + x[i];
+  if a > 0 then
+    let b <- b + 1;
+    let x[j] <- a
+  fi;
+  let b <- b + x[i];
+  let a <- a + x[i];
+  call OutputNum(b)
 }.

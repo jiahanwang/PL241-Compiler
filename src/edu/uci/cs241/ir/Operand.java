@@ -83,8 +83,8 @@ public class Operand implements Cloneable{
             case VARIABLE:
             case BASE_ADDRESS:
             case FP:
-                return this.name.equals(op.name);
             case ARR_ADDRESS:
+                return this.name.equals(op.name);
             case MEM_ADDRESS:
                 return this.address == op.address;
             case FUNC_PARAM:
