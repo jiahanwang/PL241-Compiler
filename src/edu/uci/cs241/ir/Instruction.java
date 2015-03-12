@@ -190,6 +190,9 @@ public class Instruction {
             builder.append(operand.toString());
             builder.append(" ");
         }
+        if(this.regno != -1){
+            builder.append("= R" + this.regno);
+        }
         return builder.toString();
     }
 }
