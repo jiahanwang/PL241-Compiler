@@ -16,14 +16,14 @@ public class RegisterAllocator {
     private SimpleGraph<Node, String> ig;
     private ArrayList<Set<Node>> liveRanges;
     private DefUseChain du;
-    private HashMap<Integer, Integer> regMap;   // [Intermediate] = RegNo.
+    private HashMap<String, Integer> regMap;   // [Intermediate] = RegNo.
     private HashMap<String, Node> nodeMap;
     private Function func;
 
     public RegisterAllocator(Function func) {
         this.ig = new SimpleGraph<Node, String>();
         this.liveRanges = new ArrayList<Set<Node>>();
-        this.regMap = new HashMap<Integer, Integer>();
+        this.regMap = new HashMap<String, Integer>();
         this.func = func;
         this.nodeMap = new HashMap<String, Node>();
         this.du = func.getDu();
@@ -40,7 +40,7 @@ public class RegisterAllocator {
     public void reset() {
         this.ig = new SimpleGraph<Node, String>();
         this.liveRanges = new ArrayList<Set<Node>>();
-        this.regMap = new HashMap<Integer, Integer>();
+        this.regMap = new HashMap<String, Integer>();
         this.nodeMap = new HashMap<String, Node>();
     }
 
@@ -118,7 +118,7 @@ public class RegisterAllocator {
 
             /** removal of phis **/
             for(Instruction i : b.phis) {
-                    liveSet.remove(String.valueOf(i.id));
+                liveSet.remove(String.valueOf(i.id));
             }
 
             /** if b is loop header **/
@@ -201,7 +201,7 @@ public class RegisterAllocator {
         // Grab neighbor colors to make sure we don't use them
         LinkedHashSet<Integer> adjRegs = new LinkedHashSet<Integer>();
         for(Node n : adj) {
-            adjRegs.add(regMap.get(n));
+            adjRegs.add(regMap.get(n.getId()));
         }
         // Attempt to assign a color / register
         int reg = 1;
@@ -211,7 +211,7 @@ public class RegisterAllocator {
                 reg++;
             } else {
                 // assign it to this
-                regMap.put(Integer.valueOf(removed.getId()), reg);
+                regMap.put(removed.getId(), reg);
                 break;
             }
         }
