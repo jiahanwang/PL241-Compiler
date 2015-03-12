@@ -40,8 +40,10 @@ public class Operand implements Cloneable{
                 break;
             case VARIABLE:
                 this.global = !input.contains("_");
-            case BASE_ADDRESS:
                 this.name = input;
+                break;
+            case BASE_ADDRESS:
+                this.name = input + "_base_addr";
                 break;
             case ARR_ADDRESS:
             case MEM_ADDRESS:
@@ -109,7 +111,7 @@ public class Operand implements Cloneable{
             case ARR_ADDRESS:
                 return "ARR[" + this.address + "]";
             case BASE_ADDRESS:
-                return this.name + "_base_address";
+                return this.name;
             case MEM_ADDRESS:
                 return "MEM[" + this.address + "]";
             case FP:
@@ -138,7 +140,7 @@ public class Operand implements Cloneable{
             case ARR_ADDRESS:
                 return "ARR[" + this.address + "]";
             case BASE_ADDRESS:
-                return this.name + "_base_address";
+                return this.name;
             case MEM_ADDRESS:
                 return "MEM[" + this.address + "]";
             case FP:

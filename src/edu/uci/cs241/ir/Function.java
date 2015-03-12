@@ -65,7 +65,7 @@ public class Function {
                     this.du.addDef(new Operand(OperandType.INST, String.valueOf(in.id)), in);
                     break;
                 case ADDA:
-                    // do not track the base address of array
+                    this.du.addUse(in.operands.get(0), in);
                     this.du.addUse(in.operands.get(1), in);
                     this.du.addDef(new Operand(OperandType.ARR_ADDRESS, String.valueOf(in.id)), in);
                     break;

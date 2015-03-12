@@ -116,14 +116,72 @@ public class Instruction {
     }
 
     // For RA
-    public List<Operand> getInputs(){
-        return this.operands;
+    public List<String> getInputs(){
+        List<String> inputs = new LinkedList<String>();
+        switch (this.operator) {
+            case ADD:
+            case SUB:
+            case MUL:
+            case DIV:
+            case ADDA:
+            case CMP:
+            case STORE:
+                if(this.operands.get(0).type != OperandType.CONST){
+                    inputs.add(this.operands.get(0).getValue());
+                }
+                if(this.operands.get(1).type != OperandType.CONST){
+                    inputs.add(this.operands.get(1).getValue());
+                }
+                break;
+            case LOAD:
+            case BNE:
+            case BEQ:
+            case BLE:
+            case BLT:
+            case BGE:
+            case BGT:
+            case WRITE:
+                if(this.operands.get(0).type != OperandType.CONST){
+                    inputs.add(this.operands.get(0).getValue());
+                }
+                break;
+            case FUNC:
+                // track parameters excluding the last hidden one
+                for(int i = 1, len = this.operands.size() - 1; i < len; i++){
+                    if(this.operands.get(i).type != OperandType.CONST){
+                        inputs.add(this.operands.get(i).getValue());
+                    }
+                }
+                break;
+            case RETURN:
+                for(int i = 0, len = this.operands.size(); i < len; i++){
+                    if(this.operands.get(i).type != OperandType.CONST){
+                        inputs.add(this.operands.get(i).getValue());
+                    }
+                }
+                break;
+        }
+        return inputs;
     }
 
-    // For RA
-    public Operand getOutput(){
-        return new Operand(OperandType.INST, String.valueOf(this.id));
-    }
+//    // For RA
+//    public String getOutput(){
+//        switch (this.operator) {
+//            case ADD:
+//            case SUB:
+//            case MUL:
+//            case DIV:
+//            case CMP:
+//            case ADDA:
+//            case LOAD:
+//            case READ:
+//            case LOADPARAM:
+//            case FUNC:
+//                return String.valueOf(this.id);
+//            default:
+//                return null;
+//        }
+//    }
 
     public String toString() {
         StringBuilder builder = new StringBuilder();

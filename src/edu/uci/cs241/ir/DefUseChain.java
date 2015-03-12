@@ -37,11 +37,12 @@ public class DefUseChain {
 
     public boolean addDef(Operand operand, Instruction in){
         switch(operand.type){
+            case BASE_ADDRESS:
             case VARIABLE: {
-                // non-local reference
-                if (operand.global) {
-                    return false;
-                }
+//                // non-local reference
+//                if (operand.global) {
+//                    return false;
+//                }
                 Item item;
                 if (this.variables.containsKey(operand.name)){
                     // if empty def has been added by while PHI
@@ -73,6 +74,7 @@ public class DefUseChain {
                 this.intermediates.put(operand.line, item);
                 return true;
             }
+
             case ARR_ADDRESS: {
                 Item item;
                 if (this.intermediates.containsKey(operand.address)){
@@ -91,11 +93,12 @@ public class DefUseChain {
 
     public boolean addUse(Operand operand, Instruction in){
         switch(operand.type){
+            case BASE_ADDRESS:
             case VARIABLE: {
-                // non-local reference
-                if (operand.global) {
-                    return false;
-                }
+//                // non-local reference
+//                if (operand.global) {
+//                    return false;
+//                }
                 Item item;
                 if (!this.variables.containsKey(operand.name)) {
                     // every variable has been checked by parser, this is to deal with while PHI
@@ -118,19 +121,6 @@ public class DefUseChain {
                 item.addUse(in);
                 return true;
             }
-            case ARR_ADDRESS: {
-                Item item;
-                if (!this.intermediates.containsKey(operand.address)){
-                    // this is to deal with while PHI
-                    // add an empty def first
-                    item = new Item();
-                    this.intermediates.put(operand.address, item);
-                }else {
-                    item = this.intermediates.get(operand.address);
-                }
-                item.addUse(in);
-                return true;
-            }
 
             case INST: {
                 Item item;
@@ -141,6 +131,20 @@ public class DefUseChain {
                     this.intermediates.put(operand.line, item);
                 }else {
                     item = this.intermediates.get(operand.line);
+                }
+                item.addUse(in);
+                return true;
+            }
+
+            case ARR_ADDRESS: {
+                Item item;
+                if (!this.intermediates.containsKey(operand.address)){
+                    // this is to deal with while PHI
+                    // add an empty def first
+                    item = new Item();
+                    this.intermediates.put(operand.address, item);
+                }else {
+                    item = this.intermediates.get(operand.address);
                 }
                 item.addUse(in);
                 return true;

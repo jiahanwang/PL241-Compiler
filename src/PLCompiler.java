@@ -21,7 +21,7 @@ public class PLCompiler {
 
     public static void main(String[] args) {
         try {
-            for(int i = 28; i <= 28; i++) {
+            for(int i = 0; i <= 32; i++) {
 
                 // CFG Visualization for unoptimized IR
                 PrintWriter unoptimized_pw = new PrintWriter("viz/unoptimized/test0"+String.format("%02d", i)+".dot");
@@ -39,14 +39,12 @@ public class PLCompiler {
                 optimized_cse_pw.println("digraph test0" + String.format("%02d", i) + " {");
                 optimized_cse_pw.println("node [shape=box]");
 
-                PrintWriter dom_pw = new PrintWriter("viz/cse/test0"+String.format("%02d", i)+".cse.dom.dot");
-                dom_pw.println("digraph test0" + String.format("%02d", i) + " {");
-                dom_pw.println("node [shape=box]");
+                // Dominator Tree after CSE
+//                PrintWriter dom_pw = new PrintWriter("viz/cse/test0"+String.format("%02d", i)+".cse.dom.dot");
+//                dom_pw.println("digraph test0" + String.format("%02d", i) + " {");
+//                dom_pw.println("node [shape=box]");
 
-                // CFG Visualization for Register Allocator
-                PrintWriter ig_pw = new PrintWriter("viz/register/test0"+String.format("%02d", i)+".ig.dot");
-                ig_pw.println("graph test0" + String.format("%02d", i) + " {");
-                ig_pw.println("node [shape=circle]");
+
 
                 /**
                  *
@@ -89,8 +87,8 @@ public class PLCompiler {
                     explored = new boolean[10000];
                     DFS_buildCFG(func.entry, optimized_cp_pw, explored);
                     /* print out Def-Use Chain */
-                    System.out.print(func.getDu());
-                    //System.out.print("***********************\n");
+                    //System.out.print(func.getDu());
+                    System.out.print("***********************\n");
 
                     /** Common Subexpression Elimination **/
                     HashMap<InstructionType, ArrayList<Instruction>> anchor = new HashMap<InstructionType, ArrayList<Instruction>>();
@@ -108,9 +106,9 @@ public class PLCompiler {
                     DFS_buildCFG(func.entry, optimized_cse_pw, explored);
                     /* print out Def-Use Chain */
                     System.out.print(func.getDu());
-                    //System.out.print("***********************\n");
-                    explored = new boolean[10000];
-                    DFS_buildDom(func.entry, dom_pw, explored);
+                    System.out.print("***********************\n");
+                    //explored = new boolean[10000];
+                    //DFS_buildDom(func.entry, dom_pw, explored);
                     /**
                      *
                      * STEP 3: Register Allocator
@@ -123,6 +121,11 @@ public class PLCompiler {
 //                  reg.printNodeMap();
                     reg.printLiveRanges();
                     reg.buildIG();
+
+                    // Draw the IG for every single function
+                    PrintWriter ig_pw = new PrintWriter("viz/register/test0"+ String.format("%02d", i) + "." + func.name + ".ig.dot");
+                    ig_pw.println("graph test0" + String.format("%02d", i) + " {");
+                    ig_pw.println("node [shape=circle]");
                     SimpleGraph<Node, String> sg = reg.getIG();
                     for(Node n : sg.getVertices()) {
                         ig_pw.println(n.getId() + "[label=\"[" + n.getId() +
@@ -133,6 +136,8 @@ public class PLCompiler {
                     for(String edge : sg.getEdges()) {
                         ig_pw.println(edge);
                     }
+                    ig_pw.println("}");
+                    ig_pw.close();
 
                 }
                 System.out.print("======================\n\n\n");
@@ -142,10 +147,9 @@ public class PLCompiler {
                 optimized_cse_pw.close();
                 unoptimized_pw.println("}");
                 unoptimized_pw.close();
-                dom_pw.println("}");
-                dom_pw.close();
-                ig_pw.println("}");
-                ig_pw.close();
+                //dom_pw.println("}");
+                //dom_pw.close();
+
             }
         } catch (Exception e) {
             e.printStackTrace();

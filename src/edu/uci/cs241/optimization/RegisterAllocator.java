@@ -43,60 +43,85 @@ public class RegisterAllocator {
         this.regMap = new HashMap<Integer, Integer>();
         this.nodeMap = new HashMap<String, Node>();
     }
+
+
+    public void initializeGraph(){
+        // add all used intermediate in the graph
+        for(Map.Entry<Integer, DefUseChain.Item> inter : this.du.intermediates.entrySet()){
+            if(inter.getValue().uses.size() == 0) continue;
+            Node n = new Node(String.valueOf(inter.getKey()));
+            nodeMap.put(n.getId(), n);
+            this.ig.addVertex(n);
+        }
+        // add non-local reference in the graph
+        for(Map.Entry<String, DefUseChain.Item> inter : this.du.variables.entrySet()){
+            if(inter.getValue().uses.size() == 0) continue;
+            Node n = new Node(inter.getKey());
+            nodeMap.put(n.getId(), n);
+            this.ig.addVertex(n);
+        }
+    }
+
     /*
     Based on Franz's paper: Linear Scan Register Allocation on SSA Form
      */
     public void buildLiveRanges() throws Exception {
 
+        // Initialize the Graph first
+        initializeGraph();
         // Build the reverse ordering for BuildIntervals
         boolean explored[] = new boolean[100];
         ArrayList<BasicBlock> ro = buildOrdering(func.entry, explored);
+        // Build intervals
         for(BasicBlock b : ro) {
             // Avoid null / empty blocks
             if(b.ins == null || b.ins.isEmpty()) {
                 continue;
             }
-            // liveSet = union of all live in b's successors
+            /** liveSet = union of all live in b's successors **/
             HashSet<String> liveSet = new HashSet<String>();
-            for(BasicBlock d : b.getSuccessors()) {
+            for(BasicBlock successor : b.getSuccessors()) {
                 // Add all vars that were alive in the successors
                 // (they were used so must be defined in a successor block)
-                liveSet.addAll(d.live);
+                liveSet.addAll(successor.live);
                 //This is to add all the corresponding input phis from successor blocks.
-                for (Instruction i : d.phis) {
-                    // Get left or right phi depending on the block it came from.
-                    Operand o = (d == b.left) ? i.operands.get(0) : i.operands.get(1);
-                    if (o.type != OperandType.CONST) {
-                        liveSet.add(o.getValue());
-                    }
-                }
+                liveSet.addAll(successor.getRelevantPhiInputs(b));
+
+//                for (Instruction i : successor.phis(b)) {
+//                    // Get left or right phi depending on the block it came from.
+//                    Operand o = (successor == b.left) ? i.operands.get(0) : i.operands.get(1);
+//                    if (o.type != OperandType.CONST) {
+//                        liveSet.add(o.getValue());
+//                    }
+//                }
             }
-            // traverse instructions in reverse order
+            /** traverse instructions in reverse order **/
             for(int i = b.ins.size() - 1; i >= 0; i--) {
                 // Due to our structure, all of these are inputs.
                 Instruction in = b.ins.get(i);
-
-                if(in.operator == InstructionType.BRA || in.operator == InstructionType.RETURN
+                // Skip PHI
+                if(in.operator == InstructionType.PHI) continue;
+//                if(in.operator == InstructionType.BRA || in.operator == InstructionType.RETURN || in.operator == InstructionType.PHI
 //                        || in.operator == InstructionType.BNE || in.operator == InstructionType.BEQ
 //                        || in.operator == InstructionType.BLE || in.operator == InstructionType.BLT
 //                        || in.operator == InstructionType.BGE || in.operator == InstructionType.BGT
-                        || in.operator ==  InstructionType.WLN || in.operator == InstructionType.LOADPARAM) {
-                    continue;
-                }
+//                        || in.operator ==  InstructionType.WLN || in.operator == InstructionType.LOADPARAM) {
+//                    continue;
+//                }
 
-                if(in.operator == InstructionType.PHI) {
-                    // Special case; create nodes and skip
-                    for(Operand o : in.operands) {
-                        Node n = new Node(o.getValue());
-                        nodeMap.put(o.getValue(), n);
-                    }
-                    continue;
-                }
+//                if(in.operator == InstructionType.PHI) {
+//                    // Special case; create nodes and skip
+//                    for(Operand o : in.operands) {
+//                        Node n = new Node(o.getValue());
+//                        nodeMap.put(o.getValue(), n);
+//                    }
+//                    continue;
+//                }
 
-                // If output, this def check has to come first to avoid over
-                // lapping with the end use vars
-                // If it is contained in nodeMap, then it must hvave been used already.
-                if(nodeMap.containsKey(String.valueOf(in.id))) {
+                // For output
+                // If output, this def check has to come first to avoid over lapping with the end use vars
+                // If it is contained in nodeMap, then it is a valid def(has been used)
+               if(nodeMap.containsKey(String.valueOf(in.id))) {
                     // add interference with liveset
                     Node n = nodeMap.get(String.valueOf(in.id));
                     for (String s : liveSet) {
@@ -109,34 +134,53 @@ public class RegisterAllocator {
                     liveSet.remove(n.getId());
                 }
 
-                // For Inputs / USE
-                // create the node, insert into live range
-                for(Operand o : in.operands) {
+                // For Inputs
+                for(String input : in.getInputs()) {
                     //If operand is constant, skip
-                    if(o.type  == OperandType.CONST
-                            || o.type == OperandType.ARR_ADDRESS
-                            || o.type == OperandType.BASE_ADDRESS
-                            || o.type == OperandType.MEM_ADDRESS
-                            || o.type == OperandType.JUMP_ADDRESS) {
-                        continue;
-                    }
+//                    if(o.type  == OperandType.CONST
+//                            || o.type == OperandType.ARR_ADDRESS
+//                            || o.type == OperandType.BASE_ADDRESS
+//                            || o.type == OperandType.MEM_ADDRESS
+//                            || o.type == OperandType.JUMP_ADDRESS) {
+//                        continue;
+//                    }
                     // Since this var is alive, add to set
-                    Node var = new Node(o.getValue());
-                    nodeMap.put(o.getValue(), var);
-                    liveSet.add(o.getValue());
-                    ig.addVertex(var);
+                   // Node var = new Node(o.getValue());
+                    //nodeMap.put(o.getValue(), var);
+                    liveSet.add(input);
+                    //ig.addVertex(var);
                 }
             }
 
-            // removal of phis
+            /** removal of phis **/
             for(Instruction i : b.phis) {
                     liveSet.remove(String.valueOf(i.id));
             }
 
-            // if b is loop header
+            /** if b is loop header **/
             if(b.type == BasicBlockType.WHILE) {
                 BasicBlock loopEnd = b.loop_end;
-                //traverse the WHILE BODY
+                //traverse the WHILE BODY to get Defs
+                List<String> to_add = new LinkedList<String>();
+                int start = b.getStart();
+                int end = loopEnd.getEnd();
+                ListIterator<Instruction> it = func.ir.ins.listIterator(start);
+                int i = start;
+                while(i++ <= end){
+                    Instruction in = it.next();
+                    // if it is in the node map, then it is a valid def
+                    if(nodeMap.containsKey(String.valueOf(in.id))) {
+                        // it is a valid def
+                        to_add.add(String.valueOf(in.id));
+                    }
+                }
+                for(String live : liveSet){
+                    for(String def : to_add) {
+                        Node n1 = nodeMap.get(live);
+                        Node n2= nodeMap.get(def);
+                        ig.addEdge(live + "--" + def, n1, n2);
+                    }
+                }
 
             }
             b.live = liveSet;

@@ -1,6 +1,7 @@
 package edu.uci.cs241.ir;
 
 import edu.uci.cs241.ir.types.BasicBlockType;
+import edu.uci.cs241.ir.types.OperandType;
 
 import java.util.*;
 
@@ -81,6 +82,24 @@ public class BasicBlock {
             }
         }
         return successor;
+    }
+
+    public List<String> getRelevantPhiInputs(BasicBlock b){
+        if(this.phis == null || this.phis.size() == 0 || b == null || b.ins == null) return new ArrayList<String>(0);
+        List<String> res = new LinkedList<String>();
+        int start = b.ins.get(0).id;
+        int end = b.ins.get(b.ins.size() - 1).id;
+        for(Instruction phi : phis){
+            for(Operand operand : phi.operands){
+                if(operand.type == OperandType.INST){
+                    if(operand.line >= start && operand.line <= end){
+                        // this operand is relevant
+                        res.add(String.valueOf(operand.line));
+                    }
+                }
+            }
+        }
+        return res;
     }
 
     public void addInstruction(Instruction in){
