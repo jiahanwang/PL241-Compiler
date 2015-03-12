@@ -86,14 +86,6 @@ public class RegisterAllocator {
                 liveSet.addAll(successor.live);
                 //This is to add all the corresponding input phis from successor blocks.
                 liveSet.addAll(successor.getRelevantPhiInputs(b));
-
-//                for (Instruction i : successor.phis(b)) {
-//                    // Get left or right phi depending on the block it came from.
-//                    Operand o = (successor == b.left) ? i.operands.get(0) : i.operands.get(1);
-//                    if (o.type != OperandType.CONST) {
-//                        liveSet.add(o.getValue());
-//                    }
-//                }
             }
             /** traverse instructions in reverse order **/
             for(int i = b.ins.size() - 1; i >= 0; i--) {
@@ -101,27 +93,11 @@ public class RegisterAllocator {
                 Instruction in = b.ins.get(i);
                 // Skip PHI
                 if(in.operator == InstructionType.PHI) continue;
-//                if(in.operator == InstructionType.BRA || in.operator == InstructionType.RETURN || in.operator == InstructionType.PHI
-//                        || in.operator == InstructionType.BNE || in.operator == InstructionType.BEQ
-//                        || in.operator == InstructionType.BLE || in.operator == InstructionType.BLT
-//                        || in.operator == InstructionType.BGE || in.operator == InstructionType.BGT
-//                        || in.operator ==  InstructionType.WLN || in.operator == InstructionType.LOADPARAM) {
-//                    continue;
-//                }
-
-//                if(in.operator == InstructionType.PHI) {
-//                    // Special case; create nodes and skip
-//                    for(Operand o : in.operands) {
-//                        Node n = new Node(o.getValue());
-//                        nodeMap.put(o.getValue(), n);
-//                    }
-//                    continue;
-//                }
 
                 // For output
-                // If output, this def check has to come first to avoid over lapping with the end use vars
-                // If it is contained in nodeMap, then it is a valid def(has been used)
-               if(nodeMap.containsKey(String.valueOf(in.id))) {
+                    // If output, this def check has to come first to avoid over lapping with the end use vars
+                    // If it is contained in nodeMap, then it must have been used already.
+                if(nodeMap.containsKey(String.valueOf(in.id))) {
                     // add interference with liveset
                     Node n = nodeMap.get(String.valueOf(in.id));
                     for (String s : liveSet) {
@@ -136,19 +112,7 @@ public class RegisterAllocator {
 
                 // For Inputs
                 for(String input : in.getInputs()) {
-                    //If operand is constant, skip
-//                    if(o.type  == OperandType.CONST
-//                            || o.type == OperandType.ARR_ADDRESS
-//                            || o.type == OperandType.BASE_ADDRESS
-//                            || o.type == OperandType.MEM_ADDRESS
-//                            || o.type == OperandType.JUMP_ADDRESS) {
-//                        continue;
-//                    }
-                    // Since this var is alive, add to set
-                   // Node var = new Node(o.getValue());
-                    //nodeMap.put(o.getValue(), var);
                     liveSet.add(input);
-                    //ig.addVertex(var);
                 }
             }
 
@@ -176,9 +140,7 @@ public class RegisterAllocator {
                 }
                 for(String live : liveSet){
                     for(String def : to_add) {
-                        Node n1 = nodeMap.get(live);
-                        Node n2= nodeMap.get(def);
-                        ig.addEdge(live + "--" + def, n1, n2);
+                        ig.addEdge(live + "--" + def, nodeMap.get(live), nodeMap.get(def));
                     }
                 }
 
