@@ -125,7 +125,7 @@ public class Operand implements Cloneable{
             case FUNC_RETURN_PARAM:
                 return "PARAM[" + this.line + "]";
             case REG:
-                return "R"+this.regno;
+                return "R" + this.regno;
             default:
                 return "" + this.value;
         }
@@ -154,7 +154,7 @@ public class Operand implements Cloneable{
             case FUNC_RETURN_PARAM:
                 return "PARAM[" + this.line + "]";
             case REG:
-                return "R"+this.regno;
+                return "R" + this.regno;
             default:
                 return "" + this.value;
         }

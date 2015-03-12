@@ -103,7 +103,7 @@ public class PLCompiler {
                     explored = new boolean[10000];
                     DFS_buildCFG(func.entry, optimized_cse_pw, explored);
                     /* print out Def-Use Chain */
-                    System.out.print(func.getDu());
+                    //System.out.print(func.getDu());
                     System.out.print("***********************\n");
                     //explored = new boolean[10000];
                     //DFS_buildDom(func.entry, dom_pw, explored);
@@ -122,7 +122,7 @@ public class PLCompiler {
 //                  reg.buildIG();
 
                     // Draw the IG for every single function
-                    PrintWriter ig_pw = new PrintWriter("viz/register/test0"+ String.format("%02d", i) + "." + func.name + ".ig.dot");
+                    PrintWriter ig_pw = new PrintWriter("viz/ig/test0"+ String.format("%02d", i) + "." + func.name + ".ig.dot");
                     ig_pw.println("graph test0" + String.format("%02d", i) + " {");
                     ig_pw.println("node [shape=circle]");
                     SimpleGraph<Node, String> sg = reg.getIG();
@@ -135,7 +135,18 @@ public class PLCompiler {
                     }
                     ig_pw.println("}");
                     ig_pw.close();
-
+                    reg.allocateRegisters();
+                    reg.replaceInstructions();
+                    reg.printRegMap();
+                    // print out the CFG with register
+                    PrintWriter register_pw = new PrintWriter("viz/register/test0"+ String.format("%02d", i) + "." + func.name + ".ig.dot");
+                    register_pw.println("digraph test0" + String.format("%02d", i) + " {");
+                    register_pw.println("node [shape=box]");
+                    explored = new boolean[10000];
+                    DFS_buildCFG(func.entry, register_pw, explored);
+                    register_pw.println(10000 + "[label=\"" + reg.getRegMapinString() + "\"]");
+                    register_pw.println("}");
+                    register_pw.close();
                 }
                 System.out.print("======================\n\n\n");
                 optimized_cp_pw.println("}");
@@ -146,7 +157,6 @@ public class PLCompiler {
                 unoptimized_pw.close();
                 //dom_pw.println("}");
                 //dom_pw.close();
-
             }
         } catch (Exception e) {
             e.printStackTrace();

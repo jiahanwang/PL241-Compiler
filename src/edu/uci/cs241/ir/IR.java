@@ -184,7 +184,7 @@ public class IR implements Cloneable{
         for(int i = start, len = end + 1; i < len; i++){
             Instruction in = ins.get(i);
             builder.append(in.id + ": ");
-            builder.append(in);
+            builder.append(in.toString());
             builder.append("\n");
         }
         return builder.toString();

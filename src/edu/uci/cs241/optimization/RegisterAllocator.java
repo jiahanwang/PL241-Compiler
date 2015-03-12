@@ -274,18 +274,18 @@ public class RegisterAllocator {
     public void replaceInstructions() throws Exception {
         for(Instruction i : func.ir.ins) {
             // Store regno into the instruction
-            if(regMap.containsKey(i.id)) {
-                i.regno = regMap.get(i.id);
+            if(regMap.containsKey(String.valueOf(i.id))) {
+                i.regno = regMap.get(String.valueOf(i.id));
             }
             // Change the operand intermediates to regnos
             for(Operand o : i.operands) {
                 if(o.type == OperandType.INST) {
-                    if(regMap.containsKey(o.line)) {
+                    if(regMap.containsKey(String.valueOf(o.line))) {
                         o.type = OperandType.REG;
-                        o.regno = regMap.get(o.line);
+                        o.regno = regMap.get(String.valueOf(o.line));
                     } else {
-                        throw new Exception("Error in register allocation: " +
-                                "trying to replace intermediate ["+o.line+"] with reg but was never allocated.");
+                        //throw new Exception("Error in register allocation: " +
+                        //        "trying to replace intermediate ["+o.line+"] with reg but was never allocated.");
                     }
                 }
             }
@@ -294,6 +294,10 @@ public class RegisterAllocator {
 
     public SimpleGraph<Node, String> getIG() {
         return ig;
+    }
+
+    public String getRegMapinString(){
+        return regMap.toString();
     }
 
     public void printRegMap() {
