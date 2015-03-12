@@ -60,7 +60,7 @@ public class RegisterAllocator {
         // add non-local reference in the graph
         for(Map.Entry<String, DefUseChain.Item> inter : this.du.variables.entrySet()){
             int frequency = inter.getValue().uses.size();
-            if(frequency == 0) continue;
+            //if(frequency == 0) continue;
             Node n = new Node(inter.getKey());
             n.cost = frequency;
             nodeMap.put(n.getId(), n);
@@ -294,10 +294,10 @@ public class RegisterAllocator {
             }
             // Change the operand intermediates to regnos
             for(Operand o : i.operands) {
-                if(o.type == OperandType.INST) {
-                    if(regMap.containsKey(String.valueOf(o.line))) {
+                if(o.type == OperandType.INST  || o.type == OperandType.VARIABLE) {
+                    if(regMap.containsKey(o.getValue())) {
+                        o.regno = regMap.get(o.getValue());
                         o.type = OperandType.REG;
-                        o.regno = regMap.get(String.valueOf(o.line));
                     } else {
                         //throw new Exception("Error in register allocation: " +
                         //        "trying to replace intermediate ["+o.line+"] with reg but was never allocated.");
@@ -312,11 +312,12 @@ public class RegisterAllocator {
     }
 
     public String getRegMapinString(){
-        return regMap.toString();
-    }
-
-    public void printRegMap() {
-        System.out.println(regMap.toString());
+        StringBuilder builder = new StringBuilder();
+        for(Map.Entry<String, Integer> entry : regMap.entrySet()){
+            builder.append(entry.getKey()).append(" = R");
+            builder.append(entry.getValue()).append("\n");
+        }
+        return builder.toString();
     }
 
 

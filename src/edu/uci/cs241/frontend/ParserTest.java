@@ -107,7 +107,7 @@ public class ParserTest {
                     pw_ig.close();
 
                     reg.allocateRegisters();
-                    reg.printRegMap();
+                    //reg.printRegMap();
 //                    reg.replaceInstructions();
 //                    System.out.print(func.name + ":\n");
 //                    System.out.print(func.ir);

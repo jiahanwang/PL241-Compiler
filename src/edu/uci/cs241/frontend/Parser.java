@@ -319,24 +319,29 @@ public class Parser {
                 }
 
                 // add arr retrieve instruction
+                Instruction multi_index = new Instruction(InstructionType.MUL);
+                if(arr.dimensions.size() == 1){
+                    multi_index.addOperandByResultType(x);
+                }else {
+                    multi_index.addOperand(OperandType.INST, String.valueOf(last_line));
+                }
+                multi_index.addOperand(OperandType.CONST, String.valueOf(4));
+                int start_Line = current_ir.addInstruction(multi_index);
+
                 Instruction retrieve_arr = new Instruction(InstructionType.ADDA);
                 retrieve_arr.addOperand(OperandType.BASE_ADDRESS, name);
-                if(arr.dimensions.size() == 1){
-                    retrieve_arr.addOperandByResultType(x);
-                }else {
-                    retrieve_arr.addOperand(OperandType.INST, String.valueOf(last_line));
-                }
+                retrieve_arr.addOperand(OperandType.INST, String.valueOf(start_Line));
 
                 if(!left_side){
                     // just load from this address
                     Instruction load = new Instruction(InstructionType.LOAD);
-                    int start_Line = current_ir.addInstruction(retrieve_arr);
-                    load.addOperand(OperandType.INST, String.valueOf(start_Line));
+                    last_line = current_ir.addInstruction(retrieve_arr);
+                    load.addOperand(OperandType.INST, String.valueOf(last_line));
                     res.type = ResultType.INST;
                     res.line = current_ir.addInstruction(load);
                     if(arr.dimensions.size() == 1){
                         res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : start_Line;
-                        res.end_line = res.address;
+                        res.end_line = res.line;
                     }else{
                         res.end_line = res.line;
                     }
@@ -347,7 +352,7 @@ public class Parser {
                     // cuz type will be changed to INST
                     res.line = res.address;
                     if(arr.dimensions.size() == 1){
-                        res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : res.address;
+                        res.start_line = x.start_line != Integer.MIN_VALUE ? x.start_line : start_Line;
                         res.end_line = res.address;
                     }else{
                         res.end_line = res.address;

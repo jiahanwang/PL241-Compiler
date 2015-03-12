@@ -23,7 +23,7 @@ public class PLCompiler {
 
     public static void main(String[] args) {
         try {
-            for(int i = 1; i <= 32; i++) {
+            for(int i = 0; i <= 0; i++) {
 
                 // CFG Visualization for unoptimized IR
                 PrintWriter unoptimized_pw = new PrintWriter("viz/unoptimized/test0"+String.format("%02d", i)+".dot");
@@ -146,7 +146,7 @@ public class PLCompiler {
                     ig_pw.close();
                     reg.allocateRegisters();
                     reg.replaceInstructions();
-                    reg.printRegMap();
+                    System.out.println("Registers: \n" + reg.getRegMapinString());
                     // print out the CFG with register
                     PrintWriter register_pw = new PrintWriter("viz/register/test0"+ String.format("%02d", i) + "." + func.name + ".ig.dot");
                     register_pw.println("digraph test0" + String.format("%02d", i) + " {");
