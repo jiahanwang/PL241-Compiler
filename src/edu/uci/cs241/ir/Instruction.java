@@ -198,6 +198,9 @@ public class Instruction {
         if(this.regno != -1){
             builder.append("= R" + this.regno);
         }
+        if(this.operator == InstructionType.LOAD){
+            builder.append(":" + this.reload);
+        }
         return builder.toString();
     }
 }

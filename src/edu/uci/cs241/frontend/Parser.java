@@ -210,7 +210,9 @@ public class Parser {
                 Instruction in = b.ins.get(i);
                 // For STORE
                 if(in.operator == InstructionType.STORE){
-                    for(Instruction load : loadSet){
+                    Iterator<Instruction> it = loadSet.iterator();
+                    while(it.hasNext()){
+                        Instruction load = it.next();
                         if(load.arr_name.equals(in.arr_name)){
                             load.reload = true;
                             loadSet.remove(load);
@@ -220,6 +222,15 @@ public class Parser {
                 }
                 // For LOAD
                 if(in.operator == InstructionType.LOAD){
+                    // the loads for the same array in the same block replace each other
+                    Iterator<Instruction> it = loadSet.iterator();
+                    while(it.hasNext()){
+                        Instruction load = it.next();
+                        if(load.arr_name.equals(in.arr_name)){
+                            loadSet.remove(load);
+                            loadSet.add(in);
+                        }
+                    }
                     loadSet.add(in);
                 }
             }
