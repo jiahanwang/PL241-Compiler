@@ -815,7 +815,10 @@ public class Parser {
                             cur_phi.current = phi.current;
                             cur_phi.last = phi.lead;
                         }
-                        phis.add(phi.toInstruction());
+//                        phis.add(phi.toInstruction());
+                        Instruction p = phi.toInstruction();
+                        p.parent = b.join;
+                        phis.add(p);
                     }
                     if(phis.size() == 0){
                         // nothing in join node, then as least mark size of the whole if statement
@@ -907,7 +910,9 @@ public class Parser {
                         phi.lead = phi.current;
                         phi.operands.add(phi.original);
                         phi.operands.add(phi.last);
-                        phis.add(phi.toInstruction());
+                        Instruction p = phi.toInstruction();
+                        p.parent = b;
+                        phis.add(p);
                     }
                     // insert into the node
                     if(phis.size() != 0) {

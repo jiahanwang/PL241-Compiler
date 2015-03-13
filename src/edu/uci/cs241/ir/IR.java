@@ -131,9 +131,23 @@ public class IR implements Cloneable{
 
     public boolean deleteInstruction(int start){
         Instruction delete = this.ins.get(start);
+        BasicBlock parent = delete.parent;
+        if(parent == null) {
+            System.out.println(delete.toString());
+        }
+
+        List<Instruction> ins = parent.ins;
+        Instruction i = ins.get(0);
+        int id = i.id;
+
+
         int offset = start - delete.parent.ins.get(0).id;
         // Remove from BB
-        delete.parent.ins.remove(offset);
+        try {
+            delete.parent.ins.remove(offset);
+        } catch (Exception e) {
+            System.out.println("");
+        }
         // Update lines in IR
         ListIterator<Instruction> iterator = this.ins.listIterator(0);
         while(iterator.hasNext()){

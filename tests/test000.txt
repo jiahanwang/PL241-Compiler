@@ -1,22 +1,52 @@
 main
-  var a, b, i, j;
-  array[6] x;
+
+array [5] [5] a, b, c;
+var i, j, k, sum, inout;
 
 {
-  let i <- call InputNum();
-  let j <- call InputNum();
-  let x[i] <- call InputNum();
-  let a <- i + 1;
-  let b <- a + x[i];
-  if a > 0 then
-    let b <- b + 1;
-    let x[j] <- a
-  fi;
-  let b <- b + x[i];
-  let a <- a + x[i];
-  call OutputNum(b);
-  while x[i] < 10 do
-	let a <- x[i];
-	let x[i] <- x[i] + 1
-  od
+  let inout <- call InputNum;
+
+  let i <- 0;
+  while i < 5 do
+    let j <- 0;
+    while j < 5 do
+      let a[i][j] <- i * j;
+      let b[i][j] <- i + j;
+      let j <- j + 1
+    od;
+    let i <- i + 1
+  od;
+
+
+  let i <- 0;
+  while i < 5 do
+    let k <- 0;
+    while k < 5 do
+      let sum <- 0;
+      let j <- 0;
+      while j < 5 do
+        let sum <- sum + a[i][j] * b[j][k];
+        let j <- j + 1
+      od;
+      let c[i][k] <- sum;
+      let k <- k + 1
+    od;
+    let i <- i + 1
+  od;
+
+
+  let i <- 0;
+  while i < 5 do
+    let j <- 0;
+    while j < 5 do
+      call OutputNum(i);
+      call OutputNum(j);
+      call OutputNum(c[i][j]);
+      call OutputNewLine;
+
+      let j <- j + 1
+    od;
+    let i <- i + 1
+  od;
+  call OutputNum(inout)
 }.

@@ -66,13 +66,16 @@ public class CSE {
             // Special case of LOAD-STORE-LOAD
             if(i.reload) {
                 if(anchor.containsKey(t)) {
+                    Instruction old = null;
                     for(Instruction i2 : anchor.get(t)) {
                         if(i.equals(i2)) {
                             // Have to replace older version of LOAD with this one.
-                            anchor.get(t).remove(i2);
-                            anchor.get(t).add(i);
+                            old = i2;
+                            break;
                         }
                     }
+                    anchor.get(t).remove(old);
+                    anchor.get(t).add(i);
                 } else {
                     ArrayList<Instruction> a = new ArrayList<Instruction>();
                     a.add(i);

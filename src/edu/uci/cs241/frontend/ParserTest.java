@@ -59,9 +59,9 @@ public class ParserTest {
                     // Apply CSE
                     HashMap<InstructionType, ArrayList<Instruction>> anchor = new HashMap<InstructionType, ArrayList<Instruction>>();
                     CSE.recursiveCSE(func.entry, anchor);
-//                    for(Integer num : CSE.remove) {
-//                        func.ir.deleteInstruction(num);
-//                    }
+                    for(Integer num : CSE.remove) {
+                        func.ir.deleteInstruction(num);
+                    }
                     CSE.reset();
 
                     //if(func.predefined) continue;
@@ -99,7 +99,7 @@ public class ParserTest {
                     pw_ig.close();
 
                     reg.allocateRegisters();
-                    //reg.printRegMap();
+                    System.out.println(reg.getRegMapinString());
 //                    reg.replaceInstructions();
 //                    System.out.print(func.name + ":\n");
 //                    System.out.print(func.ir);
