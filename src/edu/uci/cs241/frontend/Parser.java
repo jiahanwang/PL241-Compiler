@@ -200,7 +200,7 @@ public class Parser {
             if(b.ins == null || b.ins.isEmpty()) {
                 continue;
             }
-            /** liveSet = union of all loads in b's successors **/
+            /** loadSet = union of all loads in b's successors **/
             HashSet<Instruction> loadSet = new HashSet<Instruction>();
             for(BasicBlock successor : b.getSuccessors()) {
                 loadSet.addAll(successor.load);
@@ -815,7 +815,7 @@ public class Parser {
                             cur_phi.current = phi.current;
                             cur_phi.last = phi.lead;
                         }
-//                        phis.add(phi.toInstruction());
+//                      phis.add(phi.toInstruction());
                         Instruction p = phi.toInstruction();
                         p.parent = b.join;
                         phis.add(p);
