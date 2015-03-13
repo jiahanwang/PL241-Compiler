@@ -256,7 +256,7 @@ public class RegisterAllocator {
         int reg = 1;
         while(true) {
             // if already in use or special reg
-            if(adjRegs.contains(reg) || (reg >= 27 && reg <= 30)) {
+            if(adjRegs.contains(reg) || (reg >= 28 && reg <= 30)) {
                 reg++;
             } else {
                 // assign it to this
