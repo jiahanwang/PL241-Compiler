@@ -14,5 +14,9 @@ main
   fi;
   let b <- b + x[i];
   let a <- a + x[i];
-  call OutputNum(b)
+  call OutputNum(b);
+  while x[i] < 10 do
+	let a <- x[i];
+	let x[i] <- 1
+  od
 }.

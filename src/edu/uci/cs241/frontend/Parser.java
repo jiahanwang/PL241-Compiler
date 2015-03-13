@@ -233,6 +233,32 @@ public class Parser {
                     }
                     loadSet.add(in);
                 }
+                /** if b is loop header **/
+                if(b.type == BasicBlockType.WHILE) {
+                    BasicBlock loopEnd = b.loop_end;
+                    //traverse the WHILE BODY to get the first store
+                    int start = b.getEnd();
+                    int end = loopEnd.getEnd();
+                    ListIterator<Instruction> it = func.ir.ins.listIterator(end);
+                    boolean bottom_store = false;
+                    int j = end;
+                    while(j-- >= start){
+                        Instruction w_in = it.previous();
+                        if(w_in.operator == InstructionType.LOAD && w_in.arr_name == in.arr_name){
+                            break;
+                        }
+                        if(w_in.operator == InstructionType.STORE && w_in.arr_name == in.arr_name){
+                            bottom_store = true;
+                            break;
+                        }
+                    }
+                    if(bottom_store){
+                        for(Instruction load : loadSet){
+                            load.reload = true;
+                        }
+                    }
+
+                }
             }
             b.load = loadSet;
         }
