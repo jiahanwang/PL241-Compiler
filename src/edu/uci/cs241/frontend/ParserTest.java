@@ -59,9 +59,9 @@ public class ParserTest {
                     // Apply CSE
                     HashMap<InstructionType, ArrayList<Instruction>> anchor = new HashMap<InstructionType, ArrayList<Instruction>>();
                     CSE.recursiveCSE(func.entry, anchor);
-                    for(Integer num : CSE.remove) {
-                        func.ir.deleteInstruction(num);
-                    }
+//                    for(Integer num : CSE.remove) {
+//                        func.ir.deleteInstruction(num);
+//                    }
                     CSE.reset();
 
                     //if(func.predefined) continue;
