@@ -17,6 +17,6 @@ main
   call OutputNum(b);
   while x[i] < 10 do
 	let a <- x[i];
-	let x[i] <- 1
+	let x[i] <- x[i] + 1
   od
 }.

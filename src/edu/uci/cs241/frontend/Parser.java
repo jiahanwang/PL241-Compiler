@@ -215,7 +215,7 @@ public class Parser {
                         Instruction load = it.next();
                         if(load.arr_name.equals(in.arr_name)){
                             load.reload = true;
-                            loadSet.remove(load);
+                            it.remove();
                         }
                     }
                     continue;
@@ -227,8 +227,7 @@ public class Parser {
                     while(it.hasNext()){
                         Instruction load = it.next();
                         if(load.arr_name.equals(in.arr_name)){
-                            loadSet.remove(load);
-                            loadSet.add(in);
+                            it.remove();
                         }
                     }
                     loadSet.add(in);
